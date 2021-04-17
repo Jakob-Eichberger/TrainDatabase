@@ -1,0 +1,5 @@
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.csprojAssemblyReference.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\MainWindow.g.cs
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\App.g.cs
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application_MarkupCompile.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application_MarkupCompile.lref
