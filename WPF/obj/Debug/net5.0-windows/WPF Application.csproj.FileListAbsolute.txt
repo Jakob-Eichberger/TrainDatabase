@@ -1,5 +1,58 @@
-C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.csprojAssemblyReference.cache
 C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\MainWindow.g.cs
 C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\App.g.cs
 C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application_MarkupCompile.cache
 C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application_MarkupCompile.lref
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\WPF Application.exe
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\WPF Application.deps.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\WPF Application.runtimeconfig.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\WPF Application.runtimeconfig.dev.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\WPF Application.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\ref\WPF Application.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\WPF Application.pdb
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Humanizer.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Data.Sqlite.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.DotNet.PlatformAbstractions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.EntityFrameworkCore.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.EntityFrameworkCore.Design.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.EntityFrameworkCore.Relational.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.EntityFrameworkCore.Sqlite.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.Caching.Abstractions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.Caching.Memory.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.DependencyModel.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.Logging.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.Options.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\Microsoft.Extensions.Primitives.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\SQLitePCLRaw.batteries_v2.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\SQLitePCLRaw.nativelibrary.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\SQLitePCLRaw.core.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\SQLitePCLRaw.provider.dynamic_cdecl.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\System.Diagnostics.DiagnosticSource.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\alpine-x64\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\linux-arm\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\linux-arm64\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\linux-armel\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\linux-mips64\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\linux-musl-x64\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\linux-x64\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\linux-x86\native\libe_sqlite3.so
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\osx-x64\native\libe_sqlite3.dylib
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\win-arm\native\e_sqlite3.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\win-arm64\native\e_sqlite3.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\win-x64\native\e_sqlite3.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\bin\Debug\net5.0-windows\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\MainWindow.baml
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.g.resources
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.AssemblyInfoInputs.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.AssemblyInfo.cs
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.csproj.CoreCompileInputs.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.csproj.CopyComplete
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\ref\WPF Application.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.pdb
+C:\Users\jakob\Documents\GitHub\TrainDatabase\WPF\obj\Debug\net5.0-windows\WPF Application.genruntimeconfig.cache

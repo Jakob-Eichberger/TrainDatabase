@@ -1,0 +1,15 @@
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\bin\Debug\net5.0\Infrastructure.deps.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\bin\Debug\net5.0\Infrastructure.runtimeconfig.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\bin\Debug\net5.0\Infrastructure.runtimeconfig.dev.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\bin\Debug\net5.0\Infrastructure.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\bin\Debug\net5.0\ref\Infrastructure.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\bin\Debug\net5.0\Infrastructure.pdb
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.csprojAssemblyReference.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.AssemblyInfoInputs.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.AssemblyInfo.cs
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\ref\Infrastructure.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.pdb
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Infrastructure\obj\Debug\net5.0\Infrastructure.genruntimeconfig.cache

@@ -1,0 +1,14 @@
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\bin\Debug\net5.0\Extensions.deps.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\bin\Debug\net5.0\Extensions.runtimeconfig.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\bin\Debug\net5.0\Extensions.runtimeconfig.dev.json
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\bin\Debug\net5.0\Extensions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\bin\Debug\net5.0\ref\Extensions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\bin\Debug\net5.0\Extensions.pdb
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\Extensions.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\Extensions.AssemblyInfoInputs.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\Extensions.AssemblyInfo.cs
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\Extensions.csproj.CoreCompileInputs.cache
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\Extensions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\ref\Extensions.dll
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\Extensions.pdb
+C:\Users\jakob\Documents\GitHub\TrainDatabase\Extensions\obj\Debug\net5.0\Extensions.genruntimeconfig.cache
