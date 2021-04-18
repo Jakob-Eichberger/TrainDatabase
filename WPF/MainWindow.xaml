@@ -7,6 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Label Content="adresse" Margin="85,66,635,334"/>
+        <Label Content="kmh (0 bis 255)" Margin="266,66,449,339"/>
+        <TextBox x:Name="locoadress" Margin="85,100,569,285"/>
+        <TextBox x:Name="locospeed" Margin="266,100,388,285"/>
+        <Button Click="Button_Click" Margin="85,154,388,103"    />
 
     </Grid>
 </Window>
