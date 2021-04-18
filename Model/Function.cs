@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace WPF_Application
+namespace Wpf_Application
 {
     public partial class Function
     {

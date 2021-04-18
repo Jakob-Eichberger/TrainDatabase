@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace WPF_Application
+namespace Model
 {
     public partial class Vehicle
     {

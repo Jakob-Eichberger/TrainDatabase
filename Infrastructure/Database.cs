@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using WPF_Application;
+using Model;
+using Wpf_Application;
 
 #nullable disable
 
