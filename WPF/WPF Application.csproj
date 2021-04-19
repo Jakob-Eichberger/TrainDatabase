@@ -5,6 +5,8 @@
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
+		<ApplicationIcon>Datenbank.ico</ApplicationIcon>
+		<AssemblyName>TrainDB</AssemblyName>
 	</PropertyGroup>
 
 	<ItemGroup>

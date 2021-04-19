@@ -20,21 +20,31 @@ namespace Wpf_Application
     /// </summary>
     public partial class MainWindow : Window
     {
-        readonly ModelTrainController.ModelTrainController controler;
+        readonly ModelTrainController.ModelTrainController controler = Z21Connection.Get();
         private readonly Database db = new();
 
         public MainWindow()
         {
             try
             {
+                InitializeComponent();
+
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
                 db.FillDatabase();
 
-                InitializeComponent();
-                DrawAllVehicles(db.Vehicles.ToList());
-                controler = Z21Connection.Get();
-
+                if (db.Vehicles.Any())
+                {
+                    DrawAllVehicles(db.Vehicles.ToList());
+                }
+                else
+                {
+                    MessageBoxResult rs = MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (rs == MessageBoxResult.Yes)
+                    {
+                        new Import_Overview().Show();
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -43,7 +53,6 @@ namespace Wpf_Application
         }
 
         private void DB_Import_Z21_new(object sender, RoutedEventArgs e) => new DB_Import_Z21().Show();
-
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
@@ -103,6 +112,7 @@ namespace Wpf_Application
 
             }
         }
+
         void ControlLoko_Click(Object sender, RoutedEventArgs e)
         {
             try
@@ -118,10 +128,10 @@ namespace Wpf_Application
             {
                 Logger.Log($"{DateTime.UtcNow}: Method {nameof(ControlLoko_Click)} throw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex.InnerException.Message}", LoggerType.Error);
                 MessageBox.Show($"Beim öffnen ist ein Fehler aufgetreten! Fehlermeldung: {ex.Message}", "Error beim öffnen");
-
             }
 
         }
+
         void EditLoko_Click(Object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Does not work yet! Sorry!");
@@ -130,7 +140,7 @@ namespace Wpf_Application
         private void tbSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name).Contains(tbSearch.Text)));
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name).ToLower().Contains(tbSearch.Text.ToLower())));
             else
                 DrawAllVehicles(db.Vehicles);
         }
