@@ -14,9 +14,9 @@ namespace Model
         [Required]
         public string Name { get; set; } = "";
 
-        public string? ImageName { get; set; } = null;
+        public string? ImageName { get; set; } = default!;
 
-        public long? Type { get; set; } = 0;
+        public VehilceType Type { get; set; } = VehilceType.Lokomotive;
 
         public long? MaxSpeed { get; set; } = 0;
 

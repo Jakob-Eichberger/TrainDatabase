@@ -37,7 +37,7 @@ namespace WPF_Application
         private int acceleration = 0;
         private BreakingMode breaking = BreakingMode.FA;
         private Weight weight = 0;
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
         /// Represents the State the Loko will be in. 
