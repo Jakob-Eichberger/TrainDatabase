@@ -17,7 +17,7 @@ namespace Wpf_Application
         /// Function gets the LanAdress and LanPort from a config file and creates a new <see cref="Z21"/> object.
         /// </summary>
         /// <returns>Retuns a <see cref="Z21"/> object.</returns>
-        public static Z21 Get() => new(new Z21StartData { LanAdresse = "192.168.0.111", LanPort = 21106 });
+        public static Z21 Get() => new(new Z21StartData { LanAdresse = "192.168.0.111", LanPort = 21105 });
 
         /// <summary>
         /// Function sets an <paramref name="address"/> and a <paramref name="port"/> which it then saves in a config file.

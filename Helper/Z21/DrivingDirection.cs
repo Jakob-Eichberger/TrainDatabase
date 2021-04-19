@@ -14,5 +14,8 @@
 
 namespace Helper
 {
-    public enum RichtungsAngabe { Leerlauf, Forward, Backward };
+    /// <summary>
+    /// N: Neutral, F: Forward, R: Reverse
+    /// </summary>
+    public enum DrivingDirection { N = 0, F = 1, R = 2 };
 }

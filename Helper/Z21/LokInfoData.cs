@@ -18,8 +18,8 @@ namespace Helper
     {
         public LokAdresse Adresse;
         public bool Besetzt;
-        public RichtungsAngabe Richtung;
+        public DrivingDirection drivingDirection;
         private byte fahrstufe = 0;
-        public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value < (byte)255 ? value : throw new ArgumentException($"Max Value für Fahrstufe ist 254! Ist: {value}"); } }
+        public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value <= (byte)254 ? value : throw new ArgumentException($"Max Value für Fahrstufe ist 254! Ist: {value}"); } }
     }
 }

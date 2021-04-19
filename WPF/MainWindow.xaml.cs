@@ -24,19 +24,18 @@ namespace Wpf_Application
     public partial class MainWindow : Window
     {
         readonly Z21 z21;
-        private readonly Database db;
+        private readonly Database db = new();
+        private readonly List<TrainControl> TrainControls = new();
         public MainWindow()
         {
             try
             {
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
-
                 InitializeComponent();
                 z21 = Z21Connection.Get();
-                var x = new TrainControl(z21, db.Vehicles.Find(0));
-                x.Show();
-
+                TrainControls.Add(new TrainControl(z21, db.Vehicles.FirstOrDefault(e => e.Address == 9)));
+                TrainControls[0].Show();
 
             }
             catch (Exception e)
