@@ -22,7 +22,6 @@ namespace Wpf_Application
     {
         readonly ModelTrainController.ModelTrainController controler;
         private readonly Database db = new();
-        private readonly List<TrainControl> TrainControls = new();
 
         public MainWindow()
         {
@@ -35,8 +34,6 @@ namespace Wpf_Application
                 InitializeComponent();
                 DrawAllVehicles(db.Vehicles.ToList());
                 controler = Z21Connection.Get();
-
-                new TrainControl(controler, db?.Vehicles?.FirstOrDefault(e => e.Address == 9) ?? throw new ApplicationException("Lok ned do")).Show();
 
             }
             catch (Exception e)
@@ -94,13 +91,13 @@ namespace Wpf_Application
                 miControlLoko.Header = "Lok steueren";
                 miControlLoko.Click += ControlLoko_Click;
                 sp.ContextMenu.Items.Add(miControlLoko);
+                miControlLoko.Tag = item;
 
                 MenuItem miEditLoko = new MenuItem();
                 miEditLoko.Header = "Lok bearbeiten";
                 miEditLoko.Click += EditLoko_Click;
 
                 sp.ContextMenu.Items.Add(miEditLoko);
-                sp.Tag = item;
                 border.Child = sp;
                 VehicleGrid.Children.Add(border);
 
@@ -108,9 +105,23 @@ namespace Wpf_Application
         }
         void ControlLoko_Click(Object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("control");
-        }
+            try
+            {
+                var menu = ((MenuItem)e.Source);
+                Vehicle? vehicle = (menu.Tag as Vehicle);
+                if (vehicle is not null)
+                    new TrainControl(controler, vehicle).Show();
+                else
+                    MessageBox.Show("Öffnen nicht möglich da Vehilce null ist!", "Erro");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"{DateTime.UtcNow}: Method {nameof(ControlLoko_Click)} throw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex.InnerException.Message}", LoggerType.Error);
+                MessageBox.Show($"Beim öffnen ist ein Fehler aufgetreten! Fehlermeldung: {ex.Message}", "Error beim öffnen");
 
+            }
+
+        }
         void EditLoko_Click(Object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Does not work yet! Sorry!");
