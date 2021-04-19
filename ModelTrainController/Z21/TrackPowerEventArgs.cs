@@ -12,20 +12,17 @@
  * 
  */
 
-namespace Helper
+using System;
+
+namespace ModelTrainController.Z21
 {
-    public class SystemStateData
+    public class TrackPowerEventArgs : EventArgs
     {
-        public int MainCurrent = -1;
-        public int ProgCurrent = -1;
-        public int FilteredMainCurrent = -1;
-        public int Temperature = -1;
-        public int SupplyVoltage = -1;
-        public int VCCVoltage = -1;
-        public CentralStateData CentralState;
-        public SystemStateData()
+        public TrackPowerEventArgs(bool trackPowerOn)
+            : base()
         {
-            CentralState = new CentralStateData();
+            TrackPowerOn = trackPowerOn;
         }
+        public bool TrackPowerOn;
     }
 }

@@ -14,15 +14,15 @@
 
 using System;
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class FirmwareVersionInfoEventArgs : EventArgs
+    public class DataEventArgs : EventArgs
     {
-        public FirmwareVersionInfoEventArgs(FirmwareVersionInfo data)
+        public DataEventArgs(byte[] received)
             : base()
         {
-            Data = data;
+            Received = received;
         }
-        public FirmwareVersionInfo Data;
+        public byte[] Received;
     }
 }

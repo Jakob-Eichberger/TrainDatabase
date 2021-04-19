@@ -11,17 +11,18 @@
  * unter http://www.gnu.org/licenses/gpl.html.
  * 
  */
-using System;
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class GetLocoInfoEventArgs : EventArgs
+    public class CentralStateData
     {
-        public GetLocoInfoEventArgs(LokInfoData data)
-            : base()
-        {
-            Data = data;
-        }
-        public LokInfoData Data;
+        public bool EmergencyStop = true;
+        public bool TrackVoltageOff = true;
+        public bool ShortCircuit = true;
+        public bool ProgrammingModeActive = true;
+        public bool HighTemperature = true;
+        public bool PowerLost = true;
+        public bool ShortCircuitExternal = true;
+        public bool ShortCircuitInternal = true;
     }
 }

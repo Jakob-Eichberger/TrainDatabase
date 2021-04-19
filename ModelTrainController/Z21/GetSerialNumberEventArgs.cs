@@ -12,11 +12,17 @@
  * 
  */
 
-namespace Helper
+using System;
+
+namespace ModelTrainController.Z21
 {
-    public struct Z21StartData
+    public class GetSerialNumberEventArgs : EventArgs
     {
-        public string LanAdresse;
-        public int LanPort;
+        public GetSerialNumberEventArgs(int serialNumber)
+            : base()
+        {
+            SerialNumber = serialNumber;
+        }
+        public int SerialNumber;
     }
 }

@@ -12,18 +12,17 @@
  * 
  */
 
-namespace Helper
+using System;
+
+namespace ModelTrainController.Z21
 {
-    public class FirmwareVersionInfo
+    public class SystemStateEventArgs : EventArgs
     {
-        public int Major;
-        public int Minor;
-        public string Firmware;
-        public FirmwareVersionInfo(int major, int minor)
+        public SystemStateEventArgs(SystemStateData data)
+            : base()
         {
-            Major = major;
-            Minor = minor;
-            Firmware = major.ToString("X") + "." + minor.ToString("X");    // z21 liefert minor hex
+            Data = data;
         }
+        public SystemStateData Data;
     }
 }

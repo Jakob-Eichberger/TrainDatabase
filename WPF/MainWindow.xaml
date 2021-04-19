@@ -5,7 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_Application"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Name="mw">
+        Title="MainWindow" MinHeight="550" MinWidth="800" Name="mw">
     <Grid x:Name="MwGrid">
+        <Menu Margin="0,0,0,413" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <MenuItem Header="Database">
+                <MenuItem Header="Import">
+                    <MenuItem Header="Z21 (new)" Click="DB_Import_Z21_new"/>
+                    <MenuItem Header="Z21 (old)"/>
+                    <MenuItem Header="Rocrail"/>
+                    <MenuItem Header="TrainControler"/>
+                </MenuItem>
+                <MenuItem Header="Export">
+                    <MenuItem Header="Z21 (new)"/>
+                    <MenuItem Header="Z21 (old)"/>
+                    <MenuItem Header="Rocrail"/>
+                    <MenuItem Header="TrainControler"/>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>

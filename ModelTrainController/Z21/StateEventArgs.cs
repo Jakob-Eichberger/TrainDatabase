@@ -14,15 +14,15 @@
 
 using System;
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class VersionInfoEventArgs : EventArgs
+    public class StateEventArgs : EventArgs
     {
-        public VersionInfoEventArgs(VersionInfo data)
+        public StateEventArgs(CentralStateData data)
             : base()
         {
             Data = data;
         }
-        public VersionInfo Data;
+        public CentralStateData Data;
     }
 }

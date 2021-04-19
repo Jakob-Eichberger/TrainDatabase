@@ -1,6 +1,7 @@
 ﻿using Exceptions;
 using Helper;
 using Model;
+using ModelTrainController.Z21;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -36,13 +37,12 @@ namespace WPF_Application
         private int acceleration = 0;
         private BreakingMode breaking = BreakingMode.FA;
         private Weight weight = 0;
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Represents the states the Loko will be in eventually.
+        /// Represents the State the Loko will be in. 
         /// </summary>
-        private LokInfoData TargetLokInfoData
+        private LokInfoData Lok_FutureState
         {
             get
             {
@@ -59,13 +59,15 @@ namespace WPF_Application
                     btnDirection.IsEnabled = false;
                 }
                 lokInfoData = value;
+
+                OnPropertyChanged();
             }
         }
 
         /// <summary>
-        /// Data directly from the Z21. Represents the actually state of the Locomotive.
+        /// Data directly from the Z21. Not Used to controll the Loko.
         /// </summary>
-        public LokInfoData CurrentLokInfoData { get; set; } = new();
+        public LokInfoData Lok_CurrentState { get; set; } = new();
 
         public Dictionary<int, string> MyProperty { get; set; }
 
@@ -94,7 +96,6 @@ namespace WPF_Application
             }
         }
 
-
         /// <summary>
         /// This is the Breaking Mode the Loco is at. 
         /// </summary>
@@ -109,31 +110,34 @@ namespace WPF_Application
                     TargetSpeed = 0;
                 }
                 breaking = value;
+                OnPropertyChanged();
             }
         }
 
         public Weight Weight { get => weight; set => weight = value; }
 
+        public int MaxAcceleration { get; set; } = 126;
 
         public TrainControl(Z21 _z21, Vehicle _vehicle)
         {
             try
             {
+
                 DataContext = this;
                 InitializeComponent();
+                if (_z21 is null | _vehicle is null) return;
                 z21 = _z21;
                 vehicle = _vehicle;
                 this.Title = vehicle.FullName;
-                TargetLokInfoData.Adresse = new((int)(vehicle?.Address ?? throw new Z21Exception(z21, $"Addresse '{vehicle?.Address.ToString() ?? ""}' ist keine valide Addresse!")));
+                Lok_FutureState.Adresse = new((int)(vehicle?.Address ?? throw new Z21Exception(z21, $"Addresse '{vehicle?.Address.ToString() ?? ""}' ist keine valide Addresse!")));
 
 
                 z21.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
-                z21.GetLocoInfo(TargetLokInfoData.Adresse);
+                z21.GetLocoInfo(Lok_FutureState.Adresse);
 
                 PBSpeed.Maximum = 126;
                 lblMaxSpeed.Content = 126;
 
-                PBAcceleration.Maximum = 7000;
                 SetLocoDrive();
             }
             catch (Exception ex)
@@ -143,8 +147,9 @@ namespace WPF_Application
             }
         }
 
-        private byte GetNextSpeedStep()
+        private int GetNextSpeedStep()
         {
+            var x = Lok_CurrentState.Fahrstufe - Lok_FutureState.Fahrstufe;
             return 0;
         }
 
@@ -155,10 +160,10 @@ namespace WPF_Application
             {
                 while (true)
                 {
-                    TargetLokInfoData.Fahrstufe = GetNextSpeedStep();
-                    z21.GetLocoInfo(TargetLokInfoData.Adresse);
+                    Lok_FutureState.Fahrstufe = (byte)GetNextSpeedStep();
+                    z21.GetLocoInfo(Lok_FutureState.Adresse);
                     //if (CurrentLokInfoData.drivingDirection is not DrivingDirection.N)
-                    //    z21.SetLocoDrive();
+                    //z21.SetLocoDrive();
                     Thread.Sleep(1000);
                 }
             });
@@ -170,7 +175,7 @@ namespace WPF_Application
         {
             if (e.Data.Adresse.Value == vehicle.Address)
             {
-                CurrentLokInfoData = e.Data;
+                Lok_CurrentState = e.Data;
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     PBSpeed.Value = e.Data.Fahrstufe - 1 < 0 ? 0 : e.Data.Fahrstufe - 1;
@@ -182,25 +187,23 @@ namespace WPF_Application
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentLokInfoData.Fahrstufe == 0)
+            if (Lok_CurrentState.Fahrstufe == 0)
             {
-                switch (TargetLokInfoData.drivingDirection)
+                switch (Lok_FutureState.drivingDirection)
                 {
                     case DrivingDirection.R:
-                        TargetLokInfoData.drivingDirection = DrivingDirection.N;
+                        Lok_FutureState.drivingDirection = DrivingDirection.N;
                         break;
                     case DrivingDirection.N:
-                        TargetLokInfoData.drivingDirection = DrivingDirection.F;
+                        Lok_FutureState.drivingDirection = DrivingDirection.F;
                         break;
                     case DrivingDirection.F:
-                        TargetLokInfoData.drivingDirection = DrivingDirection.R;
+                        Lok_FutureState.drivingDirection = DrivingDirection.R;
                         break;
                 }
-                btnDirection.Content = TargetLokInfoData.drivingDirection;
                 //z21.SetLocoDrive(TargetLokInfoData);
             }
         }
-
 
 
         private void BtnSifa_Click(object sender, RoutedEventArgs e)
@@ -214,7 +217,7 @@ namespace WPF_Application
             if (e.Key == Key.W)
             {
                 Acceleration += 2;
-                Acceleration = Acceleration >= 7000 ? 7000 : Acceleration;
+                Acceleration = Acceleration >= MaxAcceleration ? MaxAcceleration : Acceleration;
             }
             if (e.Key == Key.S)
             {
@@ -231,7 +234,7 @@ namespace WPF_Application
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string name = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

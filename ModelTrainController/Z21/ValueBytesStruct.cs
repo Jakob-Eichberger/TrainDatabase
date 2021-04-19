@@ -9,10 +9,16 @@
  * Die Anwendung und die Quelltextdateien sind freie Software und stehen unter der
  * GNU General Public License. Der Originaltext dieser Lizenz kann eingesehen werden
  * unter http://www.gnu.org/licenses/gpl.html.
- * 
  */
 
-namespace Helper
+using System.Collections.Generic;
+using System.Text;
+
+namespace ModelTrainController.Z21
 {
-    public enum HardwareTyp { Z21_OLD, Z21_NEW, SMARTRAIL, z21_SMALL, None };
+    public struct ValueBytesStruct
+    {
+        public byte Adr_MSB;
+        public byte Adr_LSB;
+    }
 }

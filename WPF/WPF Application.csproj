@@ -24,6 +24,7 @@
 		<ProjectReference Include="..\Exceptions\Exceptions.csproj" />
 		<ProjectReference Include="..\Helper\Helper.csproj" />
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+		<ProjectReference Include="..\ModelTrainController\ModelTrainController.csproj" />
 	</ItemGroup>
 
 </Project>

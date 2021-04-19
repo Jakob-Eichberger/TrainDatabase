@@ -27,14 +27,14 @@
             <Label Name="lblMaxKW" Content="100"  HorizontalAlignment="Center"/>
         </DockPanel>
         <Label Content="KM/H:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"></Label>
-        <ProgressBar Height="30" Width="300" x:Name="PBSpeed" Margin="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" IsIndeterminate="False"/>
+        <ProgressBar Height="30" Width="300" x:Name="PBSpeed" Maximum="{Binding ElementName=mw, Path=Acceleration}" Margin="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" IsIndeterminate="False"/>
         <DockPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Label Name="lblCurrentSpeed" Content="0"  HorizontalAlignment="Center"/>
             <Label Content="/"  HorizontalAlignment="Center"/>
-            <Label Name="lblMaxSpeed" Content="100"  HorizontalAlignment="Center"/>
+            <Label Name="lblMaxSpeed" Content="{Binding ElementName=mw, Path=MaxAcceleration}"  HorizontalAlignment="Center"/>
         </DockPanel>
         <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
-            <Button HorizontalAlignment="Left" x:Name="btnDirection" Width="50" Height="50" Margin="5" Click="BtnDirection_Click"/>
+            <Button HorizontalAlignment="Left" x:Name="btnDirection" Content="{Binding ElementName=mw, Path=TargetLokInfoData.drivingDirection}" Width="50" Height="50" Margin="5" Click="BtnDirection_Click"/>
             <Button HorizontalAlignment="Center" x:Name="btnSifa"  Width="50" Height="50" Margin="5" Click="BtnSifa_Click"/>
             <Label HorizontalAlignment="Right" x:Name="btnBreaking" Content="FA"  Width="50" Height="50" Margin="5"/>
         </StackPanel>

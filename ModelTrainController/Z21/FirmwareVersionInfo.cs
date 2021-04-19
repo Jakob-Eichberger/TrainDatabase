@@ -12,7 +12,18 @@
  * 
  */
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public enum VersionTyp { Z21, z21, Other, None };
+    public class FirmwareVersionInfo
+    {
+        public int Major;
+        public int Minor;
+        public string Firmware;
+        public FirmwareVersionInfo(int major, int minor)
+        {
+            Major = major;
+            Minor = minor;
+            Firmware = major.ToString("X") + "." + minor.ToString("X");    // z21 liefert minor hex
+        }
+    }
 }

@@ -11,11 +11,17 @@
  * unter http://www.gnu.org/licenses/gpl.html.
  * 
  */
+using System;
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    /// <summary>
-    /// N: Neutral, F: Forward, R: Reverse
-    /// </summary>
-    public enum DrivingDirection { N = 0, F = 1, R = 2 };
+    public class GetLocoInfoEventArgs : EventArgs
+    {
+        public GetLocoInfoEventArgs(LokInfoData data)
+            : base()
+        {
+            Data = data;
+        }
+        public LokInfoData Data;
+    }
 }

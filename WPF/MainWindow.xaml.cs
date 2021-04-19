@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPF_Application;
+using WPF_Application.DbImport;
 
 namespace Wpf_Application
 {
@@ -26,23 +27,27 @@ namespace Wpf_Application
         readonly Z21 z21;
         private readonly Database db = new();
         private readonly List<TrainControl> TrainControls = new();
+
         public MainWindow()
         {
             try
             {
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
+                db.FillDatabase();
+
                 InitializeComponent();
                 z21 = Z21Connection.Get();
-                TrainControls.Add(new TrainControl(z21, db.Vehicles.FirstOrDefault(e => e.Address == 9)));
-                TrainControls[0].Show();
+
+                new TrainControl(z21, db?.Vehicles?.FirstOrDefault(e => e.Address == 9) ?? throw new ApplicationException("Lok ned do")).Show();
 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show($"{e.Message}\n inner: {e?.InnerException?.Message ?? ""}");
             }
         }
 
+        private void DB_Import_Z21_new(object sender, RoutedEventArgs e) => new DB_Import_Z21().Show();
     }
 }

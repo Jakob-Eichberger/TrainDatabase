@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
     public class LokAdresse
     {

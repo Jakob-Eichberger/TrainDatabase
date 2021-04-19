@@ -12,17 +12,7 @@
  * 
  */
 
-using System;
-
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class DataEventArgs : EventArgs
-    {
-        public DataEventArgs(byte[] received)
-            : base()
-        {
-            Received = received;
-        }
-        public byte[] Received;
-    }
+    public enum HardwareTyp { Z21_OLD, Z21_NEW, SMARTRAIL, z21_SMALL, None };
 }

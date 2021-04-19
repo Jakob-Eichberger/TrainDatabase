@@ -12,17 +12,16 @@
  * 
  */
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class CentralStateData
+    public class VersionInfo
     {
-        public bool EmergencyStop = true;
-        public bool TrackVoltageOff = true;
-        public bool ShortCircuit = true;
-        public bool ProgrammingModeActive = true;
-        public bool HighTemperature = true;
-        public bool PowerLost = true;
-        public bool ShortCircuitExternal = true;
-        public bool ShortCircuitInternal = true;
+        public int XBusVersion;
+        public VersionTyp Version;
+        public VersionInfo(int xBusVersion, VersionTyp version)
+        {
+            XBusVersion = xBusVersion;
+            Version = version;
+        }
     }
 }

@@ -9,16 +9,23 @@
  * Die Anwendung und die Quelltextdateien sind freie Software und stehen unter der
  * GNU General Public License. Der Originaltext dieser Lizenz kann eingesehen werden
  * unter http://www.gnu.org/licenses/gpl.html.
+ * 
  */
 
-using System.Collections.Generic;
-using System.Text;
-
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public struct ValueBytesStruct
+    public class SystemStateData
     {
-        public byte Adr_MSB;
-        public byte Adr_LSB;
+        public int MainCurrent = -1;
+        public int ProgCurrent = -1;
+        public int FilteredMainCurrent = -1;
+        public int Temperature = -1;
+        public int SupplyVoltage = -1;
+        public int VCCVoltage = -1;
+        public CentralStateData CentralState;
+        public SystemStateData()
+        {
+            CentralState = new CentralStateData();
+        }
     }
 }

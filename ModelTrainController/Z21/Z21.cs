@@ -12,6 +12,8 @@
  * 
  */
 
+using ModelTrainController;
+using ModelTrainController.Z21;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -20,7 +22,7 @@ namespace Helper
 {
     public class Z21 : UdpClient
     {
-        public Z21(Z21StartData startData) : base(startData.LanPort)
+        public Z21(StartData startData) : base(startData.LanPort)
         {
             lanAdresse = IPAddress.Parse(startData.LanAdresse);
             lanAdresseS = startData.LanAdresse;

@@ -12,16 +12,11 @@
  * 
  */
 
-namespace Helper
+namespace ModelTrainController
 {
-    public class HardwareInfo
+    public struct StartData
     {
-        public HardwareTyp Hardware;
-        public int FirmwareVersion;
-        public HardwareInfo(HardwareTyp hardware, int firmware)
-        {
-            Hardware = hardware;
-            FirmwareVersion = firmware;
-        }
+        public string LanAdresse;
+        public int LanPort;
     }
 }

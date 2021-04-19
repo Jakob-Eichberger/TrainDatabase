@@ -12,17 +12,7 @@
  * 
  */
 
-using System;
-
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class StateEventArgs : EventArgs
-    {
-        public StateEventArgs(CentralStateData data)
-            : base()
-        {
-            Data = data;
-        }
-        public CentralStateData Data;
-    }
+    public enum VersionTyp { Z21, z21, Other, None };
 }

@@ -12,16 +12,16 @@
  * 
  */
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class VersionInfo
+    public class HardwareInfo
     {
-        public int XBusVersion;
-        public VersionTyp Version;
-        public VersionInfo(int xBusVersion, VersionTyp version)
+        public HardwareTyp Hardware;
+        public int FirmwareVersion;
+        public HardwareInfo(HardwareTyp hardware, int firmware)
         {
-            XBusVersion = xBusVersion;
-            Version = version;
+            Hardware = hardware;
+            FirmwareVersion = firmware;
         }
     }
 }

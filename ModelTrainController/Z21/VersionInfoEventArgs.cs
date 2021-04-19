@@ -14,15 +14,15 @@
 
 using System;
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class GetSerialNumberEventArgs : EventArgs
+    public class VersionInfoEventArgs : EventArgs
     {
-        public GetSerialNumberEventArgs(int serialNumber)
+        public VersionInfoEventArgs(VersionInfo data)
             : base()
         {
-            SerialNumber = serialNumber;
+            Data = data;
         }
-        public int SerialNumber;
+        public VersionInfo Data;
     }
 }

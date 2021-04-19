@@ -14,15 +14,15 @@
 
 using System;
 
-namespace Helper
+namespace ModelTrainController.Z21
 {
-    public class SystemStateEventArgs : EventArgs
+    public class FirmwareVersionInfoEventArgs : EventArgs
     {
-        public SystemStateEventArgs(SystemStateData data)
+        public FirmwareVersionInfoEventArgs(FirmwareVersionInfo data)
             : base()
         {
             Data = data;
         }
-        public SystemStateData Data;
+        public FirmwareVersionInfo Data;
     }
 }
