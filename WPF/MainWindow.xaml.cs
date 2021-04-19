@@ -1,19 +1,8 @@
-﻿using Helper;
-using Infrastructure;
+﻿using Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WPF_Application;
 using WPF_Application.DbImport;
 
@@ -24,7 +13,7 @@ namespace Wpf_Application
     /// </summary>
     public partial class MainWindow : Window
     {
-        readonly Z21 z21;
+        readonly ModelTrainController.ModelTrainController controler;
         private readonly Database db = new();
         private readonly List<TrainControl> TrainControls = new();
 
@@ -37,9 +26,9 @@ namespace Wpf_Application
                 db.FillDatabase();
 
                 InitializeComponent();
-                z21 = Z21Connection.Get();
+                controler = Z21Connection.Get();
 
-                new TrainControl(z21, db?.Vehicles?.FirstOrDefault(e => e.Address == 9) ?? throw new ApplicationException("Lok ned do")).Show();
+                new TrainControl(controler, db?.Vehicles?.FirstOrDefault(e => e.Address == 9) ?? throw new ApplicationException("Lok ned do")).Show();
 
             }
             catch (Exception e)

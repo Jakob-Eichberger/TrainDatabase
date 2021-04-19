@@ -20,57 +20,31 @@ using System.Net.Sockets;
 
 namespace Helper
 {
-    public class Z21 : UdpClient
+    public class Z21 : ModelTrainController.ModelTrainController
     {
-        public Z21(StartData startData) : base(startData.LanPort)
+        public Z21(StartData startData) : base(startData)
         {
-            lanAdresse = IPAddress.Parse(startData.LanAdresse);
-            lanAdresseS = startData.LanAdresse;
-            lanPort = startData.LanPort;
-            Connect(lanAdresse, lanPort);
-            DontFragment = false;
-            EnableBroadcast = false;
+
             BeginReceive(new AsyncCallback(empfang), null);
             Console.WriteLine("Z21 initialisiert.");
         }
 
-        private IPAddress lanAdresse;
-        private string lanAdresseS;
+        public override event EventHandler<DataEventArgs> OnReceive;                         //  Allgemeiner Empfang von Daten
+        public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
+        public override event EventHandler<VersionInfoEventArgs> OnGetVersion;               //  40 21 LAN X GET VERSION  2.3 (xx)
+        public override event EventHandler OnTrackPowerOFF;                                  //  40 61 LAN X BC TRACK POWER OFF 2.7 (12) 
+        public override event EventHandler OnTrackPowerON;                                   //  40 61 LAN X BC TRACK POWER ON  2.8 (12) 
+        public override event EventHandler OnProgrammingMode;                                //  40 61 LAN X BC PROGRAMMING MODE 2.9 (12) 
+        public override event EventHandler OnTrackShortCircuit;                              //  40 61 LAN X BC TRACK SHORT CIRCUIT 2.10 (12) 
+        public override event EventHandler<StateEventArgs> OnStatusChanged;                  //  40 62 LAN X STATUS CHANGED 2.12 (13)
+        public override event EventHandler OnStopped;                                        //  40 81 LAN X BC STOPPED 2.14 (14)
+        public override event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion;// 40 F3 LAN X GET FIRMWARE VERSION 2.15 (xx)
+        public override event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged;   //  84    LAN SYSTEMSTATE_DATACHANGED 2.18 (16) 
+        public override event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo;         //  1A    LAN GET HWINFO
+        public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;              //  40 EF LAN X LOCO INFO   4.4 (22)
+        public override event EventHandler<TrackPowerEventArgs> OnTrackPower;                //  ist Zusammenfassung von 
 
-        public string LanAdresse
-        {
-            get
-            {
-                return lanAdresseS;
-            }
-        }
-
-        private int lanPort;
-        public int LanPort
-        {
-            get
-            {
-                return lanPort;
-            }
-        }
-
-        public event EventHandler<DataEventArgs> OnReceive;                         //  Allgemeiner Empfang von Daten
-        public event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
-        public event EventHandler<VersionInfoEventArgs> OnGetVersion;               //  40 21 LAN X GET VERSION  2.3 (xx)
-        public event EventHandler OnTrackPowerOFF;                                  //  40 61 LAN X BC TRACK POWER OFF 2.7 (12) 
-        public event EventHandler OnTrackPowerON;                                   //  40 61 LAN X BC TRACK POWER ON  2.8 (12) 
-        public event EventHandler OnProgrammingMode;                                //  40 61 LAN X BC PROGRAMMING MODE 2.9 (12) 
-        public event EventHandler OnTrackShortCircuit;                              //  40 61 LAN X BC TRACK SHORT CIRCUIT 2.10 (12) 
-        public event EventHandler<StateEventArgs> OnStatusChanged;                  //  40 62 LAN X STATUS CHANGED 2.12 (13)
-        public event EventHandler OnStopped;                                        //  40 81 LAN X BC STOPPED 2.14 (14)
-        public event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion;// 40 F3 LAN X GET FIRMWARE VERSION 2.15 (xx)
-        public event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged;   //  84    LAN SYSTEMSTATE_DATACHANGED 2.18 (16) 
-        public event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo;         //  1A    LAN GET HWINFO
-        public event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;              //  40 EF LAN X LOCO INFO   4.4 (22)
-        public event EventHandler<TrackPowerEventArgs> OnTrackPower;                //  ist Zusammenfassung von 
-
-
-        private void empfang(IAsyncResult res)
+        internal override void empfang(IAsyncResult res)
         {
             try
             {
@@ -86,7 +60,7 @@ namespace Helper
             }
         }
 
-        private void endConnect(IAsyncResult res)
+        internal override void endConnect(IAsyncResult res)
         {
             Console.WriteLine("Reconnection abgeschlossen");
             Client.EndConnect(res);
@@ -289,7 +263,7 @@ namespace Helper
         }
 
         //  LAN_GET_SERIAL_NUMBER()     // 2.1 (10)
-        public void GetSerialNumber()
+        public override void GetSerialNumber()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -301,7 +275,7 @@ namespace Helper
         }
 
         //  LAN_X_GET_VERSION     // 2.3 (10)
-        public void GetVersion()
+        public override void GetVersion()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -317,7 +291,7 @@ namespace Helper
         }
 
         //  LAN_X_GET_STATUS     // 2.4 (11)
-        public void GetStatus()
+        public override void GetStatus()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -332,7 +306,7 @@ namespace Helper
         }
 
         //  LAN_X_SET_TRACK_POWER_OFF   // 2.5 (11)
-        public void SetTrackPowerOFF()
+        public override void SetTrackPowerOFF()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -347,7 +321,7 @@ namespace Helper
         }
 
         //  LAN_X_SET_TRACK_POWER_ON   // 2.6 (11)
-        public void SetTrackPowerON()
+        public override void SetTrackPowerON()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -362,7 +336,7 @@ namespace Helper
         }
 
         //  LAN_X_SET_STOP   // 2.13 (14)
-        public void SetStop()
+        public override void SetStop()
         {
             byte[] bytes = new byte[6];
             bytes[0] = 0x06;
@@ -376,7 +350,7 @@ namespace Helper
         }
 
         //  LAN_X_GET_FIRMWARE_VERSION   // 2.15 (xx)
-        public void GetFirmwareVersion()
+        public override void GetFirmwareVersion()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -391,7 +365,7 @@ namespace Helper
         }
 
         //  LAN_SET_BROADCASTFLAGS()    // 2.16 (15)
-        public void SetBroadcastFlags()
+        public override void SetBroadcastFlags()
         {
             byte[] bytes = new byte[8];
             bytes[0] = 0x08;
@@ -407,7 +381,7 @@ namespace Helper
         }
 
         //  LAN_SYSTEMSTATE_GETDATA()     // 2.19 (17)
-        public void SystemStateGetData()
+        public override void SystemStateGetData()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -419,7 +393,7 @@ namespace Helper
         }
 
         //  LAN_GET_HWINFO   // 2.20 (xx)
-        public void GetHardwareInfo()
+        public override void GetHardwareInfo()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -431,7 +405,7 @@ namespace Helper
         }
 
         //  LAN X GET LOCO INFO         // 4.1 (20)
-        public void GetLocoInfo(LokAdresse adresse)
+        public override void GetLocoInfo(LokAdresse adresse)
         {
             byte[] bytes = new byte[9];
             bytes[0] = 0x09;
@@ -448,7 +422,7 @@ namespace Helper
         }
 
         //  LAN_X_SET_LOCO_DRIVE  4.2  (21)
-        public void SetLocoDrive(LokInfoData data)
+        public override void SetLocoDrive(LokInfoData data)
         {
             if (data.drivingDirection == DrivingDirection.F) data.Fahrstufe |= 0x080;
 
@@ -468,13 +442,13 @@ namespace Helper
         }
 
 
-        public void Nothalt()
+        public override void Nothalt()
         {
             SetTrackPowerOFF();
         }
 
         //  LAN_LOGOFF            2.2 (10)         
-        public void LogOFF()
+        public override void LogOFF()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -527,7 +501,7 @@ namespace Helper
             }
         }
 
-        public void Reconnect()
+        public override void Reconnect()
         {
             try
             {
@@ -539,7 +513,7 @@ namespace Helper
             }
         }
 
-        public new void Dispose()
+        public override void Dispose()
         {
             //LogOFF();
             Close();

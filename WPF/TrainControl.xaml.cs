@@ -30,7 +30,7 @@ namespace WPF_Application
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged
     {
-        public Z21 z21;
+        public ModelTrainController.ModelTrainController controler;
         public Vehicle vehicle;
 
         private LokInfoData lokInfoData = new();
@@ -118,22 +118,22 @@ namespace WPF_Application
 
         public int MaxAcceleration { get; set; } = 126;
 
-        public TrainControl(Z21 _z21, Vehicle _vehicle)
+        public TrainControl(ModelTrainController.ModelTrainController controler, Vehicle _vehicle)
         {
             try
             {
 
                 DataContext = this;
                 InitializeComponent();
-                if (_z21 is null | _vehicle is null) return;
-                z21 = _z21;
+                if (controler is null | _vehicle is null) return;
+                this.controler = controler;
                 vehicle = _vehicle;
                 this.Title = vehicle.FullName;
-                Lok_FutureState.Adresse = new((int)(vehicle?.Address ?? throw new Z21Exception(z21, $"Addresse '{vehicle?.Address.ToString() ?? ""}' ist keine valide Addresse!")));
+                Lok_FutureState.Adresse = new((int)(vehicle?.Address ?? throw new ControlerException(this.controler, $"Addresse '{vehicle?.Address.ToString() ?? ""}' ist keine valide Addresse!")));
 
 
-                z21.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
-                z21.GetLocoInfo(Lok_FutureState.Adresse);
+                this.controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
+                this.controler.GetLocoInfo(Lok_FutureState.Adresse);
 
                 PBSpeed.Maximum = 126;
                 lblMaxSpeed.Content = 126;
@@ -161,7 +161,7 @@ namespace WPF_Application
                 while (true)
                 {
                     Lok_FutureState.Fahrstufe = (byte)GetNextSpeedStep();
-                    z21.GetLocoInfo(Lok_FutureState.Adresse);
+                    controler.GetLocoInfo(Lok_FutureState.Adresse);
                     //if (CurrentLokInfoData.drivingDirection is not DrivingDirection.N)
                     //z21.SetLocoDrive();
                     Thread.Sleep(1000);
@@ -208,7 +208,7 @@ namespace WPF_Application
 
         private void BtnSifa_Click(object sender, RoutedEventArgs e)
         {
-            z21.SetTrackPowerOFF();
+            controler.SetTrackPowerOFF();
         }
 
 

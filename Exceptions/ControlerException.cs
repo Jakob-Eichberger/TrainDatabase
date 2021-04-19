@@ -6,24 +6,24 @@ namespace Exceptions
 {
     public class ControlerException : Exception
     {
-        public ControlerException(Z21 z21)
+        public ControlerException(ModelTrainController.ModelTrainController controler)
         {
-            z21.Nothalt();
+            controler.Nothalt();
         }
 
-        public ControlerException(Z21 z21, string message) : base(message)
+        public ControlerException(ModelTrainController.ModelTrainController controler, string message) : base(message)
         {
-            z21.Nothalt();
+            controler.Nothalt();
         }
 
-        public ControlerException(Z21 z21, string message, Exception innerException) : base(message, innerException)
+        public ControlerException(ModelTrainController.ModelTrainController controler, string message, Exception innerException) : base(message, innerException)
         {
-            z21.Nothalt();
+            controler.Nothalt();
         }
 
-        protected ControlerException(Z21 z21, SerializationInfo info, StreamingContext context) : base(info, context)
+        protected ControlerException(ModelTrainController.ModelTrainController controler, SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            z21.Nothalt();
+            controler.Nothalt();
         }
     }
 }
