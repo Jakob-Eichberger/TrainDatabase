@@ -18,8 +18,8 @@ namespace ModelTrainController
         }
 
 
-        internal abstract void empfang(IAsyncResult res);
-        internal abstract void endConnect(IAsyncResult res);
+        internal abstract void Empfang(IAsyncResult res);
+        internal abstract void EndConnect(IAsyncResult res);
 
 
         internal IPAddress lanAdresse;

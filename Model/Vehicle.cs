@@ -14,7 +14,7 @@ namespace Model
         [Required]
         public string Name { get; set; } = "";
 
-        public string ImageName { get; set; } = "";
+        public string? ImageName { get; set; } = null;
 
         public long? Type { get; set; } = 0;
 

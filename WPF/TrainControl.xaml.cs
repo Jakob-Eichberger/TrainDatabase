@@ -130,8 +130,6 @@ namespace WPF_Application
                 vehicle = _vehicle;
                 this.Title = vehicle.FullName;
                 Lok_FutureState.Adresse = new((int)(vehicle?.Address ?? throw new ControlerException(this.controler, $"Addresse '{vehicle?.Address.ToString() ?? ""}' ist keine valide Addresse!")));
-
-
                 this.controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
                 this.controler.GetLocoInfo(Lok_FutureState.Adresse);
 

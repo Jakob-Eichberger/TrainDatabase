@@ -34,7 +34,7 @@
             <Label Name="lblMaxSpeed" Content="{Binding ElementName=mw, Path=MaxAcceleration}"  HorizontalAlignment="Center"/>
         </DockPanel>
         <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
-            <Button HorizontalAlignment="Left" x:Name="btnDirection" Content="{Binding ElementName=mw, Path=TargetLokInfoData.drivingDirection}" Width="50" Height="50" Margin="5" Click="BtnDirection_Click"/>
+            <Button HorizontalAlignment="Left" x:Name="btnDirection" Content="{Binding ElementName=mw, Path=Lok_CurrentState}" Width="50" Height="50" Margin="5" Click="BtnDirection_Click"/>
             <Button HorizontalAlignment="Center" x:Name="btnSifa"  Width="50" Height="50" Margin="5" Click="BtnSifa_Click"/>
             <Label HorizontalAlignment="Right" x:Name="btnBreaking" Content="FA"  Width="50" Height="50" Margin="5"/>
         </StackPanel>

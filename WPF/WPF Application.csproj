@@ -8,6 +8,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Data\VehicleImage\default.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Data\VehicleImage\default.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
 			<PrivateAssets>all</PrivateAssets>

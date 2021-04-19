@@ -25,7 +25,7 @@ namespace Helper
         public Z21(StartData startData) : base(startData)
         {
 
-            BeginReceive(new AsyncCallback(empfang), null);
+            BeginReceive(new AsyncCallback(Empfang), null);
             Console.WriteLine("Z21 initialisiert.");
         }
 
@@ -44,15 +44,15 @@ namespace Helper
         public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;              //  40 EF LAN X LOCO INFO   4.4 (22)
         public override event EventHandler<TrackPowerEventArgs> OnTrackPower;                //  ist Zusammenfassung von 
 
-        internal override void empfang(IAsyncResult res)
+        internal override void Empfang(IAsyncResult res)
         {
             try
             {
                 IPEndPoint RemoteIpEndPoint = null;
                 byte[] received = EndReceive(res, ref RemoteIpEndPoint);
-                BeginReceive(new AsyncCallback(empfang), null);
+                BeginReceive(new AsyncCallback(Empfang), null);
                 if (OnReceive != null) OnReceive(this, new DataEventArgs(received));
-                cutTelegramm(received);
+                CutTelegramm(received);
             }
             catch (Exception ex)
             {
@@ -60,13 +60,13 @@ namespace Helper
             }
         }
 
-        internal override void endConnect(IAsyncResult res)
+        internal override void EndConnect(IAsyncResult res)
         {
             Console.WriteLine("Reconnection abgeschlossen");
             Client.EndConnect(res);
         }
 
-        private void cutTelegramm(byte[] bytes)
+        private void CutTelegramm(byte[] bytes)
         {
             if (bytes == null) return;
             int z = 0;
@@ -79,7 +79,7 @@ namespace Helper
                 {
                     byte[] einzelbytes = new byte[length];
                     Array.Copy(bytes, z, einzelbytes, 0, length);
-                    evaluation(einzelbytes);
+                    Evaluation(einzelbytes);
                     z += length;
                 }
                 else
@@ -91,7 +91,7 @@ namespace Helper
 
         }
 
-        private void evaluation(byte[] received)
+        private void Evaluation(byte[] received)
         {
             bool b;
             int i, j;
@@ -150,7 +150,7 @@ namespace Helper
                             break;
                         case 0x62:           //  LAN X STATUS CHANGED  2.12 (13)
                             Console.WriteLine("> LAN X STATUS CHANGED " + getByteString(received));
-                            CentralStateData centralStateData = getCentralStateData(received);
+                            CentralStateData centralStateData = GetCentralStateData(received);
                             if (OnStatusChanged != null) OnStatusChanged(this, new StateEventArgs(centralStateData));
                             break;
                         case 0x63:
@@ -221,7 +221,7 @@ namespace Helper
                     break;
                 case 0x84:            // LAN SYSTEMSTATE DATACHANGED    2.18 (16)
                     Console.WriteLine("> LAN SYSTEMSTATE DATACHANGED " + getByteString(received));
-                    SystemStateData systemStateData = getSystemStateData(received);
+                    SystemStateData systemStateData = GetSystemStateData(received);
                     if (OnSystemStateDataChanged != null) OnSystemStateDataChanged(this, new SystemStateEventArgs(systemStateData));
 
                     break;
@@ -231,8 +231,7 @@ namespace Helper
             }
         }
 
-
-        private CentralStateData getCentralStateData(byte[] received)
+        private CentralStateData GetCentralStateData(byte[] received)
         {
             CentralStateData statedata = new CentralStateData();
             statedata.EmergencyStop = ((received[6] & 0x01) == 0x01);
@@ -242,7 +241,7 @@ namespace Helper
             return statedata;
         }
 
-        private SystemStateData getSystemStateData(byte[] received)
+        private SystemStateData GetSystemStateData(byte[] received)
         {
             SystemStateData statedata = new SystemStateData();
             statedata.MainCurrent = (received[4] << 8) + (received[5]);
@@ -441,7 +440,6 @@ namespace Helper
             Senden(bytes);
         }
 
-
         public override void Nothalt()
         {
             SetTrackPowerOFF();
@@ -495,7 +493,7 @@ namespace Helper
             {
                 Console.WriteLine("Fehler beim Senden. Socket-Exception.");
                 Console.WriteLine("Versuche es erneut.");
-                Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(endConnect), null);
+                Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
                 Console.WriteLine(e.Message);
 
             }
@@ -505,7 +503,7 @@ namespace Helper
         {
             try
             {
-                Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(endConnect), null);
+                Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
             }
             catch
             {
