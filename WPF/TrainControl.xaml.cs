@@ -32,11 +32,9 @@ namespace WPF_Application
     {
         public ModelTrainController.ModelTrainController controler;
         public Vehicle vehicle;
-
         private LokInfoData lokInfoData = new();
-        private int acceleration = 0;
-        private BreakingMode breaking = BreakingMode.FA;
-        private Weight weight = 0;
+        private LokInfoData lok_CurrentState = new();
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>
@@ -50,16 +48,7 @@ namespace WPF_Application
             }
             set
             {
-                if (value is not null && value.Fahrstufe == 0)
-                {
-                    btnDirection.IsEnabled = true;
-                }
-                else
-                {
-                    btnDirection.IsEnabled = false;
-                }
                 lokInfoData = value;
-
                 OnPropertyChanged();
             }
         }
@@ -67,54 +56,22 @@ namespace WPF_Application
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the Loko.
         /// </summary>
-        public LokInfoData Lok_CurrentState { get; set; } = new();
-
-        public Dictionary<int, string> MyProperty { get; set; }
-
+        public LokInfoData Lok_CurrentState
+        {
+            get => lok_CurrentState; set
+            {
+                lok_CurrentState = value;
+                OnPropertyChanged();
+            }
+        }
         /// <summary>
         /// This is the speed the Locomotive should have. But it is not the speed the Locomotive is actually at. For that please us the <see cref="LokInfoData.fahrstufe"/> property.
         /// </summary>
         public int TargetSpeed { get; set; } = 0;
 
         /// <summary>
-        /// This is the ammount the Loco should accelerate at.
-        /// </summary>
-        public int Acceleration
-        {
-            get => acceleration;
-            set
-            {
-                if (Breaking == BreakingMode.FA)
-                {
-                    acceleration = value;
-                }
-                else
-                {
-                    acceleration = 0;
-                }
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
         /// This is the Breaking Mode the Loco is at. 
         /// </summary>
-        public BreakingMode Breaking
-        {
-            get => breaking;
-            set
-            {
-                if (value > 0) Acceleration = 0;
-                if (value == BreakingMode.VB)
-                {
-                    TargetSpeed = 0;
-                }
-                breaking = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public Weight Weight { get => weight; set => weight = value; }
 
         public int MaxAcceleration { get; set; } = 126;
 
@@ -130,13 +87,12 @@ namespace WPF_Application
                 vehicle = _vehicle;
                 this.Title = vehicle.FullName;
                 Lok_FutureState.Adresse = new((int)(vehicle?.Address ?? throw new ControlerException(this.controler, $"Addresse '{vehicle?.Address.ToString() ?? ""}' ist keine valide Addresse!")));
+                Lok_FutureState.drivingDirection = DrivingDirection.R;
+                Lok_FutureState.Besetzt = false;
+
                 this.controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
                 this.controler.GetLocoInfo(Lok_FutureState.Adresse);
 
-                PBSpeed.Maximum = 126;
-                lblMaxSpeed.Content = 126;
-
-                SetLocoDrive();
             }
             catch (Exception ex)
             {
@@ -145,96 +101,23 @@ namespace WPF_Application
             }
         }
 
-        private int GetNextSpeedStep()
-        {
-            var x = Lok_CurrentState.Fahrstufe - Lok_FutureState.Fahrstufe;
-            return 0;
-        }
-
-
-        private void SetLocoDrive()
-        {
-            Thread th = new(() =>
-            {
-                while (true)
-                {
-                    Lok_FutureState.Fahrstufe = (byte)GetNextSpeedStep();
-                    controler.GetLocoInfo(Lok_FutureState.Adresse);
-                    //if (CurrentLokInfoData.drivingDirection is not DrivingDirection.N)
-                    //z21.SetLocoDrive();
-                    Thread.Sleep(1000);
-                }
-            });
-            th.Start();
-        }
-
-
         public void OnGetLocoInfoEventArgs(Object sender, GetLocoInfoEventArgs e)
         {
             if (e.Data.Adresse.Value == vehicle.Address)
             {
                 Lok_CurrentState = e.Data;
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    PBSpeed.Value = e.Data.Fahrstufe - 1 < 0 ? 0 : e.Data.Fahrstufe - 1;
-                    lblCurrentSpeed.Content = e.Data.Fahrstufe - 1 < 0 ? 0 : e.Data.Fahrstufe - 1;
-                }));
-            }
-        }
-
-
-        private void BtnDirection_Click(object sender, RoutedEventArgs e)
-        {
-            if (Lok_CurrentState.Fahrstufe == 0)
-            {
-                switch (Lok_FutureState.drivingDirection)
-                {
-                    case DrivingDirection.R:
-                        Lok_FutureState.drivingDirection = DrivingDirection.N;
-                        break;
-                    case DrivingDirection.N:
-                        Lok_FutureState.drivingDirection = DrivingDirection.F;
-                        break;
-                    case DrivingDirection.F:
-                        Lok_FutureState.drivingDirection = DrivingDirection.R;
-                        break;
-                }
-                //z21.SetLocoDrive(TargetLokInfoData);
-            }
-        }
-
-
-        private void BtnSifa_Click(object sender, RoutedEventArgs e)
-        {
-            controler.SetTrackPowerOFF();
-        }
-
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.W)
-            {
-                Acceleration += 2;
-                Acceleration = Acceleration >= MaxAcceleration ? MaxAcceleration : Acceleration;
-            }
-            if (e.Key == Key.S)
-            {
-                Acceleration -= 2;
-                Acceleration = Acceleration <= 0 ? 0 : Acceleration;
-            }
-            if (e.Key == Key.Up)
-            {
-
-            }
-            if (e.Key == Key.Down)
-            {
-
             }
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void TargetSpeed_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Lok_FutureState.Fahrstufe = (byte)SliderTargetSpeed.Value;
+            controler.SetLocoDrive(Lok_FutureState);
         }
     }
 }

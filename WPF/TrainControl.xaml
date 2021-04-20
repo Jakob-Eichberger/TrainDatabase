@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="TrainControl" SizeToContent="WidthAndHeight" ResizeMode="NoResize" Name="mw" KeyDown="Window_KeyDown">
+        Title="TrainControl" SizeToContent="WidthAndHeight" ResizeMode="NoResize" Name="mw">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -18,27 +18,9 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-
         <Label Content="KW:" Grid.Column="0" Grid.Row="0"  VerticalAlignment="Center"></Label>
-        <ProgressBar Height="30" Value="{Binding ElementName=mw, Path=Acceleration}" Width="300" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  x:Name="PBAcceleration" Margin="5" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2"  IsIndeterminate="False" />
-        <DockPanel Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Name="lblCurrentKW" Content="{Binding ElementName=mw, Path=Acceleration}"  HorizontalAlignment="Center"/>
-            <Label Content="/"  HorizontalAlignment="Center"/>
-            <Label Name="lblMaxKW" Content="100"  HorizontalAlignment="Center"/>
-        </DockPanel>
+        <Slider x:Name="SliderTargetSpeed" Maximum="126" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Width="200" ValueChanged="TargetSpeed_Changed"></Slider>
+        <Slider x:Name="SliderCurrentSpeed" Maximum="126" Value="{Binding ElementName=mw,Path=Lok_CurrentState.Fahrstufe}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" IsEnabled="False"></Slider>
         <Label Content="KM/H:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"></Label>
-        <ProgressBar Height="30" Width="300" x:Name="PBSpeed" Maximum="{Binding ElementName=mw, Path=Acceleration}" Margin="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" IsIndeterminate="False"/>
-        <DockPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <Label Name="lblCurrentSpeed" Content="0"  HorizontalAlignment="Center"/>
-            <Label Content="/"  HorizontalAlignment="Center"/>
-            <Label Name="lblMaxSpeed" Content="{Binding ElementName=mw, Path=MaxAcceleration}"  HorizontalAlignment="Center"/>
-        </DockPanel>
-        <StackPanel Orientation="Horizontal"  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
-            <Button HorizontalAlignment="Left" x:Name="btnDirection" Content="{Binding ElementName=mw, Path=Lok_CurrentState}" Width="50" Height="50" Margin="5" Click="BtnDirection_Click"/>
-            <Button HorizontalAlignment="Center" x:Name="btnSifa"  Width="50" Height="50" Margin="5" Click="BtnSifa_Click"/>
-            <Label HorizontalAlignment="Right" x:Name="btnBreaking" Content="FA"  Width="50" Height="50" Margin="5"/>
-        </StackPanel>
-
-        <ComboBox Height="40"  Margin="5" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>

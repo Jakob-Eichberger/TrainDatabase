@@ -1,12 +1,12 @@
-﻿<Window x:Class="WPF_Application.DbImport.DB_Import_Z21"
+﻿<Window x:Class="WPF_Application.DbImport.Z21_New_Import"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application.DbImport"
         mc:Ignorable="d"
-        Title="Z21" Height="450" Width="800">
+        Title="Z21_New_Import" Height="450" Width="800">
     <Grid>
-        
+        <Button x:Name="btnOpenFileDalog" Content="Open SQLite File" Click="btnOpenFileDalog_Click"></Button>
     </Grid>
 </Window>

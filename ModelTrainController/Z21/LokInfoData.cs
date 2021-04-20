@@ -20,6 +20,7 @@ namespace ModelTrainController.Z21
         public bool Besetzt;
         public DrivingDirection drivingDirection;
         private byte fahrstufe = 0;
-        public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value <= 254 ? value : throw new ArgumentException($"Max Value für Fahrstufe ist 254! Ist: {value}"); } }
+        // TODO: Change the max value
+        public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value <= 200 ? value : throw new ArgumentException($"Max Value für Fahrstufe ist 126! Ist: {value}"); } }
     }
 }

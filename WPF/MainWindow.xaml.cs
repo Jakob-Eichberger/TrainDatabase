@@ -24,9 +24,11 @@ namespace Wpf_Application
     {
         readonly ModelTrainController.ModelTrainController controler = Z21Connection.Get();
         private readonly Database db = new();
-        private Brush primary = Brushes.White;
-        private Brush secondary = Brushes.Black;
         public event PropertyChangedEventHandler? PropertyChanged;
+        private Brush primary = Brushes.White;
+        private Brush secondary = Brushes.DarkGray;
+        private Brush textColour = Brushes.Black;
+
 
         public Brush Primary
         {
@@ -44,11 +46,24 @@ namespace Wpf_Application
                 OnPropertyChanged();
             }
         }
+        public Brush TextColour
+        {
+            get => textColour; set
+            {
+                textColour = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainWindow()
         {
             try
             {
+                if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
+                {
+                    Close();
+                }
+
                 InitializeComponent();
 
                 db.Database.EnsureDeleted();
@@ -56,7 +71,7 @@ namespace Wpf_Application
                 db.FillDatabase();
 
                 if (db.Vehicles.Any())
-                    DrawAllVehicles(db.Vehicles.ToList());
+                    DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
                 else
                     if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     new Import_Overview().Show();
@@ -67,7 +82,7 @@ namespace Wpf_Application
             }
         }
 
-        private void DB_Import_Z21_new(object sender, RoutedEventArgs e) => new DB_Import_Z21().Show();
+        private void DB_Import_Z21_new(object sender, RoutedEventArgs e) => new Z21_New_Import().Show();
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
@@ -122,7 +137,6 @@ namespace Wpf_Application
                 sp.ContextMenu.Items.Add(miEditLoko);
                 border.Child = sp;
                 VehicleGrid.Children.Add(border);
-
             }
         }
 
@@ -153,9 +167,9 @@ namespace Wpf_Application
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())));
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
-                DrawAllVehicles(db.Vehicles);
+                DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position));
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)

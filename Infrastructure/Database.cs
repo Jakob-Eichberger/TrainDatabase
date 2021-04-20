@@ -55,9 +55,8 @@ namespace Infrastructure
                     Active = true,
                     Address = i,
                     Name = $"Name {i}",
-                    ImageName = "57AE7DD0-ED68-462C-A5C2-B9B29710CDA1.png"
-
-
+                    ImageName = "57AE7DD0-ED68-462C-A5C2-B9B29710CDA1.png",
+                    Position = i
                 });
             }
             SaveChanges();

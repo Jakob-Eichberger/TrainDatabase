@@ -14,7 +14,7 @@ namespace Model
         [Required]
         public string Name { get; set; } = "";
 
-        public string? ImageName { get; set; } = default!;
+        public string ImageName { get; set; } = "";
 
         public VehilceType Type { get; set; } = VehilceType.Lokomotive;
 
@@ -25,7 +25,7 @@ namespace Model
 
         public bool Active { get; set; } = true;
 
-        public long? Position { get; set; } = 0;
+        public long Position { get; set; } = 0;
 
         public string DriversCab { get; set; } = "";
 
@@ -74,6 +74,8 @@ namespace Model
         public int CategoryId { get; set; }
 
         public List<Function> Functions { get; private set; } = new();
+
+        public Epoch Epoche { get; set; } = Epoch.@default;
 
     }
 }
