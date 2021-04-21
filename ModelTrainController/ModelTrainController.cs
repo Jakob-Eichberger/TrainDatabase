@@ -1,4 +1,6 @@
-﻿using ModelTrainController.Z21;
+﻿using Helper;
+using Model;
+using ModelTrainController.Z21;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -90,7 +92,7 @@ namespace ModelTrainController
         public abstract void GetLocoInfo(LokAdresse adresse);
         //  LAN_X_SET_LOCO_DRIVE  4.2  (21)
         public abstract void SetLocoDrive(LokInfoData data);
-
+        public abstract void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType);
 
         public abstract void Nothalt();
         //  LAN_LOGOFF            2.2 (10)         

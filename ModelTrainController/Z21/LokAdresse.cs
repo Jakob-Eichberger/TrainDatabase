@@ -33,6 +33,7 @@ namespace ModelTrainController.Z21
         }
 
         private int val = 0;
+
         public int Value
         {
             set

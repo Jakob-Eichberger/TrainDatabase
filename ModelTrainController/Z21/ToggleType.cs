@@ -11,16 +11,13 @@
  * unter http://www.gnu.org/licenses/gpl.html.
  * 
  */
-using System;
-namespace ModelTrainController.Z21
+
+namespace Helper
 {
-    public class LokInfoData
+    public enum ToggleType
     {
-        public LokAdresse Adresse;
-        public bool Besetzt;
-        public DrivingDirection drivingDirection;
-        private byte fahrstufe = 0;
-        // TODO: Change the max value
-        public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value; } }
+        off = 00,
+        on = 01,
+        @switch = 10
     }
 }

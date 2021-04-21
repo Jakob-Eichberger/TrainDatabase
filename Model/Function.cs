@@ -14,7 +14,7 @@ namespace Model
         public string Time { get; set; }
         public long? Position { get; set; }
         public string ImageName { get; set; }
-        public long? Function1 { get; set; }
+        public long? FunctionIndex { get; set; }
         public long ShowFunctionNumber { get; set; }
         public long IsConfigured { get; set; }
     }

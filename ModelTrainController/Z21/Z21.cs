@@ -12,6 +12,7 @@
  * 
  */
 
+using Model;
 using ModelTrainController;
 using ModelTrainController.Z21;
 using System;
@@ -437,6 +438,22 @@ namespace Helper
             bytes[8] = data.Fahrstufe;
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
             Console.WriteLine("LAN X SET LOCO DRIVE " + getByteString(bytes) + "  (" + data.Adresse + " - " + data.Fahrstufe.ToString() + ")");
+            Senden(bytes);
+        }
+
+        public override void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
+        {
+            byte[] bytes = new byte[10];
+            bytes[0] = 0x0A;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0xE4;
+            bytes[5] = 0xF8;
+            bytes[6] = adresse.ValueBytes.Adr_MSB;
+            bytes[7] = adresse.ValueBytes.Adr_LSB;
+            bytes[8] = (byte)(toggelType == ToggleType.off ? function.FunctionIndex : function.FunctionIndex |= 0x080);
+            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
             Senden(bytes);
         }
 

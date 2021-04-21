@@ -5,22 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="TrainControl" SizeToContent="WidthAndHeight" ResizeMode="NoResize" Name="mw">
-    <Grid>
+        Title="TrainControl" SizeToContent="WidthAndHeight" Name="mw" MinHeight="150" MinWidth="150" Height="270" Width="330">
+    <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition/>
-            <ColumnDefinition />
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Label Content="KW:" Grid.Column="0" Grid.Row="0"  VerticalAlignment="Center"></Label>
-        <Slider x:Name="SliderTargetSpeed" Maximum="126" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Width="200" ValueChanged="TargetSpeed_Changed"></Slider>
-        <Slider x:Name="SliderCurrentSpeed" Maximum="126" Value="{Binding ElementName=mw,Path=Lok_CurrentState.Fahrstufe}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" IsEnabled="False"></Slider>
-        <Label Content="KM/H:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"></Label>
+        <Label Content="T" Grid.Column="0" Grid.Row="1"  VerticalAlignment="Center" HorizontalAlignment="Stretch"></Label>
+        <Label Content="C" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"></Label>
+
+        <Slider FontSize="30" x:Name="SliderTargetSpeed" Orientation="Vertical"  Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Maximum="{Binding ElementName=mw,Path=MaxAcceleration}" ValueChanged="TargetSpeed_Changed"/>
+        <Slider x:Name="SliderCurrentSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Maximum="{Binding ElementName=mw,Path=MaxAcceleration}"  Value="{Binding ElementName=mw,Path=Lok_CurrentState.Fahrstufe}" IsEnabled="False"/>
+        <Button x:Name="BtnDirection" Click="BtnDirection_Click" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <TabControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" >
+            <TabItem Header="Funktionen">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                    <WrapPanel Name="FunctionGrid" />
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Doppeltraktion">
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

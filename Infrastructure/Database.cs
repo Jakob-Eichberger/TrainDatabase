@@ -48,7 +48,7 @@ namespace Infrastructure
 
         public void FillDatabase()
         {
-            for (int i = 0; i < 20; i++)
+            for (int i = 1; i <= 20; i++)
             {
                 Vehicles.Add(new Vehicle
                 {

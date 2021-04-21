@@ -71,10 +71,11 @@ namespace Wpf_Application
                 db.FillDatabase();
 
                 if (db.Vehicles.Any())
-                    DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
+                    DrawAllVehicles(db.Vehicles.Include(e => e.Functions).OrderBy(e => e.Position).ToList());
                 else
                     if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     new Import_Overview().Show();
+
             }
             catch (Exception e)
             {
@@ -115,11 +116,11 @@ namespace Wpf_Application
                 {
                     Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{item?.Address}' not found. Message: {ex.Message}", LoggerType.Warning);
                 }
-                TextBlock x = new();
-                x.Text = !string.IsNullOrWhiteSpace(item?.FullName) ? item?.FullName : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
+                TextBlock tb = new();
+                tb.Text = !string.IsNullOrWhiteSpace(item?.FullName) ? item?.FullName : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
                 sp.Height = 120;
                 sp.Width = 250;
-                sp.Children.Add(x);
+                sp.Children.Add(tb);
                 sp.HorizontalAlignment = HorizontalAlignment.Left;
                 sp.VerticalAlignment = VerticalAlignment.Top;
 
@@ -169,7 +170,7 @@ namespace Wpf_Application
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
-                DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position));
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
