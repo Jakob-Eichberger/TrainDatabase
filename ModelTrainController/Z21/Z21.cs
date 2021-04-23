@@ -199,9 +199,29 @@ namespace Helper
                             infodata.Fahrstufe = (byte)(received[8] & 0x7F);
                             b = ((received[8] & 0x80) == 0x80);
                             if (b) infodata.drivingDirection = DrivingDirection.F; else infodata.drivingDirection = DrivingDirection.R;
-                            Console.WriteLine("> LAN X LOCO INFO " + getByteString(received) + " (#" + infodata.Adresse + " - " + infodata.Fahrstufe.ToString() + ")");
-                            if (OnGetLocoInfo != null) OnGetLocoInfo(this, new GetLocoInfoEventArgs(infodata));
 
+                            int functionIndexCount = 5;
+                            for (int index = 9; index <= 12; index++)
+                            {
+                                var functionBits = new BitArray(new byte[] { received[index] });
+                                if (index == 9)
+                                {
+                                    infodata.Functions.Add(new(0, Convert.ToBoolean(functionBits.Get(4))));
+                                    infodata.Functions.Add(new(1, Convert.ToBoolean(functionBits.Get(0))));
+                                    infodata.Functions.Add(new(2, Convert.ToBoolean(functionBits.Get(1))));
+                                    infodata.Functions.Add(new(3, Convert.ToBoolean(functionBits.Get(2))));
+                                    infodata.Functions.Add(new(4, Convert.ToBoolean(functionBits.Get(3))));
+                                }
+                                else
+                                {
+                                    for (int temp = 0; temp < 8; temp++)
+                                    {
+                                        infodata.Functions.Add(new(functionIndexCount, Convert.ToBoolean(functionBits.Get(temp))));
+                                        functionIndexCount++;
+                                    }
+                                }
+                            }
+                            if (OnGetLocoInfo != null) OnGetLocoInfo(this, new GetLocoInfoEventArgs(infodata));
                             break;
                         case 0xF3:
                             switch (received[5])
@@ -232,7 +252,6 @@ namespace Helper
                     break;
             }
         }
-
         private CentralStateData GetCentralStateData(byte[] received)
         {
             CentralStateData statedata = new CentralStateData();

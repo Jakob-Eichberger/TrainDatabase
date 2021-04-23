@@ -125,12 +125,12 @@ namespace Wpf_Application
                 sp.ContextMenu = new();
 
                 MenuItem miControlLoko = new();
-                miControlLoko.Header = item.Type == VehilceType.Lokomotive ? "Lok steuern" : (item.Type == VehilceType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
+                miControlLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok steuern" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
                 miControlLoko.Click += ControlLoko_Click;
                 sp.ContextMenu.Items.Add(miControlLoko);
                 miControlLoko.Tag = item;
                 MenuItem miEditLoko = new();
-                miEditLoko.Header = item.Type == VehilceType.Lokomotive ? "Lok bearbeiten" : (item.Type == VehilceType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
+                miEditLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok bearbeiten" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
                 miEditLoko.Click += EditLoko_Click;
 
                 sp.ContextMenu.Items.Add(miEditLoko);

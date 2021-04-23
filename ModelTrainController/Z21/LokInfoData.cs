@@ -11,7 +11,10 @@
  * unter http://www.gnu.org/licenses/gpl.html.
  * 
  */
+using Model;
 using System;
+using System.Collections.Generic;
+
 namespace ModelTrainController.Z21
 {
     public class LokInfoData
@@ -22,5 +25,11 @@ namespace ModelTrainController.Z21
         private byte fahrstufe = 2;
         // TODO: Change the max value
         public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value; } }
+
+        /// <summary>
+        /// int -> <see cref="Function.FunctionIndex"/> |
+        /// bool -> TRUE: ON, FALSE, OFF
+        /// </summary>
+        public List<Tuple<int, bool>> Functions = new();
     }
 }

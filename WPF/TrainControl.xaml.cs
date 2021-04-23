@@ -1,27 +1,19 @@
-﻿using Exceptions;
-using Extensions;
+﻿using Extensions;
 using Helper;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Model;
+using ModelTrainController;
 using ModelTrainController.Z21;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace WPF_Application
 {
@@ -35,13 +27,37 @@ namespace WPF_Application
     public partial class TrainControl : Window, INotifyPropertyChanged
     {
         public ModelTrainController.ModelTrainController controler = default!;
-        public Vehicle vehicle;
         private LokInfoData lokState = new();
         public Database db = new();
         private int maxDccStep = 126;
         private bool direction = true;
         private int speedStep;
         public event PropertyChangedEventHandler? PropertyChanged;
+        private TrackPower trackPower;
+        private Vehicle vehicle;
+        private bool lastTrackPowerUpdateWasShort = false;
+
+        public Vehicle Vehicle
+        {
+            get => vehicle;
+            set
+            {
+                vehicle = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(VehicleTypeGridLength));
+                OnPropertyChanged(nameof(VehicleTypeVisbility));
+
+            }
+        }
+        public GridLength VehicleTypeGridLength
+        {
+            get => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
+        }
+
+        public Visibility VehicleTypeVisbility
+        {
+            get => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         public bool SliderInUser { get; set; }
 
@@ -85,7 +101,6 @@ namespace WPF_Application
         private List<Button> FunctionButtons = new();
 
         private List<ToggleButton> FunctionToggleButtons = new();
-        private bool railPower;
 
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the Loko.
@@ -104,11 +119,6 @@ namespace WPF_Application
         }
 
         /// <summary>
-        /// This is the speed the Locomotive should have. But it is not the speed the Locomotive is actually at. For that please us the <see cref="LokInfoData.fahrstufe"/> property.
-        /// </summary>
-        public int TargetSpeed { get; set; } = 0;
-
-        /// <summary>
         /// This is the Max Acceleration Step.
         /// </summary>
         public int MaxDccStep
@@ -120,13 +130,37 @@ namespace WPF_Application
             }
         }
 
-        public bool RailPower
+        public TrackPower TrackPower
         {
-            get => railPower; set
+            get => trackPower; set
             {
-                railPower = value;
-                OnPropertyChanged();
+                if (!lastTrackPowerUpdateWasShort)
+                {
+                    trackPower = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(TrackPowerBoolean));
+                    OnPropertyChanged(nameof(TrackPowerMessage));
+                }
+                lastTrackPowerUpdateWasShort = (value == TrackPower.Short) ? true : false;
+
             }
+        }
+
+        public bool TrackPowerBoolean
+        {
+            set
+            {
+                if (TrackPowerBoolean)
+                    controler.SetTrackPowerOFF();
+                else
+                    controler.SetTrackPowerON();
+            }
+            get => TrackPower.ToBoolean();
+        }
+
+        public string TrackPowerMessage
+        {
+            get => TrackPower.GetString();
         }
 
         public TrainControl(ModelTrainController.ModelTrainController _controler, Vehicle _vehicle, Database db)
@@ -138,11 +172,16 @@ namespace WPF_Application
                 InitializeComponent();
                 this.DataContext = this;
                 controler = _controler!;
-                vehicle = _vehicle!;
-                lokState.Adresse = new((byte)vehicle.Address);
-                this.Title = $"{vehicle.Address} - {(string.IsNullOrWhiteSpace(vehicle.Name) ? vehicle.Full_Name : vehicle.Name)}";
+                Vehicle = _vehicle!;
+                lokState.Adresse = new((byte)Vehicle.Address);
+                this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
                 controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
+                controler.OnTrackPowerOFF += new EventHandler(OnGetTrackPowerOffEventArgs);
+                controler.OnTrackPowerON += new EventHandler(OnGetTrackPowerOnEventArgs);
+                controler.OnTrackShortCircuit += new EventHandler(OnTrackShortCircuitEventArgs);
+                controler.OnProgrammingMode += new EventHandler(OnProgrammingModeEventArgs);
                 controler.GetLocoInfo(LokState.Adresse);
+                controler.SetTrackPowerON();
                 DrawAllFunctions();
             }
             catch (Exception ex)
@@ -157,7 +196,7 @@ namespace WPF_Application
         {
             FunctionGrid.Children.Clear();
             int i = 0;
-            foreach (var item in (db.Functions.Where(e => e.VehicleId == vehicle.Id).OrderBy(e => e.FunctionIndex).ToList() ?? new()))
+            foreach (var item in (db.Functions.Where(e => e.VehicleId == Vehicle.Id).OrderBy(e => e.FunctionIndex).ToList() ?? new()))
             {
                 i++;
                 Border border = new();
@@ -201,52 +240,82 @@ namespace WPF_Application
             }
         }
 
+        #region Events
         public void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
         {
-            if (e.Data.Adresse.Value == vehicle.Address)
+            if (e.Data.Adresse.Value == Vehicle.Address)
             {
                 LokState = e.Data;
                 if (Direction != e.Data.drivingDirection.ConvertToBool())
                 {
                     Direction = e.Data.drivingDirection.ConvertToBool();
                 }
+                foreach (var item in e.Data.Functions)
+                {
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        //var x = FunctionButtons.FirstOrDefault(e=> (e.Tag as Function).FunctionIndex == item.Item1);
+                        var x = FunctionToggleButtons.FirstOrDefault(e => (e.Tag as Function).FunctionIndex == item.Item1);
+                        if (x is not null)
+                            x.IsChecked = item.Item2;
+                    }));
+                }
+
+                //FunctionToggleButtons
             }
         }
+
+        public void OnGetTrackPowerOnEventArgs(Object? sender, EventArgs e) => TrackPower = TrackPower.ON;
+
+        public void OnGetTrackPowerOffEventArgs(Object? sender, EventArgs e) => TrackPower = TrackPower.OFF;
+
+        public void OnTrackShortCircuitEventArgs(Object? sender, EventArgs e) => TrackPower = TrackPower.Short;
+
+        public void OnProgrammingModeEventArgs(Object? sender, EventArgs e) => TrackPower = TrackPower.Programing;
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+        #endregion
 
+        #region Click_Events
         void FunctionToggle_Click(Object sender, RoutedEventArgs e)
         {
 
             var func = (e.Source as ToggleButton)?.Tag as Function;
             if ((sender as ToggleButton).IsChecked ?? false)
             {
-                controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.on);
+                controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.on);
             }
             else
             {
-                controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.off);
+                controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.off);
             }
         }
 
         void FunctionButtonDown_Click(Object sender, RoutedEventArgs e)
         {
             var func = (e.Source as Button)?.Tag as Function;
-            controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.on);
+            controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.on);
         }
 
         void FunctionButtonUp_Click(Object sender, RoutedEventArgs e)
         {
             var func = (e.Source as Button)?.Tag as Function;
-            controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.off);
+            controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.off);
         }
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e)
         {
         }
+        #endregion
+
+        #region Preview Events
+        private void SliderSpeed_PreviewMouseDown(object sender, MouseButtonEventArgs e) => SliderInUser = true;
+
+        private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
+        #endregion
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
@@ -254,8 +323,8 @@ namespace WPF_Application
             controler.SetLocoDrive(LokState);
         }
 
-        private void SliderSpeed_PreviewMouseDown(object sender, MouseButtonEventArgs e) => SliderInUser = true;
 
-        private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
+
+
     }
 }

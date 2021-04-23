@@ -223,7 +223,7 @@ namespace Importer
                                 Id = reader.GetString(0).ToInt32(),
                                 Name = reader.GetString(1),
                                 Image_Name = reader.GetString(2),
-                                Type = (VehilceType)reader.GetString(3).ToInt32(),
+                                Type = (VehicleType)reader.GetString(3).ToInt32(),
                                 Max_Speed = reader.GetString(4).ToInt64(),
                                 Address = reader.GetString(5).ToInt64(),
                                 Active = reader.GetString(6).ToBoolean(),

@@ -16,7 +16,7 @@ namespace Model
 
         public string Image_Name { get; set; } = "";
 
-        public VehilceType Type { get; set; } = VehilceType.Lokomotive;
+        public VehicleType Type { get; set; } = VehicleType.Lokomotive;
 
         public long? Max_Speed { get; set; } = 0;
 

@@ -1,8 +1,6 @@
-﻿#nullable disable
-
-namespace Model
+﻿namespace Model
 {
-    public enum VehilceType
+    public enum VehicleType
     {
         Lokomotive = 0,
         Steuerwagen = 1,
