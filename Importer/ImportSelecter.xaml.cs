@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,20 @@ namespace Importer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ImportSelecter : Window
     {
-        public MainWindow()
+        public Database Db { get; set; }
+
+        public ImportSelecter(Database db)
         {
+            Db = db;
             InitializeComponent();
+        }
+
+        private void newZ21_Click(object sender, RoutedEventArgs e)
+        {
+            new Z21(Db).Show();
+            this.Close();
         }
     }
 }

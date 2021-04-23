@@ -61,19 +61,27 @@ namespace Wpf_Application
 
                 if (db.Vehicles.Any())
                     DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
-                //else
-                //if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                else
+                if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                {
+                    new Importer.ImportSelecter(db).Show();
+                    this.Close();
+                }
                 Controler = new Z21(ControllerConnection.Get());
             }
             catch (Exception e)
             {
-                MessageBox.Show($"{e.Message}\n inner: {e?.InnerException?.Message ?? ""}");
+                Logger.Log($"Fehler beim öffnen vom Main Window: ex-Message:{e?.Message ?? ""}\ninnerex: {e?.InnerException?.ToString() ?? ""}\ninner ex message:{e?.InnerException?.Message ?? ""}", LoggerType.Error);
+                MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e.Message}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ichs fixen) ;) ");
             }
         }
 
         private void DB_Import_Z21_new(object sender, RoutedEventArgs e)
         {
             VehicleGrid.Children.Clear();
+            var x = new Importer.Z21(db);
+            this.Close();
+            x.Show();
         }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)

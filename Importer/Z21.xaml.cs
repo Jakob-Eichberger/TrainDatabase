@@ -101,6 +101,8 @@ namespace Importer
         {
             DataContext = this;
             OpenFileDialog ofp = new();
+            ofp.DefaultExt = ".z21";
+            ofp.Filter = "Z21 DB FIle (*.z21)|*.z21";
             if (ofp.ShowDialog() == true)
             {
                 Path = ofp.FileName;
@@ -122,6 +124,8 @@ namespace Importer
             {
                 NotLoadingData = Visibility.Collapsed;
                 await ImportAsync();
+                MessageBox.Show("Die ROCO DB wurde erfolgreich import! Sie können die Applikation nun wieder start!", "ERFOLG!", MessageBoxButton.OK, MessageBoxImage.Information);
+                this.Close();
             }
         }
 
@@ -168,9 +172,6 @@ namespace Importer
 
                 });
                 await FillDbFromDB(sqlLiteDB);
-                Close();
-                MessageBox.Show("Import erfolgreich!");
-
             }
             catch (Exception ex)
             {

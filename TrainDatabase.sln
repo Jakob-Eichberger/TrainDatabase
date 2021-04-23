@@ -26,9 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exceptions", "Exceptions\Ex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModelTrainController", "ModelTrainController\ModelTrainController.csproj", "{2077FC43-5BF8-4F7C-BF21-39F2FC516294}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBImport", "DBImport\DBImport.csproj", "{23D2D967-396E-4D6A-BEB9-E5EFB4072C60}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Importer", "Importer\Importer.csproj", "{90F217D4-BC69-42ED-934B-9AB25E4BB7A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Importer", "Importer\Importer.csproj", "{90F217D4-BC69-42ED-934B-9AB25E4BB7A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,10 +62,6 @@ Global
 		{2077FC43-5BF8-4F7C-BF21-39F2FC516294}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2077FC43-5BF8-4F7C-BF21-39F2FC516294}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2077FC43-5BF8-4F7C-BF21-39F2FC516294}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23D2D967-396E-4D6A-BEB9-E5EFB4072C60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23D2D967-396E-4D6A-BEB9-E5EFB4072C60}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23D2D967-396E-4D6A-BEB9-E5EFB4072C60}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23D2D967-396E-4D6A-BEB9-E5EFB4072C60}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90F217D4-BC69-42ED-934B-9AB25E4BB7A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{90F217D4-BC69-42ED-934B-9AB25E4BB7A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90F217D4-BC69-42ED-934B-9AB25E4BB7A0}.Release|Any CPU.ActiveCfg = Release|Any CPU

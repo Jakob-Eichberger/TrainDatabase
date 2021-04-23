@@ -34,12 +34,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DBImport\DBImport.csproj" />
 		<ProjectReference Include="..\Exceptions\Exceptions.csproj" />
 		<ProjectReference Include="..\Extensions\Extensions.csproj" />
 		<ProjectReference Include="..\Helper\Helper.csproj" />
+		<ProjectReference Include="..\Importer\Importer.csproj" />
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 		<ProjectReference Include="..\ModelTrainController\ModelTrainController.csproj" />
+		<ProjectReference Include="..\Model\Model.csproj" />
 	</ItemGroup>
 
 </Project>
