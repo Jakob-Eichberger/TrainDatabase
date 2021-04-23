@@ -3,12 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WPF_Application"
+        xmlns:local="clr-namespace:WPF_Application" 
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="TrainControl" SizeToContent="WidthAndHeight" Name="mw" MinHeight="150" MinWidth="150" Height="270" Width="330">
+        Title="TrainControl" SizeToContent="WidthAndHeight" Name="mw" MinHeight="350" MinWidth="480" Height="360" Width="480" Closing="Mw_Closing">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30"/>
             <ColumnDefinition Width="30"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
@@ -17,13 +17,11 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <Label Content="T" Grid.Column="0" Grid.Row="1"  VerticalAlignment="Center" HorizontalAlignment="Stretch"></Label>
-        <Label Content="C" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"></Label>
 
-        <Slider FontSize="30" x:Name="SliderTargetSpeed" Orientation="Vertical"  Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Maximum="{Binding ElementName=mw,Path=MaxAcceleration}" ValueChanged="TargetSpeed_Changed"/>
-        <Slider x:Name="SliderCurrentSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Maximum="{Binding ElementName=mw,Path=MaxAcceleration}"  Value="{Binding ElementName=mw,Path=Lok_CurrentState.Fahrstufe}" IsEnabled="False"/>
-        <Button x:Name="BtnDirection" Click="BtnDirection_Click" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"/>
-        <TabControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" >
+        <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Minimum="0" Maximum="{Binding ElementName=mw,Path=MaxDccStep}" Value="{Binding ElementName=mw,Path=SpeedStep}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp"/>
+        <ToggleButton Content="{Binding ElementName=mw,Path=GetDirectionString}" IsChecked="{Binding ElementName=mw,Path=Direction}" x:Name="BtnDirection" Click="BtnDirection_Click" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="{Binding ElementName=mw,Path=SpeedStep}"/>
+        <TabControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" >
             <TabItem Header="Funktionen">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" >
                     <WrapPanel Name="FunctionGrid" />

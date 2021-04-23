@@ -19,7 +19,7 @@ namespace ModelTrainController.Z21
         public LokAdresse Adresse;
         public bool Besetzt;
         public DrivingDirection drivingDirection;
-        private byte fahrstufe = 0;
+        private byte fahrstufe = 2;
         // TODO: Change the max value
         public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value; } }
     }

@@ -1,4 +1,5 @@
 ﻿using Exceptions;
+using Extensions;
 using Helper;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -35,37 +36,68 @@ namespace WPF_Application
     {
         public ModelTrainController.ModelTrainController controler = default!;
         public Vehicle vehicle;
-        private LokInfoData lok_FutureState = new();
-        private LokInfoData lok_CurrentState = new();
+        private LokInfoData lokState = new();
         public Database db = new();
-        private int maxAcceleration = 127;
-
+        private int maxDccStep = 126;
+        private bool direction = true;
+        private int speedStep;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        /// <summary>
-        /// Represents the State the Loko will be in. 
-        /// </summary>
-        private LokInfoData Lok_FutureState
+        public bool SliderInUser { get; set; }
+
+        public int SpeedStep
         {
-            get
+            get => speedStep; set
             {
-                return lok_FutureState;
-            }
-            set
-            {
-                lok_FutureState = value;
-                OnPropertyChanged();
+                if (value != 1)
+                {
+                    speedStep = value;
+                    OnPropertyChanged();
+                    if (speedStep != (LokState.Fahrstufe))
+                        SetSpeed(value);
+                }
             }
         }
+
+        private void SetSpeed(int speedstep)
+        {
+            LokInfoData info = LokState;
+            if (info is null) return;
+            info.Fahrstufe = (byte)speedStep;
+            controler.SetLocoDrive(info);
+        }
+
+        public bool Direction
+        {
+            get => direction; set
+            {
+                direction = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(GetDirectionString));
+                var temp = lokState;
+                temp.drivingDirection = value.GetDrivingDirection();
+                controler.SetLocoDrive(temp);
+            }
+        }
+
+        public string GetDirectionString { get => Direction ? "Vorwärts" : "Rückwärts"; }
+
+        private List<Button> FunctionButtons = new();
+
+        private List<ToggleButton> FunctionToggleButtons = new();
 
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the Loko.
         /// </summary>
-        public LokInfoData Lok_CurrentState
+        public LokInfoData LokState
         {
-            get => lok_CurrentState; set
+            get => lokState; set
             {
-                lok_CurrentState = value;
+                lokState = value;
+                if (!SliderInUser)
+                {
+                    SpeedStep = value.Fahrstufe;
+                }
                 OnPropertyChanged();
             }
         }
@@ -78,74 +110,46 @@ namespace WPF_Application
         /// <summary>
         /// This is the Max Acceleration Step.
         /// </summary>
-        public int MaxAcceleration
+        public int MaxDccStep
         {
-            get => maxAcceleration; set
+            get => maxDccStep; set
             {
-                maxAcceleration = value;
+                maxDccStep = value;
                 OnPropertyChanged();
             }
         }
 
-        public TrainControl(ModelTrainController.ModelTrainController controler, Vehicle _vehicle)
+        public TrainControl(ModelTrainController.ModelTrainController _controler, Vehicle _vehicle, Database db)
         {
             try
             {
-                if (controler is null) throw new NullReferenceException($"Parameter {nameof(controler)} ist null!");
+                if (_controler is null) throw new NullReferenceException($"Parameter {nameof(_controler)} ist null!");
                 if (_vehicle is null) throw new NullReferenceException($"Paramter{nameof(_vehicle)}ist null!");
-                DataContext = this;
                 InitializeComponent();
-                if (controler is null | _vehicle is null) return;
-                this.controler = controler!;
+                this.DataContext = this;
+                controler = _controler!;
                 vehicle = _vehicle!;
-                this.Title = vehicle.FullName;
-                Lok_FutureState.Adresse = new((int)(vehicle?.Address ?? throw new ControlerException(this.controler, $"Addresse '{vehicle?.Address.ToString() ?? ""}' ist keine valide Addresse!")));
-                Lok_FutureState.drivingDirection = DrivingDirection.R;
-                Lok_FutureState.Besetzt = false;
-
-                this.controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
-                this.controler.GetLocoInfo(Lok_FutureState.Adresse);
-
-                for (int item = 0; item < 50; item++)
-                {
-                    vehicle.Functions.Add(new() { FunctionIndex = item, ImageName = $"Func {item}" });
-                }
+                lokState.Adresse = new((byte)vehicle.Address);
+                this.Title = $"{vehicle.Address} - {(string.IsNullOrWhiteSpace(vehicle.Name) ? vehicle.Full_Name : vehicle.Name)}";
+                controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
+                controler.GetLocoInfo(LokState.Adresse);
                 DrawAllFunctions();
             }
             catch (Exception ex)
             {
                 Close();
-                Logger.Log($"{DateTime.UtcNow}: '{ex?.Message ?? "Keine Exception Message"}' - Inner Exception: {ex?.InnerException?.Message ?? "Keine Inner Exception"}", LoggerType.Error);
-                MessageBox.Show($"Beim öffnen des Controlls ist ein Fehler aufgetreten: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        void FunctionToggle_Click(Object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var func = (e.Source as ToggleButton)?.Tag as Function;
-                if ((sender as ToggleButton).IsChecked ?? false)
-                {
-                    controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.on);
-                }
-                else
-                {
-                    controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.off);
-                }
-            }
-            catch
-            {
-
+                Logger.Log($"{DateTime.UtcNow}: '{(string.IsNullOrWhiteSpace(ex.Message) ? "Keine Exception Message" : ex.Message)}' - Inner Exception: {ex?.InnerException?.Message ?? "Keine Inner Exception"}", LoggerType.Error);
+                MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex.Message) ? "Keine Exception Message" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public void DrawAllFunctions()
         {
             FunctionGrid.Children.Clear();
-            foreach (var item in vehicle?.Functions ?? new())
+            int i = 0;
+            foreach (var item in (db.Functions.Where(e => e.VehicleId == vehicle.Id).OrderBy(e => e.Position).ToList() ?? new()))
             {
-                //if (item is null) return;
+                i++;
                 Border border = new();
                 border.Padding = new(2);
                 border.Margin = new(10);
@@ -154,54 +158,35 @@ namespace WPF_Application
 
                 StackPanel sp = new();
 
+                if (item.ButtonType == 0)
+                {
+                    var tb = new ToggleButton();
+                    tb.Height = 50;
+                    tb.Width = 90;
+                    tb.Content = string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut;
+                    tb.Click += FunctionToggle_Click;
+                    tb.Tag = item;
+                    tb.Name = $"btn_Function_{item.Id}";
+                    FunctionToggleButtons.Add(tb);
+                    sp.Children.Add(tb);
+                }
+                else
+                {
+                    var btn = new Button();
+                    btn.Height = 50;
+                    btn.Width = 90;
+                    btn.Content = string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut;
+                    btn.PreviewMouseDown += FunctionButtonDown_Click;
+                    btn.PreviewMouseUp += FunctionButtonUp_Click;
+                    btn.Tag = item;
+                    btn.Name = $"btn_Function_{item.Id}";
+                    FunctionButtons.Add(btn);
+                    sp.Children.Add(btn);
+                }
 
-                var tb = new ToggleButton();
-                tb.Height = 25;
-                tb.Width = 50;
-                tb.Content = item?.ImageName ?? "-";
-                tb.Click += FunctionToggle_Click;
-                tb.Tag = item;
-                sp.Children.Add(tb);
                 border.Child = sp;
-                ////try
-                ////{
-                ////    string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\";
-                ////    path += string.IsNullOrWhiteSpace(item?.ImageName) ? "default.png" : item?.ImageName;
-                ////    Image image = new();
-                ////    BitmapImage bitmap = new();
-                ////    bitmap.BeginInit();
-                ////    bitmap.UriSource = new(path);
-                ////    bitmap.EndInit();
-                ////    image.Source = bitmap;
-                ////    image.Width = 250;
-                ////    image.Height = 100;
-                ////    sp.Children.Add(image);
-                ////}
-                ////catch (Exception ex)
-                ////{
-                ////    Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{item?.Address}' not found. Message: {ex.Message}", LoggerType.Warning);
-                ////}
-                //TextBlock x = new();
-                //x.Text = !string.IsNullOrWhiteSpace(item?.FullName) ? item?.FullName : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
-                //sp.Height = 25;
-                //sp.Width = 50;
-                //sp.Children.Add(x);
                 sp.HorizontalAlignment = HorizontalAlignment.Left;
                 sp.VerticalAlignment = VerticalAlignment.Top;
-
-                //sp.ContextMenu = new();
-
-                //MenuItem miControlLoko = new();
-                //miControlLoko.Header = item.Type == VehilceType.Lokomotive ? "Lok steuern" : (item.Type == VehilceType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
-                ////miControlLoko.Click += ControlLoko_Click;
-                //sp.ContextMenu.Items.Add(miControlLoko);
-                //miControlLoko.Tag = item;
-                //MenuItem miEditLoko = new();
-                //miEditLoko.Header = item.Type == VehilceType.Lokomotive ? "Lok bearbeiten" : (item.Type == VehilceType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
-                ////miEditLoko.Click += EditLoko_Click;
-
-                //sp.ContextMenu.Items.Add(miEditLoko);
-                //border.Child = sp;
                 FunctionGrid.Children.Add(border);
             }
         }
@@ -210,7 +195,11 @@ namespace WPF_Application
         {
             if (e.Data.Adresse.Value == vehicle.Address)
             {
-                Lok_CurrentState = e.Data;
+                LokState = e.Data;
+                if (Direction != e.Data.drivingDirection.ConvertToBool())
+                {
+                    Direction = e.Data.drivingDirection.ConvertToBool();
+                }
             }
         }
 
@@ -219,21 +208,44 @@ namespace WPF_Application
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        private void TargetSpeed_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        void FunctionToggle_Click(Object sender, RoutedEventArgs e)
         {
-            Lok_FutureState.Fahrstufe = (byte)SliderTargetSpeed.Value;
-            controler.SetLocoDrive(Lok_FutureState);
+
+            var func = (e.Source as ToggleButton)?.Tag as Function;
+            if ((sender as ToggleButton).IsChecked ?? false)
+            {
+                controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.on);
+            }
+            else
+            {
+                controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.off);
+            }
+        }
+
+        void FunctionButtonDown_Click(Object sender, RoutedEventArgs e)
+        {
+            var func = (e.Source as Button)?.Tag as Function;
+            controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.on);
+        }
+
+        void FunctionButtonUp_Click(Object sender, RoutedEventArgs e)
+        {
+            var func = (e.Source as Button)?.Tag as Function;
+            controler.SetLocoFunction(new LokAdresse((int)vehicle.Address), func, ToggleType.off);
         }
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e)
         {
-            var temp = Lok_CurrentState.Fahrstufe;
-            //Lok_FutureState.Fahrstufe = 0;
-            Lok_FutureState.drivingDirection = DrivingDirection.F == Lok_CurrentState.drivingDirection ? DrivingDirection.R : DrivingDirection.F;
-            BtnDirection.Content = DrivingDirection.F == Lok_CurrentState.drivingDirection ? "Vorwärts" : "Rückwärts";
-            controler.SetLocoDrive(Lok_FutureState);
-            //Lok_FutureState.Fahrstufe = temp;
-            //controler.SetLocoDrive(Lok_FutureState);
         }
+
+        private void Mw_Closing(object sender, CancelEventArgs e)
+        {
+            LokState.Besetzt = false;
+            controler.SetLocoDrive(LokState);
+        }
+
+        private void SliderSpeed_PreviewMouseDown(object sender, MouseButtonEventArgs e) => SliderInUser = true;
+
+        private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
     }
 }

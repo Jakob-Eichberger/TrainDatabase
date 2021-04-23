@@ -6,7 +6,7 @@ namespace Helper
     {
         public static void Log(string message, LoggerType type)
         {
-            throw new NotImplementedException("This function aint working yet!");
+            //throw new NotImplementedException("This function aint working yet!");
         }
     }
 }

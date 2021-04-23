@@ -17,8 +17,7 @@ namespace ModelTrainController.Z21
 {
     public class GetLocoInfoEventArgs : EventArgs
     {
-        public GetLocoInfoEventArgs(LokInfoData data)
-            : base()
+        public GetLocoInfoEventArgs(LokInfoData data) : base()
         {
             Data = data;
         }

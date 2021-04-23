@@ -37,7 +37,6 @@ namespace Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Vehicle>().HasMany(e => e.Functions);
             modelBuilder.Entity<Vehicle>().HasOne(e => e.Category);
             modelBuilder.Entity<Category>().HasMany(e => e.Vehicles);
             OnModelCreatingPartial(modelBuilder);
@@ -48,17 +47,17 @@ namespace Infrastructure
 
         public void FillDatabase()
         {
-            for (int i = 1; i <= 20; i++)
-            {
-                Vehicles.Add(new Vehicle
-                {
-                    Active = true,
-                    Address = i,
-                    Name = $"Name {i}",
-                    ImageName = "57AE7DD0-ED68-462C-A5C2-B9B29710CDA1.png",
-                    Position = i
-                });
-            }
+            //for (int i = 1; i <= 20; i++)
+            //{
+            //    Vehicles.Add(new Vehicle
+            //    {
+            //        Active = true,
+            //        Address = i,
+            //        Name = $"Name {i}",
+            //        ImageName = "57AE7DD0-ED68-462C-A5C2-B9B29710CDA1.png",
+            //        Position = i
+            //    });
+            //}
             SaveChanges();
         }
     }

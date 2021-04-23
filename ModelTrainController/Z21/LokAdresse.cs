@@ -18,9 +18,6 @@ namespace ModelTrainController.Z21
 {
     public class LokAdresse
     {
-        public LokAdresse()
-        {
-        }
 
         public LokAdresse(int adresse)
         {

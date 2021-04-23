@@ -16,6 +16,7 @@ using Model;
 using ModelTrainController;
 using ModelTrainController.Z21;
 using System;
+using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 
@@ -407,6 +408,7 @@ namespace Helper
         //  LAN X GET LOCO INFO         // 4.1 (20)
         public override void GetLocoInfo(LokAdresse adresse)
         {
+            if (adresse is null ) return;
             byte[] bytes = new byte[9];
             bytes[0] = 0x09;
             bytes[1] = 0;
@@ -452,7 +454,23 @@ namespace Helper
             bytes[5] = 0xF8;
             bytes[6] = adresse.ValueBytes.Adr_MSB;
             bytes[7] = adresse.ValueBytes.Adr_LSB;
-            bytes[8] = (byte)(toggelType == ToggleType.off ? function.FunctionIndex : function.FunctionIndex |= 0x080);
+            bytes[8] = (byte)function.FunctionIndex;
+
+            var bitarray = new BitArray(new byte[] { bytes[8] });
+            switch (toggelType)
+            {
+                case ToggleType.off:
+                    break;
+                case ToggleType.on:
+                    bitarray.Set(6, true);
+                    break;
+                case ToggleType.@switch:
+                    bitarray.Set(7, true);
+                    break;
+
+            }
+            bitarray.CopyTo(bytes, 8);
+
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
             Senden(bytes);
         }

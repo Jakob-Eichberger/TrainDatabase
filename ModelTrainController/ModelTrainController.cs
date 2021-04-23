@@ -58,6 +58,7 @@ namespace ModelTrainController
         public abstract event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo;         //  1A    LAN GET HWINFO
         public abstract event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;              //  40 EF LAN X LOCO INFO   4.4 (22)
         public abstract event EventHandler<TrackPowerEventArgs> OnTrackPower;                //  ist Zusammenfassung von 
+              //  ist Zusammenfassung von 
 
         public abstract void GetSerialNumber();
 

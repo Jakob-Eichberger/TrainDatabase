@@ -17,5 +17,5 @@ namespace ModelTrainController.Z21
     /// <summary>
     /// N: Neutral, F: Forward, R: Reverse
     /// </summary>
-    public enum DrivingDirection { N = 0, F = 1, R = 2 };
+    public enum DrivingDirection { F = 0, R = 1 };
 }

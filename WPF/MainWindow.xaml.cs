@@ -65,13 +65,10 @@ namespace Wpf_Application
                 }
 
                 InitializeComponent();
-
-                db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
-                db.FillDatabase();
 
                 if (db.Vehicles.Any())
-                    DrawAllVehicles(db.Vehicles.Include(e => e.Functions).OrderBy(e => e.Position).ToList());
+                    DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
                 else
                     if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     new Import_Overview().Show();
@@ -83,7 +80,11 @@ namespace Wpf_Application
             }
         }
 
-        private void DB_Import_Z21_new(object sender, RoutedEventArgs e) => new Z21_New_Import().Show();
+        private void DB_Import_Z21_new(object sender, RoutedEventArgs e)
+        {
+            VehicleGrid.Children.Clear();
+            new Z21_New_Import(db).Show();
+        }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
@@ -101,7 +102,7 @@ namespace Wpf_Application
                 try
                 {
                     string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\";
-                    path += string.IsNullOrWhiteSpace(item?.ImageName) ? "default.png" : item?.ImageName;
+                    path += string.IsNullOrWhiteSpace(item?.Image_Name) ? "default.png" : item?.Image_Name;
                     Image image = new();
                     BitmapImage bitmap = new();
                     bitmap.BeginInit();
@@ -117,7 +118,7 @@ namespace Wpf_Application
                     Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{item?.Address}' not found. Message: {ex.Message}", LoggerType.Warning);
                 }
                 TextBlock tb = new();
-                tb.Text = !string.IsNullOrWhiteSpace(item?.FullName) ? item?.FullName : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
+                tb.Text = !string.IsNullOrWhiteSpace(item?.Full_Name) ? item?.Full_Name : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
                 sp.Height = 120;
                 sp.Width = 250;
                 sp.Children.Add(tb);
@@ -148,9 +149,9 @@ namespace Wpf_Application
                 var menu = ((MenuItem)e.Source);
                 Vehicle? vehicle = (menu.Tag as Vehicle);
                 if (vehicle is not null)
-                    new TrainControl(controler, vehicle).Show();
+                    new TrainControl(controler, vehicle, db).Show();
                 else
-                    MessageBox.Show("Öffnen nicht möglich da Vehilce null ist!", "Erro");
+                    MessageBox.Show("Öffnen nicht möglich da Vehilce null ist!", "Error");
             }
             catch (Exception ex)
             {
@@ -168,7 +169,7 @@ namespace Wpf_Application
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
         }

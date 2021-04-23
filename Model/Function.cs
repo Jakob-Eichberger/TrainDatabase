@@ -7,15 +7,16 @@ namespace Model
 {
     public partial class Function
     {
-        public long Id { get; set; }
-        public long? VehicleId { get; set; }
-        public long ButtonType { get; set; }
+        public int Id { get; set; }
+        public Vehicle Vehicle { get; set; }
+        public int VehicleId { get; set; }
+        public int ButtonType { get; set; }
         public string Shortcut { get; set; }
-        public string Time { get; set; }
-        public long? Position { get; set; }
+        public decimal Time { get; set; }
+        public int Position { get; set; }
         public string ImageName { get; set; }
-        public long? FunctionIndex { get; set; }
-        public long ShowFunctionNumber { get; set; }
-        public long IsConfigured { get; set; }
+        public int FunctionIndex { get; set; }
+        public bool ShowFunctionNumber { get; set; }
+        public bool IsConfigured { get; set; }
     }
 }

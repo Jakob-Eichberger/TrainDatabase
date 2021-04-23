@@ -14,11 +14,11 @@ namespace Model
         [Required]
         public string Name { get; set; } = "";
 
-        public string ImageName { get; set; } = "";
+        public string Image_Name { get; set; } = "";
 
         public VehilceType Type { get; set; } = VehilceType.Lokomotive;
 
-        public long? MaxSpeed { get; set; } = 0;
+        public long? Max_Speed { get; set; } = 0;
 
         [Required]
         public long Address { get; set; } = 0;
@@ -27,35 +27,35 @@ namespace Model
 
         public long Position { get; set; } = 0;
 
-        public string DriversCab { get; set; } = "";
+        public string Drivers_Cab { get; set; } = "";
 
-        public string FullName { get; set; } = "";
+        public string Full_Name { get; set; } = "";
 
-        public long? SpeedDisplay { get; set; } = 0;
+        public long? Speed_Display { get; set; } = 0;
 
         public string Railway { get; set; } = "";
 
-        public string BufferLenght { get; set; } = "";
+        public long Buffer_Lenght { get; set; }
 
-        public string ModelBufferLenght { get; set; } = "";
+        public long Model_Buffer_Lenght { get; set; }
 
-        public string ServiceWeight { get; set; } = "";
+        public long Service_Weight { get; set; }
 
-        public string ModelWeight { get; set; } = "";
+        public long Model_Weight { get; set; }
 
-        public string Rmin { get; set; } = "";
+        public long Rmin { get; set; }
 
-        public string ArticleNumber { get; set; } = "";
+        public string Article_Number { get; set; } = "";
 
-        public string DecoderType { get; set; } = "";
+        public string Decoder_Type { get; set; } = "";
 
         public string Owner { get; set; } = "";
 
-        public string BuildYear { get; set; } = "";
+        public string Build_Year { get; set; } = "";
 
-        public string OwningSince { get; set; } = "";
+        public string Owning_Since { get; set; } = "";
 
-        public long? TractionDirection { get; set; } = 0;
+        public long? Traction_Direction { get; set; } = 0;
 
         public string Description { get; set; } = "";
 
@@ -65,15 +65,13 @@ namespace Model
 
         public long? Video { get; set; } = 0;
 
-        public long? DirectSteering { get; set; } = 0;
+        public long? Direct_Steering { get; set; } = 0;
 
         public bool? Crane { get; set; } = false;
 
-        public Category Category { get; private set; } = default!;
+        public Category Category { get; set; } = default!;
 
         public int CategoryId { get; set; }
-
-        public List<Function> Functions { get; private set; } = new();
 
         public Epoch Epoche { get; set; } = Epoch.@default;
 
