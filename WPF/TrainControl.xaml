@@ -9,7 +9,7 @@
         Title="TrainControl" SizeToContent="WidthAndHeight" Name="mw" MinHeight="350" MinWidth="480" Height="360" Width="480" Closing="Mw_Closing">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="80"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -18,9 +18,13 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
-        <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Minimum="0" Maximum="{Binding ElementName=mw,Path=MaxDccStep}" Value="{Binding ElementName=mw,Path=SpeedStep}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp"/>
-        <ToggleButton Content="{Binding ElementName=mw,Path=GetDirectionString}" IsChecked="{Binding ElementName=mw,Path=Direction}" x:Name="BtnDirection" Click="BtnDirection_Click" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"/>
-        <Label Grid.Row="1" Grid.Column="0" Content="{Binding ElementName=mw,Path=SpeedStep}"/>
+        <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Minimum="0" Maximum="{Binding ElementName=mw,Path=MaxDccStep}" Value="{Binding ElementName=mw,Path=SpeedStep}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp" Margin="0,0,5,0"/>
+        <ToggleButton Content="{Binding ElementName=mw,Path=GetDirectionString}" IsChecked="{Binding ElementName=mw,Path=Direction}" Margin="0,0,5,0" x:Name="BtnDirection" Click="BtnDirection_Click" Grid.Row="3" Grid.Column="0"/>
+        <DockPanel Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" >
+            <Label  Content="{Binding ElementName=mw,Path=SpeedStep}" HorizontalAlignment="Center"/>
+            <Label Content="/"/>
+        <Label  Content="{Binding ElementName=mw,Path=MaxDccStep}" HorizontalAlignment="Center"/>
+        </DockPanel>
         <TabControl Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" >
             <TabItem Header="Funktionen">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" >
