@@ -1,11 +1,9 @@
-﻿using Extensions;
-using Helper;
+﻿using Helper;
 using Infrastructure;
 using Microsoft.Data.Sqlite;
 using Microsoft.Win32;
 using Model;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
@@ -13,24 +11,18 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Extensions;
 
-namespace WPF_Application.DbImport
+namespace Importer
 {
     /// <summary>
-    /// Interaction logic for Z21_New_Import.xaml
+    /// Interaction logic for Z21.xaml
     /// </summary>
-    public partial class Z21_New_Import : Window, INotifyPropertyChanged
+    public partial class Z21 : Window, INotifyPropertyChanged
     {
+
         private Database db;
         private Visibility isNotLoading;
         private string statusText = "";
@@ -77,6 +69,7 @@ namespace WPF_Application.DbImport
                 OnPropertyChanged();
             }
         }
+
         /// <summary>
         /// Max Value is 100;
         /// </summary>
@@ -88,6 +81,7 @@ namespace WPF_Application.DbImport
                 OnPropertyChanged();
             }
         }
+
         public int MaxProgress
         {
             get => maxProgress; set
@@ -96,7 +90,8 @@ namespace WPF_Application.DbImport
                 OnPropertyChanged();
             }
         }
-        public Z21_New_Import(Database _db)
+
+        public Z21(Database _db)
         {
             InitializeComponent();
             db = _db;
@@ -159,19 +154,19 @@ namespace WPF_Application.DbImport
                 var images = files.Where(e => System.IO.Path.GetExtension(e) != ".sqlite").ToList();
                 IsIndeterminate = false;
                 await Task.Run(() =>
-                 {
-                     MaxProgress = images.Count();
-                     for (int i = 0; i <= (images.Count() - 1); i++)
-                     {
-                         StatusText = $"{i + 1}/{MaxProgress} Fotos kopiert.";
-                         Progress = i + 1;
-                         var image = images[i];
-                         var destination = $"{vehicleDirectory}\\{System.IO.Path.GetFileName(image)}";
-                         File.Move(image, destination);
-                     }
+                {
+                    MaxProgress = images.Count();
+                    for (int i = 0; i <= (images.Count() - 1); i++)
+                    {
+                        StatusText = $"{i + 1}/{MaxProgress} Fotos kopiert.";
+                        Progress = i + 1;
+                        var image = images[i];
+                        var destination = $"{vehicleDirectory}\\{System.IO.Path.GetFileName(image)}";
+                        File.Move(image, destination);
+                    }
 
 
-                 });
+                });
                 await FillDbFromDB(sqlLiteDB);
                 Close();
                 MessageBox.Show("Import erfolgreich!");
@@ -247,7 +242,7 @@ namespace WPF_Application.DbImport
                                 Owner = reader.GetString(19),
                                 Build_Year = reader.GetString(20),
                                 Owning_Since = reader.GetString(21),
-                                Traction_Direction = reader.GetString(22).ToInt64(),
+                                Traction_Direction = reader.GetString(22).ToBoolean(),
                                 Description = reader.GetString(23),
                                 Dummy = reader.GetString(24).ToBoolean(),
                                 Ip = IPAddress.Parse(reader.GetString(25)),
@@ -262,5 +257,4 @@ namespace WPF_Application.DbImport
             });
         }
     }
-
 }

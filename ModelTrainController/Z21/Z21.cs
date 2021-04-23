@@ -408,7 +408,7 @@ namespace Helper
         //  LAN X GET LOCO INFO         // 4.1 (20)
         public override void GetLocoInfo(LokAdresse adresse)
         {
-            if (adresse is null ) return;
+            if (adresse is null) return;
             byte[] bytes = new byte[9];
             bytes[0] = 0x09;
             bytes[1] = 0;

@@ -55,7 +55,7 @@ namespace Model
 
         public string Owning_Since { get; set; } = "";
 
-        public long? Traction_Direction { get; set; } = 0;
+        public bool? Traction_Direction { get; set; }
 
         public string Description { get; set; } = "";
 

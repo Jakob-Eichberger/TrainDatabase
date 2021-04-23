@@ -13,7 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPF_Application;
-using WPF_Application.DbImport;
 
 namespace Wpf_Application
 {
@@ -69,9 +68,8 @@ namespace Wpf_Application
 
                 if (db.Vehicles.Any())
                     DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
-                else
-                    if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                    new Import_Overview().Show();
+                //else
+                //if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
 
             }
             catch (Exception e)
@@ -83,7 +81,6 @@ namespace Wpf_Application
         private void DB_Import_Z21_new(object sender, RoutedEventArgs e)
         {
             VehicleGrid.Children.Clear();
-            new Z21_New_Import(db).Show();
         }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)

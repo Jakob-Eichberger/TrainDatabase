@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WPF_Application.DbImport
+namespace Importer
 {
     /// <summary>
-    /// Interaction logic for Overview.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class Import_Overview : Window
+    public partial class MainWindow : Window
     {
-        public Import_Overview()
+        public MainWindow()
         {
             InitializeComponent();
         }

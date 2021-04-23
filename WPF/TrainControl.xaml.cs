@@ -85,6 +85,7 @@ namespace WPF_Application
         private List<Button> FunctionButtons = new();
 
         private List<ToggleButton> FunctionToggleButtons = new();
+        private bool railPower;
 
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the Loko.
@@ -119,6 +120,15 @@ namespace WPF_Application
             }
         }
 
+        public bool RailPower
+        {
+            get => railPower; set
+            {
+                railPower = value;
+                OnPropertyChanged();
+            }
+        }
+
         public TrainControl(ModelTrainController.ModelTrainController _controler, Vehicle _vehicle, Database db)
         {
             try
@@ -147,7 +157,7 @@ namespace WPF_Application
         {
             FunctionGrid.Children.Clear();
             int i = 0;
-            foreach (var item in (db.Functions.Where(e => e.VehicleId == vehicle.Id).OrderBy(e => e.Position).ToList() ?? new()))
+            foreach (var item in (db.Functions.Where(e => e.VehicleId == vehicle.Id).OrderBy(e => e.FunctionIndex).ToList() ?? new()))
             {
                 i++;
                 Border border = new();
@@ -163,7 +173,7 @@ namespace WPF_Application
                     var tb = new ToggleButton();
                     tb.Height = 50;
                     tb.Width = 90;
-                    tb.Content = string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut;
+                    tb.Content = $"({item.FunctionIndex}) {(string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut)}";
                     tb.Click += FunctionToggle_Click;
                     tb.Tag = item;
                     tb.Name = $"btn_Function_{item.Id}";
@@ -175,7 +185,7 @@ namespace WPF_Application
                     var btn = new Button();
                     btn.Height = 50;
                     btn.Width = 90;
-                    btn.Content = string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut;
+                    btn.Content = $"({item.FunctionIndex}) {(string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut)}";
                     btn.PreviewMouseDown += FunctionButtonDown_Click;
                     btn.PreviewMouseUp += FunctionButtonUp_Click;
                     btn.Tag = item;
