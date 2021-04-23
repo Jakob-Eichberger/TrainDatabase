@@ -49,6 +49,7 @@ namespace WPF_Application
 
             }
         }
+
         public GridLength VehicleTypeGridLength
         {
             get => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);

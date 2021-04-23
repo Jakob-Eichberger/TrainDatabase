@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_Application"
         mc:Ignorable="d"
-        Title="Datenbank" MinHeight="550" Height="550" MinWidth="870" Width="870" Name="mw">
+        Title="Datenbank" MinHeight="550" Height="550" MinWidth="870" Width="870" Name="mw" Closing="Mw_Closing">
     <Grid x:Name="MwGrid">
         <Grid.ColumnDefinitions>
 
@@ -15,7 +15,7 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Menu Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+        <Menu Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="White">
             <MenuItem Header="Database">
                 <MenuItem Header="Import">
                     <MenuItem Header="Z21 (new)" Click="DB_Import_Z21_new"/>

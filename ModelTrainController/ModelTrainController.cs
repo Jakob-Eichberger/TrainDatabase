@@ -81,7 +81,7 @@ namespace ModelTrainController
         public abstract void GetFirmwareVersion();
 
         //  LAN_SET_BROADCASTFLAGS()    // 2.16 (15)
-        public abstract void SetBroadcastFlags();
+        public abstract void LogOn();
 
         //  LAN_SYSTEMSTATE_GETDATA()     // 2.19 (17)
         public abstract void SystemStateGetData();
@@ -93,14 +93,15 @@ namespace ModelTrainController
         public abstract void GetLocoInfo(LokAdresse adresse);
         //  LAN_X_SET_LOCO_DRIVE  4.2  (21)
         public abstract void SetLocoDrive(LokInfoData data);
-        public abstract void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType);
 
-        public abstract void Nothalt();
-        //  LAN_LOGOFF            2.2 (10)         
+        public abstract void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType);
+  
         public abstract void LogOFF();
 
         public abstract void Reconnect();
 
         public abstract new void Dispose();
+
+        public abstract void SetBroadcastFlag();
     }
 }

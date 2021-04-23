@@ -8,22 +8,22 @@ namespace Exceptions
     {
         public ControlerException(ModelTrainController.ModelTrainController controler)
         {
-            controler.Nothalt();
+            controler.SetTrackPowerOFF();
         }
 
         public ControlerException(ModelTrainController.ModelTrainController controler, string message) : base(message)
         {
-            controler.Nothalt();
+            controler.SetTrackPowerOFF();
         }
 
         public ControlerException(ModelTrainController.ModelTrainController controler, string message, Exception innerException) : base(message, innerException)
         {
-            controler.Nothalt();
+            controler.SetTrackPowerOFF();
         }
 
         protected ControlerException(ModelTrainController.ModelTrainController controler, SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            controler.Nothalt();
+            controler.SetTrackPowerOFF();
         }
     }
 }

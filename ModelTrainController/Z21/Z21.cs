@@ -201,7 +201,7 @@ namespace Helper
                             if (b) infodata.drivingDirection = DrivingDirection.F; else infodata.drivingDirection = DrivingDirection.R;
 
                             int functionIndexCount = 5;
-                            for (int index = 9; index <= 12; index++)
+                            for (int index = 9; index < received.Length && index <= 12; index++)
                             {
                                 var functionBits = new BitArray(new byte[] { received[index] });
                                 if (index == 9)
@@ -252,6 +252,7 @@ namespace Helper
                     break;
             }
         }
+
         private CentralStateData GetCentralStateData(byte[] received)
         {
             CentralStateData statedata = new CentralStateData();
@@ -282,7 +283,9 @@ namespace Helper
             return statedata;
         }
 
-        //  LAN_GET_SERIAL_NUMBER()     // 2.1 (10)
+        /// <summary>
+        /// LAN_GET_SERIAL_NUMBER()    
+        /// </summary>
         public override void GetSerialNumber()
         {
             byte[] bytes = new byte[4];
@@ -294,7 +297,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_X_GET_VERSION     // 2.3 (10)
+        /// <summary>
+        /// LAN_X_GET_VERSION
+        /// </summary>
         public override void GetVersion()
         {
             byte[] bytes = new byte[7];
@@ -310,7 +315,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_X_GET_STATUS     // 2.4 (11)
+        /// <summary>
+        /// LAN_X_GET_STATUS
+        /// </summary>
         public override void GetStatus()
         {
             byte[] bytes = new byte[7];
@@ -325,7 +332,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_X_SET_TRACK_POWER_OFF   // 2.5 (11)
+        /// <summary>
+        /// LAN_X_SET_TRACK_POWER_OFF
+        /// </summary>
         public override void SetTrackPowerOFF()
         {
             byte[] bytes = new byte[7];
@@ -336,11 +345,12 @@ namespace Helper
             bytes[4] = 0x21;
             bytes[5] = 0x80;
             bytes[6] = 0xA1;   // = XOR-Byte
-            Console.WriteLine("LAN X SET TRACK POWER OFF " + getByteString(bytes));
             Senden(bytes);
         }
 
-        //  LAN_X_SET_TRACK_POWER_ON   // 2.6 (11)
+        /// <summary>
+        /// LAN_X_SET_TRACK_POWER_ON
+        /// </summary>
         public override void SetTrackPowerON()
         {
             byte[] bytes = new byte[7];
@@ -355,7 +365,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_X_SET_STOP   // 2.13 (14)
+        /// <summary>
+        /// LAN_X_SET_STOP
+        /// </summary>
         public override void SetStop()
         {
             byte[] bytes = new byte[6];
@@ -369,7 +381,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_X_GET_FIRMWARE_VERSION   // 2.15 (xx)
+        /// <summary>
+        /// LAN_X_GET_FIRMWARE_VERSION
+        /// </summary>
         public override void GetFirmwareVersion()
         {
             byte[] bytes = new byte[7];
@@ -384,8 +398,10 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_SET_BROADCASTFLAGS()    // 2.16 (15)
-        public override void SetBroadcastFlags()
+        /// <summary>
+        /// LAN_SET_BROADCASTFLAGS
+        /// </summary>
+        public override void LogOn()
         {
             byte[] bytes = new byte[8];
             bytes[0] = 0x08;
@@ -400,7 +416,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_SYSTEMSTATE_GETDATA()     // 2.19 (17)
+        /// <summary>
+        /// LAN_SYSTEMSTATE_GETDATA
+        /// </summary>
         public override void SystemStateGetData()
         {
             byte[] bytes = new byte[4];
@@ -412,7 +430,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_GET_HWINFO   // 2.20 (xx)
+        /// <summary>
+        /// LAN_GET_HWINFO
+        /// </summary>
         public override void GetHardwareInfo()
         {
             byte[] bytes = new byte[4];
@@ -424,7 +444,10 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN X GET LOCO INFO         // 4.1 (20)
+        /// <summary>
+        /// LAN_X_GET_LOCO_INFO
+        /// </summary>
+        /// <param name="adresse"></param>
         public override void GetLocoInfo(LokAdresse adresse)
         {
             if (adresse is null) return;
@@ -442,7 +465,10 @@ namespace Helper
             Senden(bytes);
         }
 
-        //  LAN_X_SET_LOCO_DRIVE  4.2  (21)
+        /// <summary>
+        /// LAN_X_SET_LOCO_DRIVE
+        /// </summary>
+        /// <param name="data"></param>
         public override void SetLocoDrive(LokInfoData data)
         {
             if (data.drivingDirection == DrivingDirection.F) data.Fahrstufe |= 0x080;
@@ -462,6 +488,12 @@ namespace Helper
             Senden(bytes);
         }
 
+        /// <summary>
+        /// LAN_X_SET_LOCO_FUNCTION
+        /// </summary>
+        /// <param name="adresse"></param>
+        /// <param name="function"></param>
+        /// <param name="toggelType"></param>
         public override void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
         {
             byte[] bytes = new byte[10];
@@ -494,12 +526,9 @@ namespace Helper
             Senden(bytes);
         }
 
-        public override void Nothalt()
-        {
-            SetTrackPowerOFF();
-        }
-
-        //  LAN_LOGOFF            2.2 (10)         
+        /// <summary>
+        /// LAN_LOGOFF
+        /// </summary>
         public override void LogOFF()
         {
             byte[] bytes = new byte[4];
@@ -507,9 +536,7 @@ namespace Helper
             bytes[1] = 0;
             bytes[2] = 0x30;
             bytes[3] = 0;
-            Console.WriteLine("LAN LOGOFF " + getByteString(bytes));
             Senden(bytes);
-
         }
 
         private string getByteString(byte[] bytes)
@@ -569,6 +596,18 @@ namespace Helper
         {
             //LogOFF();
             Close();
+        }
+
+        public override void SetBroadcastFlag()
+        {
+            byte[] bytes = new byte[8];
+            bytes[0] = 0x08;
+            bytes[1] = 0;
+            bytes[2] = 0x50;
+            bytes[3] = 0;
+            //bytes[4] = 0x00010000;
+            var x = unchecked((int)0x00010000);
+            //Senden(bytes);
         }
     }
 }

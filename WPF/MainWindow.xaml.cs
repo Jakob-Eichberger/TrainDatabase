@@ -21,35 +21,28 @@ namespace Wpf_Application
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        readonly ModelTrainController.ModelTrainController controler = Z21Connection.Get();
         private readonly Database db = new();
         public event PropertyChangedEventHandler? PropertyChanged;
-        private Brush primary = Brushes.White;
-        private Brush secondary = Brushes.DarkGray;
-        private Brush textColour = Brushes.Black;
 
+        private ModelTrainController.ModelTrainController? controler;
+        private Theme theme;
 
-        public Brush Primary
+        ModelTrainController.ModelTrainController? Controler
         {
-            get => primary; set
+            get => controler; set
             {
-                primary = value;
-                OnPropertyChanged();
+                controler = value;
+                if (controler is not null)
+                    controler.LogOn();
             }
         }
-        public Brush Secondary
+
+        public Theme Theme
         {
-            get => secondary; set
+            get => theme;
+            set
             {
-                secondary = value;
-                OnPropertyChanged();
-            }
-        }
-        public Brush TextColour
-        {
-            get => textColour; set
-            {
-                textColour = value;
+                theme = value;
                 OnPropertyChanged();
             }
         }
@@ -62,7 +55,7 @@ namespace Wpf_Application
                 {
                     Close();
                 }
-
+                Theme = new();
                 InitializeComponent();
                 db.Database.EnsureCreated();
 
@@ -70,7 +63,7 @@ namespace Wpf_Application
                     DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
                 //else
                 //if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
-
+                Controler = new Z21(ControllerConnection.Get());
             }
             catch (Exception e)
             {
@@ -109,6 +102,7 @@ namespace Wpf_Application
                     image.Width = 250;
                     image.Height = 100;
                     sp.Children.Add(image);
+
                 }
                 catch (Exception ex)
                 {
@@ -121,9 +115,9 @@ namespace Wpf_Application
                 sp.Children.Add(tb);
                 sp.HorizontalAlignment = HorizontalAlignment.Left;
                 sp.VerticalAlignment = VerticalAlignment.Top;
+                sp.Background = Brushes.White;
 
                 sp.ContextMenu = new();
-
                 MenuItem miControlLoko = new();
                 miControlLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok steuern" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
                 miControlLoko.Click += ControlLoko_Click;
@@ -146,7 +140,7 @@ namespace Wpf_Application
                 var menu = ((MenuItem)e.Source);
                 Vehicle? vehicle = (menu.Tag as Vehicle);
                 if (vehicle is not null)
-                    new TrainControl(controler, vehicle, db).Show();
+                    new TrainControl(Controler, vehicle, db).Show();
                 else
                     MessageBox.Show("Öffnen nicht möglich da Vehilce null ist!", "Error");
             }
@@ -174,6 +168,15 @@ namespace Wpf_Application
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private void Mw_Closing(object sender, CancelEventArgs e)
+        {
+            if (Controler is not null)
+            {
+                Controler.LogOFF();
+                Controler = null;
+            }
         }
     }
 }

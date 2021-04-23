@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Wpf_Application
+namespace WPF_Application
 {
-    static class Z21Connection
+    static class ControllerConnection
     {
 
         [Obsolete("Not yet implemented, returns default!", false)]
@@ -18,7 +18,7 @@ namespace Wpf_Application
         /// Function gets the LanAdress and LanPort from a config file and creates a new <see cref="Z21"/> object.
         /// </summary>
         /// <returns>Retuns a <see cref="Z21"/> object.</returns>
-        public static Z21 Get() => new(new StartData { LanAdresse = "192.168.0.111", LanPort = 21105 });
+        public static StartData Get() => new StartData { LanAdresse = "192.168.0.111", LanPort = 21105 };
 
         /// <summary>
         /// Function sets an <paramref name="address"/> and a <paramref name="port"/> which it then saves in a config file.
