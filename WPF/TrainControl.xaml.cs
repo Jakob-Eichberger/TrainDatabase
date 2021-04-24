@@ -32,6 +32,7 @@ namespace WPF_Application
         private TrackPower trackPower;
         private Vehicle vehicle;
         private bool lastTrackPowerUpdateWasShort = false;
+        private Helper.JoyStick Joystick { get; } = new(Guid.Empty);
 
         public Vehicle Vehicle
         {
@@ -182,6 +183,8 @@ namespace WPF_Application
                 controler.GetLocoInfo(LokState.Adresse);
                 controler.SetTrackPowerON();
                 DrawAllFunctions();
+                Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
+                Joystick.Acquire();
             }
             catch (Exception ex)
             {
@@ -272,6 +275,12 @@ namespace WPF_Application
 
         public void OnProgrammingModeEventArgs(Object? sender, EventArgs e) => TrackPower = TrackPower.Programing;
 
+        public void OnJoyStickValueUpdate(Object? sender, JoyStickUpdateEventArgs e)
+        {
+            SliderLastused = DateTime.Now;
+            SpeedStep = maxDccStep - ((e.currentValue * maxDccStep) / e.maxValue);
+        }
+
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -327,6 +336,18 @@ namespace WPF_Application
             SpeedStep = e.Delta < 0 ? SpeedStep - 1 : SpeedStep + 1;
             e.Handled = true;
             SliderLastused = DateTime.Now;
+        }
+
+        private void Mw_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Joystick.Dispose();
+
+        }
+
+        private void Mw_GotFocus(object sender, RoutedEventArgs e)
+        {
+            Joystick.Acquire();
+
         }
     }
 }

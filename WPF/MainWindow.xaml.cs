@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,6 +53,9 @@ namespace Wpf_Application
         {
             try
             {
+
+                Settings.ControlerIP = IPAddress.Parse("127.0.0.1");
+
                 if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
                 {
                     Close();
@@ -68,7 +72,6 @@ namespace Wpf_Application
                     new Importer.ImportSelecter(db).Show();
                     this.Close();
                 }
-
                 Controler = new Z21(new StartData() { LanAdresse = Settings.ControlerIP.ToString(), LanPort = 21105 });
             }
             catch (Exception e)
@@ -77,7 +80,6 @@ namespace Wpf_Application
                 MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e.Message}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ichs fixen) ;) ");
             }
         }
-
 
         private void DB_Import_Z21_new(object sender, RoutedEventArgs e)
         {
@@ -162,7 +164,7 @@ namespace Wpf_Application
             }
 
         }
-
+        
         void EditLoko_Click(Object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Does not work yet! Sorry!");
@@ -180,7 +182,7 @@ namespace Wpf_Application
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
+        
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
             if (Controler is not null)

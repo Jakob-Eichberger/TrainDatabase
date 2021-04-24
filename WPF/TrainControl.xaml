@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WPF_Application" 
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="TrainControl" Name="mw" MinHeight="300" MinWidth="370" Width="480" Height="450" Closing="Mw_Closing" PreviewMouseWheel="mw_PreviewMouseWheel">
+        Title="TrainControl" Name="mw" MinHeight="300" MinWidth="370" Width="480" Height="450" Closing="Mw_Closing" PreviewMouseWheel="mw_PreviewMouseWheel" LostFocus="Mw_LostFocus" GotFocus="Mw_GotFocus">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ElementName=mw,Path=VehicleTypeGridLength}" />

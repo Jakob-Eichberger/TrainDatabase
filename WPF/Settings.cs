@@ -11,7 +11,7 @@ namespace WPF_Application
     {
         public static IPAddress ControlerIP
         {
-            get => new(Properties.Settings.Default.ControllerIP);
+            get => new((Properties.Settings.Default.ControllerIP));
             set
             {
 #pragma warning disable CS0618 // Type or member is obsolete

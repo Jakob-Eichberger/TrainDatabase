@@ -18,8 +18,7 @@ namespace ModelTrainController.Z21
 {
     public class DataEventArgs : EventArgs
     {
-        public DataEventArgs(byte[] received)
-            : base()
+        public DataEventArgs(byte[] received) : base()
         {
             Received = received;
         }
