@@ -34,6 +34,8 @@ namespace WPF_Application
         private bool lastTrackPowerUpdateWasShort = false;
         private Helper.JoyStick Joystick { get; } = new(Guid.Empty);
 
+        public new bool IsActive { get; set; } = false;
+
         public Vehicle Vehicle
         {
             get => vehicle;
@@ -277,8 +279,11 @@ namespace WPF_Application
 
         public void OnJoyStickValueUpdate(Object? sender, JoyStickUpdateEventArgs e)
         {
-            SliderLastused = DateTime.Now;
-            SpeedStep = maxDccStep - ((e.currentValue * maxDccStep) / e.maxValue);
+            if (this.IsActive)
+            {
+                SliderLastused = DateTime.Now;
+                SpeedStep = maxDccStep - ((e.currentValue * maxDccStep) / e.maxValue);
+            }
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
@@ -329,6 +334,7 @@ namespace WPF_Application
         {
             LokState.Besetzt = false;
             controler.SetLocoDrive(LokState);
+            Joystick.Dispose();
         }
 
         private void mw_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -338,16 +344,16 @@ namespace WPF_Application
             SliderLastused = DateTime.Now;
         }
 
-        private void Mw_LostFocus(object sender, RoutedEventArgs e)
+        private void mw_Activated(object sender, EventArgs e)
         {
-            Joystick.Dispose();
-
+            IsActive = true;
+            //Joystick.Acquire();
         }
 
-        private void Mw_GotFocus(object sender, RoutedEventArgs e)
+        private void mw_Deactivated(object sender, EventArgs e)
         {
-            Joystick.Acquire();
-
+            IsActive = false;
+            //Joystick.Dispose();
         }
     }
 }

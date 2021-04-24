@@ -73,19 +73,26 @@ namespace Helper
         /// </summary>
         private void Run()
         {
-            new Thread(() =>
+            try
             {
-                if (Joystick is null || Joystick.IsDisposed) return;
-                while (Joystick is not null && !Joystick.IsDisposed)
+                new Thread(() =>
                 {
-                    Joystick.Poll();
-                    var datas = Joystick.GetBufferedData();
-                    foreach (var state in datas.ToList().Where(e => e.Offset == JoystickOffset.Z))
+                    if (Joystick is null || Joystick.IsDisposed) return;
+                    while (Joystick is not null && !Joystick.IsDisposed)
                     {
-                        if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, 65535));
+                        Joystick.Poll();
+                        var datas = Joystick.GetBufferedData();
+                        foreach (var state in datas.ToList().Where(e => e.Offset == JoystickOffset.Z))
+                        {
+                            if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, 65535));
+                        }
                     }
-                }
-            }).Start();
+                }).Start();
+            }
+            catch (SharpDX.SharpDXException ex)
+            {
+                Logger.Log($"Fehler by {nameof(Joystick.GetBufferedData)}: {ex.Message}", LoggerType.Error);
+            }
         }
 
         /// <summary>
