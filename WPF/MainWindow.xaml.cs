@@ -2,6 +2,7 @@
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Model;
+using ModelTrainController;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -67,7 +68,8 @@ namespace Wpf_Application
                     new Importer.ImportSelecter(db).Show();
                     this.Close();
                 }
-                Controler = new Z21(ControllerConnection.Get());
+
+                Controler = new Z21(new StartData() { LanAdresse = Settings.ControlerIP.ToString(), LanPort = 21105 });
             }
             catch (Exception e)
             {
@@ -75,6 +77,7 @@ namespace Wpf_Application
                 MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e.Message}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ichs fixen) ;) ");
             }
         }
+
 
         private void DB_Import_Z21_new(object sender, RoutedEventArgs e)
         {

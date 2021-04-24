@@ -1,0 +1,33 @@
+﻿<Window x:Class="WPF_Application.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF_Application"
+        mc:Ignorable="d"
+        Title="SettingsWindow" Name="settingsw" Height="450" Width="800">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Controller">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="300*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Content="IPAdress:"/>
+                    <TextBox Text="{Binding ElementName=settingsw,Path=ControlerIp}"/>
+                    <Label Name="ErroMessageLabel" Foreground="Red" Grid.Row="3" Grid.Column="0"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Theme">
+
+            </TabItem>
+            <TabItem Header="Input">
+
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
