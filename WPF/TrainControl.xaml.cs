@@ -17,10 +17,6 @@ using System.Windows.Media;
 
 namespace WPF_Application
 {
-
-    public enum Weight { light = 0, medium = 1, heavy = 2 }
-
-
     /// <summary>
     /// Interaction logic for TrainControl.xaml
     /// </summary>
