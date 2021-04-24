@@ -62,13 +62,15 @@ namespace WPF_Application
 
         public bool SliderInUser { get; set; }
 
+        public DateTime SliderLastused { get; set; }
+
         public int SpeedStep
         {
             get => speedStep; set
             {
-                if (value != 1)
+                if (value >= 0 && value <= maxDccStep)
                 {
-                    speedStep = value;
+                    speedStep = value == 1 ? (speedStep > 1 ? 0 : 2) : value;
                     OnPropertyChanged();
                     if (speedStep != (LokState.Fahrstufe))
                         SetSpeed(value);
@@ -111,7 +113,7 @@ namespace WPF_Application
             get => lokState; set
             {
                 lokState = value;
-                if (!SliderInUser)
+                if (!SliderInUser && (DateTime.Now - SliderLastused).TotalSeconds > 2)
                 {
                     SpeedStep = value.Fahrstufe;
                 }
@@ -246,7 +248,9 @@ namespace WPF_Application
         {
             if (e.Data.Adresse.Value == Vehicle.Address)
             {
+
                 LokState = e.Data;
+
                 if (Direction != e.Data.drivingDirection.ConvertToBool())
                 {
                     Direction = e.Data.drivingDirection.ConvertToBool();
@@ -261,8 +265,6 @@ namespace WPF_Application
                             x.IsChecked = item.Item2;
                     }));
                 }
-
-                //FunctionToggleButtons
             }
         }
 
@@ -324,8 +326,11 @@ namespace WPF_Application
             controler.SetLocoDrive(LokState);
         }
 
-
-
-
+        private void mw_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            SpeedStep = e.Delta < 0 ? SpeedStep - 1 : SpeedStep + 1;
+            e.Handled = true;
+            SliderLastused = DateTime.Now;
+        }
     }
 }
