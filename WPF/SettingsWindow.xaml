@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="SettingsWindow" Name="settingsw" Height="450" Width="800">
+        Title="SettingsWindow" Name="settingsw" Height="450" Width="800" Closed="settingsw_Closed">
     <Grid>
         <TabControl>
             <TabItem Header="Controller">
@@ -15,11 +15,13 @@
                         <ColumnDefinition Width="300*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <Label Content="IPAdress:"/>
-                    <TextBox Text="{Binding ElementName=settingsw,Path=ControlerIp}"/>
-                    <Label Name="ErroMessageLabel" Foreground="Red" Grid.Row="3" Grid.Column="0"/>
+                    <Label Content="IPAdress:" Grid.Row="0" Grid.Column="0"/>
+                    <TextBox Text="{Binding ElementName=settingsw,Path=ControllerIp}" Grid.Row="0" Grid.Column="1"/>
+                    <!--<Label Name="ErroMessageLabel" Foreground="Red" Grid.Row="3" Grid.Column="0"/>-->
                 </Grid>
             </TabItem>
             <TabItem Header="Theme">

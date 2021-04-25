@@ -35,9 +35,7 @@
                 <MenuItem Header="Bearbeiten"/>
                 <MenuItem Header="Löschen"/>
             </MenuItem>
-            <MenuItem Header="Optionen">
-                <MenuItem Header="Theme"/>
-                <MenuItem Header="Mit Zentrale verbinden."/>
+            <MenuItem Header="Optionen" Click="Settings_Click">
             </MenuItem>
         </Menu>
         <DockPanel Grid.Row="1" Height="AUTO" Margin="5,5,5,5">

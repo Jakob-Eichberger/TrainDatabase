@@ -21,25 +21,37 @@ namespace WPF_Application
     public partial class SettingsWindow : Window
     {
 
-        public string ControlerIp
+        public bool ValueChanged { get; set; }
+
+        public string ControllerIp
         {
-            get { return Settings.ControlerIP.ToString(); }
+            get => Settings.ControllerIP.ToString();
             set
             {
                 try
                 {
-                    Settings.ControlerIP = IPAddress.Parse(value);
+                    ValueChanged = value != ControllerIp;
+                    Settings.ControllerIP = IPAddress.Parse(value);
                 }
-                catch (FormatException)
+                catch
                 {
-                    ErroMessageLabel.Content = "IP Incorrect";
+                    ValueChanged = false;
+                    MessageBox.Show($"'{value}' ist keine valide Ip!");
                 }
-                ErroMessageLabel.Content = "-";
             }
         }
+
         public SettingsWindow()
         {
             InitializeComponent();
+        }
+
+        private void settingsw_Closed(object sender, EventArgs e)
+        {
+            if (ValueChanged)
+            {
+                MessageBox.Show("Geänderte Einstellungen werden teilweise erst nach einem Restart übernommen!", "Geänderte Settings", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
 }

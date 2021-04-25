@@ -54,12 +54,12 @@ namespace Wpf_Application
             try
             {
 
-                Settings.ControlerIP = IPAddress.Parse("192.168.0.111");
-
+#if RELEASE
                 if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
                 {
                     Close();
                 }
+#endif
                 Theme = new();
                 InitializeComponent();
                 db.Database.EnsureCreated();
@@ -72,7 +72,7 @@ namespace Wpf_Application
                     new Importer.ImportSelecter(db).Show();
                     this.Close();
                 }
-                Controler = new Z21(new StartData() { LanAdresse = Settings.ControlerIP.ToString(), LanPort = 21105 });
+                Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = 21105 });
             }
             catch (Exception e)
             {
@@ -164,7 +164,7 @@ namespace Wpf_Application
             }
 
         }
-        
+
         void EditLoko_Click(Object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Does not work yet! Sorry!");
@@ -182,7 +182,7 @@ namespace Wpf_Application
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-        
+
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
             if (Controler is not null)
@@ -191,5 +191,7 @@ namespace Wpf_Application
                 Controler = null;
             }
         }
+
+        private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
     }
 }

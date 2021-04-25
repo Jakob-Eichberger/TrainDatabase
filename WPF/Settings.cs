@@ -5,24 +5,38 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
+using System.Collections.Specialized;
+using Importer;
+using Extensions;
 
 namespace WPF_Application
 {
     public static class Settings
     {
-        public static IPAddress ControlerIP
+        public static IPAddress ControllerIP
         {
-            get => new((Properties.Settings.Default.ControllerIP));
+            get
+            {
+                try
+                {
+                    return IPAddress.Parse(string.IsNullOrWhiteSpace(Settings.Get(nameof(ControllerIP))) ? "192.168.0.111" : Settings.Get(nameof(ControllerIP)));
+                }
+                catch (Exception)
+                {
+                    return IPAddress.Parse("192.168.0.111");
+                }
+            }
             set
             {
-                Properties.Settings.Default.ControllerIP = value.Address;
-                Properties.Settings.Default.Save();
+                Settings.Set(nameof(ControllerIP), value.ToString());
             }
         }
 
-        public static void SetJoyStickButtonForFunction(JoystickOffset j)
-        {
 
-        }
+        private static void Set(string key, string value) => ConfigurationManager.AppSettings.Set(key, value.IsNullOrWhiteSpace(out string v) ? "" : v);
+
+
+        private static string Get(string key) => ConfigurationManager.AppSettings.Get(key).IsNullOrWhiteSpace(out string v) ? "" : v;
     }
 }
