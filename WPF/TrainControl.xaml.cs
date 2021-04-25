@@ -185,8 +185,11 @@ namespace WPF_Application
                 controler.GetLocoInfo(LokState.Adresse);
                 controler.SetTrackPowerON();
                 DrawAllFunctions();
-                Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
-                Joystick.Acquire();
+                if (Joystick is not null)
+                {
+                    Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
+                    Joystick.Acquire();
+                }
             }
             catch (Exception ex)
             {
@@ -279,10 +282,17 @@ namespace WPF_Application
 
         public void OnJoyStickValueUpdate(Object? sender, JoyStickUpdateEventArgs e)
         {
-            if (this.IsActive)
+            try
             {
-                SliderLastused = DateTime.Now;
-                SpeedStep = maxDccStep - ((e.currentValue * maxDccStep) / e.maxValue);
+                if (this.IsActive)
+                {
+                    SliderLastused = DateTime.Now;
+                    SpeedStep = maxDccStep - ((e.currentValue * maxDccStep) / e.maxValue);
+                }
+            }
+            catch
+            {
+                //Do nothing. 
             }
         }
 
@@ -334,7 +344,7 @@ namespace WPF_Application
         {
             LokState.Besetzt = false;
             controler.SetLocoDrive(LokState);
-            Joystick.Dispose();
+            Joystick?.Dispose();
         }
 
         private void mw_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -344,16 +354,8 @@ namespace WPF_Application
             SliderLastused = DateTime.Now;
         }
 
-        private void mw_Activated(object sender, EventArgs e)
-        {
-            IsActive = true;
-            //Joystick.Acquire();
-        }
+        private void mw_Activated(object sender, EventArgs e) => IsActive = true;
 
-        private void mw_Deactivated(object sender, EventArgs e)
-        {
-            IsActive = false;
-            //Joystick.Dispose();
-        }
+        private void mw_Deactivated(object sender, EventArgs e) => IsActive = false;
     }
 }
