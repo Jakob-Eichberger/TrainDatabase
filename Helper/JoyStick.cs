@@ -73,9 +73,10 @@ namespace Helper
         /// </summary>
         private void Run()
         {
-            try
+
+            new Thread(() =>
             {
-                new Thread(() =>
+                try
                 {
                     if (Joystick is null || Joystick.IsDisposed) return;
                     while (Joystick is not null && !Joystick.IsDisposed)
@@ -86,13 +87,15 @@ namespace Helper
                         {
                             if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, 65535));
                         }
+                        Thread.Sleep(10);
                     }
-                }).Start();
-            }
-            catch (SharpDX.SharpDXException ex)
-            {
-                Logger.Log($"Fehler by {nameof(Joystick.GetBufferedData)}: {ex.Message}", LoggerType.Error);
-            }
+                }
+                catch (SharpDX.SharpDXException ex)
+                {
+                    Logger.Log($"Fehler by {nameof(Joystick.GetBufferedData)}: {ex.Message}", LoggerType.Error);
+                }
+            }).Start();
+
         }
 
         /// <summary>

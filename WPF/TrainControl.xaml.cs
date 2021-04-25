@@ -32,7 +32,7 @@ namespace WPF_Application
         private TrackPower trackPower;
         private Vehicle vehicle;
         private bool lastTrackPowerUpdateWasShort = false;
-        private Helper.JoyStick Joystick { get; } = new(Guid.Empty);
+        private Helper.JoyStick? Joystick { get; } = new(Guid.Empty);
 
         public new bool IsActive { get; set; } = false;
 
