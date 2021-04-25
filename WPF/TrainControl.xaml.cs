@@ -32,7 +32,7 @@ namespace WPF_Application
         private TrackPower trackPower;
         private Vehicle vehicle;
         private bool lastTrackPowerUpdateWasShort = false;
-        private Helper.JoyStick? Joystick { get; } = new(Guid.Empty);
+        private Helper.JoyStick? Joystick { get; }
 
         public new bool IsActive { get; set; } = false;
 
@@ -72,18 +72,17 @@ namespace WPF_Application
                     speedStep = value == 1 ? (speedStep > 1 ? 0 : 2) : value;
                     OnPropertyChanged();
                     if (speedStep != (LokState.Fahrstufe))
-                        SetSpeed(value);
+                        SetLoco(value);
                 }
             }
         }
 
-        private void SetSpeed(int speedstep)
+        private void SetLoco(int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) => controler.SetLocoDrive(new LokInfoData()
         {
-            LokInfoData info = LokState;
-            if (info is null) return;
-            info.Fahrstufe = (byte)speedStep;
-            controler.SetLocoDrive(info);
-        }
+            Adresse = new LokAdresse((int)vehicle.Address),
+            Besetzt = inUse ?? LokState.Besetzt,
+            drivingDirection = direction ?? LokState.drivingDirection
+        });
 
         public bool Direction
         {
@@ -105,7 +104,7 @@ namespace WPF_Application
         private List<ToggleButton> FunctionToggleButtons = new();
 
         /// <summary>
-        /// Data directly from the Z21. Not Used to controll the Loko.
+        /// Data directly from the Z21. Not Used to controll the Loko. 
         /// </summary>
         public LokInfoData LokState
         {
@@ -185,6 +184,8 @@ namespace WPF_Application
                 controler.GetLocoInfo(LokState.Adresse);
                 controler.SetTrackPowerON();
                 DrawAllFunctions();
+                if (Vehicle.Type.IsLokomotive())
+                    Joystick = new(Guid.Empty);
                 if (Joystick is not null)
                 {
                     Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
@@ -252,9 +253,7 @@ namespace WPF_Application
         {
             if (e.Data.Adresse.Value == Vehicle.Address)
             {
-
                 LokState = e.Data;
-
                 if (Direction != e.Data.drivingDirection.ConvertToBool())
                 {
                     Direction = e.Data.drivingDirection.ConvertToBool();
@@ -284,10 +283,11 @@ namespace WPF_Application
         {
             try
             {
+
                 if (this.IsActive)
                 {
                     SliderLastused = DateTime.Now;
-                    SpeedStep = maxDccStep - ((e.currentValue * maxDccStep) / e.maxValue);
+                    SpeedStep = MaxDccStep - ((e.currentValue * MaxDccStep) / e.maxValue);
                 }
             }
             catch

@@ -54,7 +54,7 @@ namespace Wpf_Application
             try
             {
 
-                Settings.ControlerIP = IPAddress.Parse("127.0.0.1");
+                Settings.ControlerIP = IPAddress.Parse("192.168.0.111");
 
                 if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
                 {

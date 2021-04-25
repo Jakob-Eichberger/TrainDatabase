@@ -10,6 +10,7 @@ namespace Helper
 {
     public class JoyStick
     {
+        public Guid joystickGuid = Guid.Empty;
         public Joystick? Joystick { get; set; }
 
         /// <summary>
@@ -17,13 +18,11 @@ namespace Helper
         /// </summary>
         public event EventHandler<JoyStickUpdateEventArgs> OnValueUpdate = default!;
 
-        public Guid joystickGuid = Guid.Empty;
         public JoyStick(Guid joystickGuid)
         {
             this.joystickGuid = joystickGuid;
             //TODO : check that device actually exists.
         }
-
 
         /// <summary>
         /// Tries to aquire a Joystick. Does not throw an exception.
@@ -83,11 +82,11 @@ namespace Helper
                     {
                         Joystick.Poll();
                         var datas = Joystick.GetBufferedData();
-                        foreach (var state in datas.ToList().Where(e => e.Offset == JoystickOffset.Z))
+                        foreach (var state in datas.ToList())
                         {
                             if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, 65535));
                         }
-                        Thread.Sleep(10);
+                        Thread.Sleep(1);
                     }
                 }
                 catch (SharpDX.SharpDXException ex)

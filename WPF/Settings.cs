@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX.DirectInput;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -14,13 +15,14 @@ namespace WPF_Application
             get => new((Properties.Settings.Default.ControllerIP));
             set
             {
-#pragma warning disable CS0618 // Type or member is obsolete
                 Properties.Settings.Default.ControllerIP = value.Address;
-#pragma warning restore CS0618 // Type or member is obsolete
                 Properties.Settings.Default.Save();
             }
         }
 
+        public static void SetJoyStickButtonForFunction(JoystickOffset j)
+        {
 
+        }
     }
 }
