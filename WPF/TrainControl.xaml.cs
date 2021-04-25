@@ -72,17 +72,20 @@ namespace WPF_Application
                     speedStep = value == 1 ? (speedStep > 1 ? 0 : 2) : value;
                     OnPropertyChanged();
                     if (speedStep != (LokState.Fahrstufe))
-                        SetLoco(value);
+                        SetLocoDrive(value);
                 }
             }
         }
 
-        private void SetLoco(int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) => controler.SetLocoDrive(new LokInfoData()
+        private void SetLocoDrive(int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) => controler.SetLocoDrive(new LokInfoData()
         {
             Adresse = new LokAdresse((int)vehicle.Address),
             Besetzt = inUse ?? LokState.Besetzt,
-            drivingDirection = direction ?? LokState.drivingDirection
+            drivingDirection = direction ?? LokState.drivingDirection,
+            Fahrstufe = (byte)(speedstep ?? LokState.Fahrstufe)
         });
+
+        private void SetLocoFunction(ToggleType type, Function function) => controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), function, type);
 
         public bool Direction
         {
@@ -91,9 +94,7 @@ namespace WPF_Application
                 direction = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(GetDirectionString));
-                var temp = lokState;
-                temp.drivingDirection = value.GetDrivingDirection();
-                controler.SetLocoDrive(temp);
+                SetLocoDrive(direction: value.GetDrivingDirection());
             }
         }
 
@@ -303,35 +304,11 @@ namespace WPF_Application
         #endregion
 
         #region Click_Events
-        void FunctionToggle_Click(Object sender, RoutedEventArgs e)
-        {
+        void FunctionToggle_Click(Object sender, RoutedEventArgs e) => SetLocoFunction((sender as ToggleButton)!.IsChecked ?? false ? ToggleType.on : ToggleType.off, ((e.Source as ToggleButton)!.Tag as Function)!);
 
-            var func = (e.Source as ToggleButton)?.Tag as Function;
-            if ((sender as ToggleButton).IsChecked ?? false)
-            {
-                controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.on);
-            }
-            else
-            {
-                controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.off);
-            }
-        }
+        void FunctionButtonDown_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.on, ((e.Source as Button)?.Tag as Function)!);
 
-        void FunctionButtonDown_Click(Object sender, RoutedEventArgs e)
-        {
-            var func = (e.Source as Button)?.Tag as Function;
-            controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.on);
-        }
-
-        void FunctionButtonUp_Click(Object sender, RoutedEventArgs e)
-        {
-            var func = (e.Source as Button)?.Tag as Function;
-            controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), func, ToggleType.off);
-        }
-
-        private void BtnDirection_Click(object sender, RoutedEventArgs e)
-        {
-        }
+        void FunctionButtonUp_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.off, ((e.Source as Button)?.Tag as Function)!);
         #endregion
 
         #region Preview Events
@@ -342,8 +319,7 @@ namespace WPF_Application
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
-            LokState.Besetzt = false;
-            controler.SetLocoDrive(LokState);
+            SetLocoDrive(inUse: false);
             Joystick?.Dispose();
         }
 
