@@ -87,7 +87,7 @@ namespace WPF_Application.JoyStick
                         var datas = Joystick.GetBufferedData();
                         foreach (var state in datas.ToList())
                         {
-                            if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, JoyStickMaxValue[state.Offset]));
+                            if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, JoyStickMaxValue.TryGetValue(state.Offset, out int maxval) ? maxval : 0));
                         }
                         Thread.Sleep(rate);
                     }
