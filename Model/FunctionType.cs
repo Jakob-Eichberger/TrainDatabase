@@ -9,16 +9,19 @@ namespace Model
     public enum FunctionType
     {
         None = 0,
-        Sound = 1,
-        Highbeam = 2,
-        Lowbeam = 3,
-        HornHigh = 4,
-        HornLow = 5,
-        Humpgear = 6,
-        CurveSound = 7,
-        Compressor = 8,
-        Cabin = 9,
-        CabinLight = 10,
-        Mute = 11
+        Drive = 1,
+        ChangeDirection = 2,
+        EmergencyStop = 3,
+        Sound = 4,
+        Highbeam = 5,
+        Lowbeam = 6,
+        HornHigh = 7,
+        HornLow = 8,
+        Humpgear = 9,
+        CurveSound = 10,
+        Compressor = 11,
+        Cabin = 12,
+        CabinLight = 13,
+        Mute = 14
     }
 }

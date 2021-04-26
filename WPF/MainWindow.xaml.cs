@@ -73,6 +73,7 @@ namespace Wpf_Application
                     this.Close();
                 }
                 Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = 21105 });
+                Settings.GetJoyStickFunctionDictionary();
             }
             catch (Exception e)
             {

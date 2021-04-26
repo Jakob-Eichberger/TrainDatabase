@@ -32,7 +32,7 @@ namespace WPF_Application
         private TrackPower trackPower;
         private Vehicle vehicle;
         private bool lastTrackPowerUpdateWasShort = false;
-        private Helper.JoyStick? Joystick { get; }
+        private JoyStick.JoyStick? Joystick { get; }
 
         public new bool IsActive { get; set; } = false;
 
@@ -177,18 +177,19 @@ namespace WPF_Application
                 Vehicle = _vehicle!;
                 lokState.Adresse = new((byte)Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
+
                 controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
                 controler.OnTrackPowerOFF += new EventHandler(OnGetTrackPowerOffEventArgs);
                 controler.OnTrackPowerON += new EventHandler(OnGetTrackPowerOnEventArgs);
                 controler.OnTrackShortCircuit += new EventHandler(OnTrackShortCircuitEventArgs);
                 controler.OnProgrammingMode += new EventHandler(OnProgrammingModeEventArgs);
+
                 controler.GetLocoInfo(LokState.Adresse);
                 controler.SetTrackPowerON();
                 DrawAllFunctions();
-                if (Vehicle.Type.IsLokomotive())
-                    Joystick = new(Guid.Empty);
-                if (Joystick is not null)
+                if (Vehicle.Type.IsLokomotive() && Settings.UsingJoyStick)
                 {
+                    Joystick = new(Guid.Empty);
                     Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
                     Joystick.Acquire();
                 }

@@ -16,6 +16,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions", "Extensions\Extensions.csproj", "{95F48131-38F0-437E-BD93-81E65A69493D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helper", "Helper\Helper.csproj", "{301C5021-DA57-4D69-8558-73757C2615EA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{95F48131-38F0-437E-BD93-81E65A69493D} = {95F48131-38F0-437E-BD93-81E65A69493D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E582AE78-39BC-47D1-BA44-85734DF6F9C7}"
 	ProjectSection(ProjectDependencies) = postProject

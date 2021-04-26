@@ -20,15 +20,30 @@
                         <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <Label Content="IPAdress:" Grid.Row="0" Grid.Column="0"/>
-                    <TextBox Text="{Binding ElementName=settingsw,Path=ControllerIp}" Grid.Row="0" Grid.Column="1"/>
-                    <!--<Label Name="ErroMessageLabel" Foreground="Red" Grid.Row="3" Grid.Column="0"/>-->
+                    <TextBox Text="{Binding ElementName=settingsw,Path=ControllerIp}" Grid.Row="0" Grid.Column="1" />
                 </Grid>
             </TabItem>
             <TabItem Header="Theme">
 
             </TabItem>
-            <TabItem Header="Input">
+            <TabItem Header="JoyStick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition x:Name="CDSetNewJoyStickButton" Width="0"/>
+                    </Grid.ColumnDefinitions>
 
+                    <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="JoyStick verwenden" IsChecked="{Binding ElementName=settingsw,Path=UsingJoyStick}"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" IsEnabled="{Binding ElementName=settingsw,Path=UsingJoyStick}">
+                        <Grid>
+                            <StackPanel Name="SPLocoFunctions"/>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

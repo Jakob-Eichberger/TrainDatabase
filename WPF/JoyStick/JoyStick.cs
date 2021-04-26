@@ -2,26 +2,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Helper;
 
-namespace Helper
+namespace WPF_Application.JoyStick
 {
     public class JoyStick
     {
         public Guid joystickGuid = Guid.Empty;
+        public int rate;
         public Joystick? Joystick { get; set; }
+
+        Dictionary<JoystickOffset, int> JoyStickMaxValue { get; set; } = new();
 
         /// <summary>
         /// Gets called whener a poll happens. 
         /// </summary>
         public event EventHandler<JoyStickUpdateEventArgs> OnValueUpdate = default!;
 
-        public JoyStick(Guid joystickGuid)
+        public JoyStick(Guid joystickGuid, int _rate = 1)
         {
             this.joystickGuid = joystickGuid;
-            //TODO : check that device actually exists.
+            rate = _rate;
+            JoyStickMaxValue = Settings.GetJoyStickMaxValue();
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace Helper
             {
                 if (Joystick is null || Joystick.IsDisposed)
                 {
-                    Guid guid = Helper.JoyStick.GetAllJoySticks().FirstOrDefault();
+                    Guid guid = GetAllJoySticks().FirstOrDefault();
                     if (guid != Guid.Empty)
                     {
                         Joystick = new Joystick(new DirectInput(), guid);
@@ -84,9 +87,9 @@ namespace Helper
                         var datas = Joystick.GetBufferedData();
                         foreach (var state in datas.ToList())
                         {
-                            if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, 65535));
+                            if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, JoyStickMaxValue[state.Offset]));
                         }
-                        Thread.Sleep(1);
+                        Thread.Sleep(rate);
                     }
                 }
                 catch (SharpDX.SharpDXException ex)

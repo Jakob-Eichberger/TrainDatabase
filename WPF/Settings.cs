@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.Collections.Specialized;
-using Importer;
+using Model;
 using Extensions;
 
 namespace WPF_Application
@@ -20,7 +20,7 @@ namespace WPF_Application
             {
                 try
                 {
-                    return IPAddress.Parse(string.IsNullOrWhiteSpace(Settings.Get(nameof(ControllerIP))) ? "192.168.0.111" : Settings.Get(nameof(ControllerIP)));
+                    return IPAddress.Parse(string.IsNullOrWhiteSpace(Get(nameof(ControllerIP))) ? "192.168.0.111" : Get(nameof(ControllerIP)));
                 }
                 catch (Exception)
                 {
@@ -29,14 +29,61 @@ namespace WPF_Application
             }
             set
             {
-                Settings.Set(nameof(ControllerIP), value.ToString());
+                Set(nameof(ControllerIP), value.ToString());
             }
         }
 
+        public static bool UsingJoyStick
+        {
+            get
+            {
+                try
+                {
+                    return bool.Parse(Get(nameof(UsingJoyStick)).IsNullOrWhiteSpace(out string v) ? "false" : v);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            set
+            {
+                Set(nameof(UsingJoyStick), value.ToString());
+            }
+        }
 
-        private static void Set(string key, string value) => ConfigurationManager.AppSettings.Set(key, value.IsNullOrWhiteSpace(out string v) ? "" : v);
+        public static void Set(string key, string value) => ConfigurationManager.AppSettings.Set(key, value.IsNullOrWhiteSpace(out string v) ? "" : v);
 
+        public static string Get(string key) => ConfigurationManager.AppSettings.Get(key).IsNullOrWhiteSpace(out string v) ? "" : v;
 
-        private static string Get(string key) => ConfigurationManager.AppSettings.Get(key).IsNullOrWhiteSpace(out string v) ? "" : v;
+        public static Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> GetJoyStickFunctionDictionary()
+        {
+            Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> l = new();
+            foreach (var item in Enum.GetValues(typeof(FunctionType)))
+            {
+                try
+                {
+                    if (Enum.TryParse(Get(Enum.GetName((FunctionType)item)!), out JoystickOffset joyStickUpdate))
+                    {
+                        l.Add((FunctionType)item, (joyStick: joyStickUpdate, maxValue: joyStickUpdate.GetMaxValue()));
+                    }
+                }
+                catch
+                {
+                    //Just do nothing;
+                }
+            }
+            return l;
+        }
+
+        public static Dictionary<JoystickOffset, int> GetJoyStickMaxValue()
+        {
+            Dictionary<JoystickOffset, int> l = new();
+            foreach (var item in Enum.GetValues(typeof(JoystickOffset)))
+            {
+                l.Add((JoystickOffset)item, ((JoystickOffset)item).GetMaxValue());
+            }
+            return l;
+        }
     }
 }
