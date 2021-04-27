@@ -75,20 +75,26 @@ namespace WPF_Application
             return ConfigurationManager.AppSettings[key] ?? "";
         }
 
-        public static Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> GetJoyStickFunctionDictionary()
+        public static Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> FunctionToJoyStickDictionary()
         {
             Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> l = new();
             foreach (var item in Enum.GetValues(typeof(FunctionType)))
             {
                 try
                 {
+                    //Set(Enum.GetName((FunctionType)item), "");
                     if (Enum.TryParse(Get(Enum.GetName((FunctionType)item)!), out JoystickOffset joyStickUpdate))
                     {
                         l.Add((FunctionType)item, (joyStick: joyStickUpdate, maxValue: joyStickUpdate.GetMaxValue()));
                     }
+                    else
+                    {
+                        var i = "";
+                    }
                 }
                 catch
                 {
+                    var i = "";
                     //Just do nothing;
                 }
             }
@@ -104,5 +110,6 @@ namespace WPF_Application
             }
             return l;
         }
+
     }
 }

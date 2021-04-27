@@ -27,10 +27,10 @@ namespace Wpf_Application
         private readonly Database db = new();
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private ModelTrainController.ModelTrainController? controler;
+        private ModelTrainController.CentralStationClient? controler;
         private Theme theme;
 
-        ModelTrainController.ModelTrainController? Controler
+        ModelTrainController.CentralStationClient? Controler
         {
             get => controler; set
             {
@@ -74,7 +74,7 @@ namespace Wpf_Application
                     this.Close();
                 }
                 Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = 21105 });
-                Settings.GetJoyStickFunctionDictionary();
+                Settings.FunctionToJoyStickDictionary();
             }
             catch (Exception e)
             {

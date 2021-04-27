@@ -71,7 +71,7 @@ namespace WPF_Application
         private void DrawLokoFunctionEnumButtons()
         {
             SPLocoFunctions.Children.Clear();
-            var JoyStickFunctionDictionary = Settings.GetJoyStickFunctionDictionary();
+            var JoyStickFunctionDictionary = Settings.FunctionToJoyStickDictionary();
             Grid functionTypeGrid = new();
             functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });

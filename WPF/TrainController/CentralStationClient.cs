@@ -7,9 +7,9 @@ using System.Net.Sockets;
 
 namespace ModelTrainController
 {
-    public abstract class ModelTrainController : UdpClient
+    public abstract class CentralStationClient : UdpClient
     {
-        public ModelTrainController(StartData startData) : base(startData.LanPort)
+        public CentralStationClient(StartData startData) : base(startData.LanPort)
         {
             lanAdresse = IPAddress.Parse(startData.LanAdresse);
             lanAdresseS = startData.LanAdresse;

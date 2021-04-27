@@ -32,7 +32,14 @@ namespace WPF_Application.JoyStick
             {
                 joyStickButton = value;
                 OnPropertyChanged(nameof(JoyStickButtonString));
+                OnPropertyChanged(nameof(IsJoyStickOffsetNotNull));
             }
+        }
+
+        public bool IsJoyStickOffsetNotNull
+        {
+            get => JoyStickButton is not null;
+
         }
 
         public int MaxValue
@@ -72,15 +79,15 @@ namespace WPF_Application.JoyStick
 
         public void OnJoyStickValueUpdate(Object? sender, JoyStickUpdateEventArgs e)
         {
-            if (JoyStickButton == e.joyStickOffset)
+            if (JoyStickButton is not null)
             {
                 MaxValue = e.currentValue >= MaxValue ? e.currentValue : MaxValue;
             }
             else
             {
+                JoyStickButton = e.joyStickOffset;
                 MaxValue = e.currentValue;
             }
-            JoyStickButton = e.joyStickOffset;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -97,6 +104,12 @@ namespace WPF_Application.JoyStick
             if (JoyStickButton is null)
                 e.Cancel = MessageBoxResult.Cancel == MessageBox.Show("Achtung, es wurde kein Button ausgewählt!", "Error", MessageBoxButton.OKCancel);
             this.DialogResult = MaxValue >= 1 && JoyStickButton is not null;
+        }
+
+        private void ResetButton_Click(object sender, RoutedEventArgs e)
+        {
+            JoyStickButton = null;
+            maxValue = 0;
         }
     }
 }

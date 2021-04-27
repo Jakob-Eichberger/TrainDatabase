@@ -23,7 +23,7 @@
 
         <Label Content="Max Value: " Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <Label Content="{Binding ElementName=jsbsWindow,Path=MaxValue}" Grid.Row="2" Grid.Column="1" Width="100"/>
-
+        <Button Content="Button zurücksetzen" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,5" Click="ResetButton_Click" IsEnabled="{Binding ElementName=jsbsWindow,Path=IsJoyStickOffsetNotNull}"/>
         <Button Grid.Row="2" Grid.Column="2" Content="Übernehmen" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,5" Click="Button_Click"/>
     </Grid>
 </Window>

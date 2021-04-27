@@ -22,7 +22,7 @@ using System.Net.Sockets;
 
 namespace Helper
 {
-    public class Z21 : ModelTrainController.ModelTrainController
+    public class Z21 : ModelTrainController.CentralStationClient
     {
         public Z21(StartData startData) : base(startData)
         {

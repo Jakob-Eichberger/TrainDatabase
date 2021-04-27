@@ -2,6 +2,7 @@
 using Model;
 using ModelTrainController;
 using ModelTrainController.Z21;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,7 +25,7 @@ namespace WPF_Application
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged
     {
-        public ModelTrainController.ModelTrainController controler = default!;
+        public ModelTrainController.CentralStationClient controler = default!;
         private LokInfoData lokState = new();
         public Database db = new();
         private int maxDccStep = 126;
@@ -34,6 +35,8 @@ namespace WPF_Application
         private TrackPower trackPower;
         private Vehicle vehicle;
         private bool lastTrackPowerUpdateWasShort = false;
+        readonly Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> functionToJoyStickDictionary;
+
         private JoyStick.JoyStick? Joystick { get; }
 
         public new bool IsActive { get; set; } = false;
@@ -78,16 +81,6 @@ namespace WPF_Application
                 }
             }
         }
-
-        private void SetLocoDrive(int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) => controler.SetLocoDrive(new LokInfoData()
-        {
-            Adresse = new LokAdresse((int)vehicle.Address),
-            Besetzt = inUse ?? LokState.Besetzt,
-            drivingDirection = direction ?? LokState.drivingDirection,
-            Fahrstufe = (byte)(speedstep ?? LokState.Fahrstufe)
-        });
-
-        private void SetLocoFunction(ToggleType type, Function function) => controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), function, type);
 
         public bool Direction
         {
@@ -167,7 +160,7 @@ namespace WPF_Application
             get => TrackPower.GetString();
         }
 
-        public TrainControl(ModelTrainController.ModelTrainController _controler, Vehicle _vehicle, Database db)
+        public TrainControl(ModelTrainController.CentralStationClient _controler, Vehicle _vehicle, Database db)
         {
             try
             {
@@ -193,6 +186,7 @@ namespace WPF_Application
                 {
                     Joystick = new(Guid.Empty);
                     Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
+                    functionToJoyStickDictionary = Settings.FunctionToJoyStickDictionary();
                 }
             }
             catch (Exception ex)
@@ -251,6 +245,16 @@ namespace WPF_Application
             }
         }
 
+        private void SetLocoDrive(int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) => controler.SetLocoDrive(new LokInfoData()
+        {
+            Adresse = new LokAdresse((int)vehicle.Address),
+            Besetzt = inUse ?? LokState.Besetzt,
+            drivingDirection = direction ?? LokState.drivingDirection,
+            Fahrstufe = (byte)(speedstep ?? LokState.Fahrstufe)
+        });
+
+        private void SetLocoFunction(ToggleType type, Function function) => controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), function, type);
+
         #region Events
         public void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
         {
@@ -289,8 +293,24 @@ namespace WPF_Application
 
                 if (this.IsActive)
                 {
-                    SliderLastused = DateTime.Now;
-                    SpeedStep = MaxDccStep - ((e.currentValue * MaxDccStep) / e.maxValue);
+                    var i = e.joyStickOffset;
+                    var Function = functionToJoyStickDictionary.Where(f => f.Value.joyStick == e.joyStickOffset).FirstOrDefault();
+
+                    switch (Function.Key)
+                    {
+                        case FunctionType.Drive:
+                            SliderLastused = DateTime.Now;
+                            SpeedStep = MaxDccStep - ((e.currentValue * MaxDccStep) / Function.Value.maxValue);
+                            break;
+                        case FunctionType.ChangeDirection:
+                            if (e.currentValue == e.maxValue)
+                                SetLocoDrive(direction: LokState.drivingDirection.ConvertToBool() ? DrivingDirection.R : DrivingDirection.F);
+                            break;
+                        default:
+                            break;
+                    }
+
+
                 }
             }
             catch
