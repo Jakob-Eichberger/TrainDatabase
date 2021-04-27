@@ -76,6 +76,7 @@ namespace WPF_Application
             functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             foreach (var item in Enum.GetValues(typeof(FunctionType)))
             {
@@ -98,6 +99,14 @@ namespace WPF_Application
                     Grid.SetColumn(button, 2);
                     Grid.SetRow(button, functionTypeGrid.RowDefinitions.Count - 1);
                     functionTypeGrid.Children.Add(button);
+
+                    Button button1 = new() { Content = "Zurücksetzen", Padding = new(5), Margin = new Thickness(0, 0, 20, 5), Tag = (FunctionType)item };
+                    button1.Click += RemoveButtonFromFunction_Click;
+                    Grid.SetColumn(button1, 3);
+                    Grid.SetRow(button1, functionTypeGrid.RowDefinitions.Count - 1);
+                    functionTypeGrid.Children.Add(button1);
+
+
                 }
             }
             SPLocoFunctions.Children.Add(functionTypeGrid);
@@ -116,6 +125,13 @@ namespace WPF_Application
                     DrawLokoFunctionEnumButtons();
                 }
             }
+        }
+
+        private void RemoveButtonFromFunction_Click(object? sender, EventArgs s)
+        {
+            if ((sender as Button) is null || (sender as Button)!.Tag is null) return;
+            ((FunctionType)(sender as Button)!.Tag).SetJoyStick(null);
+            DrawLokoFunctionEnumButtons();
         }
 
         private void settingsw_Closed(object sender, EventArgs e)
