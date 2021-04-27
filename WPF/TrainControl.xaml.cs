@@ -77,7 +77,7 @@ namespace WPF_Application
                     speedStep = value == 1 ? (speedStep > 1 ? 0 : 2) : value;
                     OnPropertyChanged();
                     if (speedStep != (LokState.Fahrstufe))
-                        SetLocoDrive(value);
+                        SetLocoDrive(speedStep);
                 }
             }
         }
