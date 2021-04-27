@@ -36,20 +36,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Exceptions\Exceptions.csproj" />
-		<ProjectReference Include="..\Extensions\Extensions.csproj" />
-		<ProjectReference Include="..\Helper\Helper.csproj" />
-		<ProjectReference Include="..\Importer\Importer.csproj" />
-		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-		<ProjectReference Include="..\ModelTrainController\ModelTrainController.csproj" />
-		<ProjectReference Include="..\Model\Model.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Update="Properties\Settings.Designer.cs">
 	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
+	  <Compile Update="Z21.xaml.cs">
+	    <SubType>Code</SubType>
 	  </Compile>
 	</ItemGroup>
 
@@ -58,6 +51,17 @@
 	    <Generator>SettingsSingleFileGenerator</Generator>
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="ImportSelecter.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	    <SubType>Designer</SubType>
+	  </Page>
+	  <Page Update="Z21.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	    <SubType>Designer</SubType>
+	  </Page>
 	</ItemGroup>
 
 </Project>

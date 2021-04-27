@@ -5,7 +5,7 @@ using Model;
 
 #nullable disable
 
-namespace Infrastructure
+namespace WPF_Application.Infrastructure
 {
     public partial class Database : DbContext
     {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_Application"
         mc:Ignorable="d"
-        Title="Datenbank" MinHeight="550" Height="550" MinWidth="870" Width="870" Name="mw" Closing="Mw_Closing">
+        Title="Datenbank" MinHeight="550" Height="550" MinWidth="870" Width="870" Name="mw" Closing="Mw_Closing" >
     <Grid x:Name="MwGrid">
         <Grid.ColumnDefinitions>
 

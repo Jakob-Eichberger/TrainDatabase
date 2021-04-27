@@ -1,6 +1,4 @@
-﻿using Extensions;
-using Helper;
-using Infrastructure;
+﻿using Helper;
 using Model;
 using ModelTrainController;
 using ModelTrainController.Z21;
@@ -14,6 +12,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using WPF_Application.Extensions;
+using WPF_Application.Helper;
+using WPF_Application.Infrastructure;
+using WPF_Application.JoyStick;
 
 namespace WPF_Application
 {
@@ -191,7 +193,6 @@ namespace WPF_Application
                 {
                     Joystick = new(Guid.Empty);
                     Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
-                    Joystick.Acquire();
                 }
             }
             catch (Exception ex)

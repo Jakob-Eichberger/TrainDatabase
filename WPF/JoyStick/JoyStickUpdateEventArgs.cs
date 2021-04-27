@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Helper
+namespace WPF_Application.JoyStick
 {
     public class JoyStickUpdateEventArgs : EventArgs
     {

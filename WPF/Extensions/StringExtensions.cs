@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Extensions
+namespace WPF_Application.Extensions
 {
     public static class StringExtensions
     {

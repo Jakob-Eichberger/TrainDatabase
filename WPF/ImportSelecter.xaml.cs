@@ -10,18 +10,29 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WPF_Application.Infrastructure;
 
-namespace WPF_Application
+namespace Importer
 {
     /// <summary>
-    /// Interaction logic for JoyStickButtonSelectionWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class JoyStickButtonSelectionWindow : Window
+    public partial class ImportSelecter : Window
     {
-        public JoyStickButtonSelectionWindow()
+        public Database Db { get; set; }
+
+        public ImportSelecter(Database db)
         {
+            Db = db;
             InitializeComponent();
+        }
+
+        private void newZ21_Click(object sender, RoutedEventArgs e)
+        {
+            new Z21(Db).Show();
+            this.Close();
         }
     }
 }

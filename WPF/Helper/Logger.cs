@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Helper
+namespace WPF_Application.Helper
 {
     public class Logger
     {

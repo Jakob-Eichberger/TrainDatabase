@@ -37,7 +37,7 @@
                         <ColumnDefinition x:Name="CDSetNewJoyStickButton" Width="0"/>
                     </Grid.ColumnDefinitions>
 
-                    <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="JoyStick verwenden" IsChecked="{Binding ElementName=settingsw,Path=UsingJoyStick}"/>
+                    <CheckBox Grid.Row="0" VerticalAlignment="Center" Content="JoyStick verwenden" IsChecked="{Binding ElementName=settingsw,Path=UsingJoyStick}" />
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" IsEnabled="{Binding ElementName=settingsw,Path=UsingJoyStick}">
                         <Grid>
                             <StackPanel Name="SPLocoFunctions"/>

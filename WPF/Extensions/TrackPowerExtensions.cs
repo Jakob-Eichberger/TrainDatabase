@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Extensions
+namespace WPF_Application.Extensions
 {
     public static class TrackPowerExtensions
     {

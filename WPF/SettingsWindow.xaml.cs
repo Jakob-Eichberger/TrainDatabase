@@ -16,6 +16,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WPF_Application.JoyStick;
+using WPF_Application.Extensions;
 
 namespace WPF_Application
 {
@@ -54,7 +56,7 @@ namespace WPF_Application
             }
             set
             {
-                ValueChanged = UsingJoyStick != value;
+                //ValueChanged = UsingJoyStick != value;
                 Settings.UsingJoyStick = value;
                 OnPropertyChanged();
             }
@@ -103,7 +105,17 @@ namespace WPF_Application
 
         private void ButtonNeuBelegen_Click(object? sender, EventArgs s)
         {
-            MessageBox.Show(Enum.GetName((FunctionType)((sender as Button).Tag)));
+            if ((sender as Button) is null || (sender as Button)!.Tag is null) return;
+            var w = new JoyStickButtonSelection();
+            if (w.ShowDialog() == true)
+            {
+                if (w.JoyStickButton is not null && w.MaxValue != 0)
+                {
+                    ((JoystickOffset)(w.JoyStickButton)).SetMaxValue(w.MaxValue);
+                    ((FunctionType)(sender as Button)!.Tag).SetJoyStick((JoystickOffset)(w.JoyStickButton));
+                    DrawLokoFunctionEnumButtons();
+                }
+            }
         }
 
         private void settingsw_Closed(object sender, EventArgs e)
@@ -117,6 +129,12 @@ namespace WPF_Application
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+
+        private void UseJoyStick_Click(object sender, RoutedEventArgs e)
+        {
+            Settings.UsingJoyStick = (sender as CheckBox)?.IsChecked ?? false;
         }
     }
 }

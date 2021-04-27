@@ -1,5 +1,4 @@
 ﻿using Helper;
-using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Model;
 using ModelTrainController;
@@ -15,6 +14,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPF_Application;
+using WPF_Application.Helper;
+using WPF_Application.Infrastructure;
 
 namespace Wpf_Application
 {
@@ -194,5 +195,6 @@ namespace Wpf_Application
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
+
     }
 }

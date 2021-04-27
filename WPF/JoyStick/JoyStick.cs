@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Helper;
+using WPF_Application.Helper;
 
 namespace WPF_Application.JoyStick
 {
@@ -25,30 +25,13 @@ namespace WPF_Application.JoyStick
             this.joystickGuid = joystickGuid;
             rate = _rate;
             JoyStickMaxValue = Settings.GetJoyStickMaxValue();
-        }
-
-        /// <summary>
-        /// Tries to aquire a Joystick. Does not throw an exception.
-        /// </summary>
-        public void Acquire()
-        {
-            try
+            Guid guid = GetAllJoySticks().FirstOrDefault();
+            if (guid != Guid.Empty)
             {
-                if (Joystick is null || Joystick.IsDisposed)
-                {
-                    Guid guid = GetAllJoySticks().FirstOrDefault();
-                    if (guid != Guid.Empty)
-                    {
-                        Joystick = new Joystick(new DirectInput(), guid);
-                        Joystick.Properties.BufferSize = 128;
-                        Joystick.Acquire();
-                        Run();
-                    }
-                }
-            }
-            catch
-            {
-                //Do nothing.
+                Joystick = new Joystick(new DirectInput(), guid);
+                Joystick.Properties.BufferSize = 128;
+                Joystick.Acquire();
+                Run();
             }
         }
 

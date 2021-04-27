@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Configuration;
 using System.Collections.Specialized;
 using Model;
-using Extensions;
+using WPF_Application.Extensions;
 
 namespace WPF_Application
 {
@@ -52,9 +52,28 @@ namespace WPF_Application
             }
         }
 
-        public static void Set(string key, string value) => ConfigurationManager.AppSettings.Set(key, value.IsNullOrWhiteSpace(out string v) ? "" : v);
+        public static void Set(string key, string value)
+        {
+            if (key.IsNullOrWhiteSpace()) return;
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            if (ConfigurationManager.AppSettings[key] is not null)
+            {
+                config.AppSettings.Settings.Remove(key);
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
+            }
+            if (value is not null)
+            {
+                config.AppSettings.Settings.Add(key, value);
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
+            }
+        }
 
-        public static string Get(string key) => ConfigurationManager.AppSettings.Get(key).IsNullOrWhiteSpace(out string v) ? "" : v;
+        public static string Get(string key)
+        {
+            return ConfigurationManager.AppSettings[key] ?? "";
+        }
 
         public static Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> GetJoyStickFunctionDictionary()
         {

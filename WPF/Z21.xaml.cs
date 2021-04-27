@@ -1,6 +1,4 @@
-﻿using Helper;
-using Infrastructure;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.Win32;
 using Model;
 using System;
@@ -13,7 +11,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Extensions;
+using WPF_Application.Extensions;
+using WPF_Application.Helper;
+using WPF_Application.Infrastructure;
 
 namespace Importer
 {

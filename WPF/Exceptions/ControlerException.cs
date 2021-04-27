@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Exceptions
+namespace WPF_Application.Exceptions
 {
     public class ControlerException : Exception
     {
