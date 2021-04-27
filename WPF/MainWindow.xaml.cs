@@ -31,7 +31,7 @@ namespace Wpf_Application
         private ModelTrainController.CentralStationClient? controler;
         private Theme theme;
 
-        ModelTrainController.CentralStationClient? Controler
+        ModelTrainController.CentralStationClient? Controller
         {
             get => controler; set
             {
@@ -63,6 +63,7 @@ namespace Wpf_Application
                 }
 #endif
                 Theme = new();
+                this.DataContext = this;
                 InitializeComponent();
                 db.Database.EnsureCreated();
 
@@ -80,7 +81,7 @@ namespace Wpf_Application
                 //        Controler = null!;
                 //        break;
                 //    case CentralStationType.Z21:
-                Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
+                Controller = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
                 //        break;
                 //    case CentralStationType.ECoS:
                 //        //Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
@@ -151,6 +152,7 @@ namespace Wpf_Application
                 miControlLoko.Tag = item;
                 MenuItem miEditLoko = new();
                 miEditLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok bearbeiten" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
+                miEditLoko.Tag = item;
                 miEditLoko.Click += EditLoko_Click;
 
                 sp.ContextMenu.Items.Add(miEditLoko);
@@ -165,22 +167,34 @@ namespace Wpf_Application
             {
                 var menu = ((MenuItem)e.Source);
                 Vehicle? vehicle = (menu.Tag as Vehicle);
-                if (vehicle is not null)
-                    new TrainControl(Controler, vehicle, db).Show();
+                if (vehicle is not null && Controller is not null)
+                    new TrainControl(Controller, vehicle, db).Show();
                 else
-                    MessageBox.Show("Öffnen nicht möglich da Vehilce null ist!", "Error");
+                    MessageBox.Show("Öffnen nicht möglich da Vehicle null ist!", "Error");
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Method {nameof(ControlLoko_Click)} throw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex.InnerException.Message}", LoggerType.Error);
-                MessageBox.Show($"Beim öffnen ist ein Fehler aufgetreten! Fehlermeldung: {ex.Message}", "Error beim öffnen");
+                Logger.Log($"{DateTime.UtcNow}: Method {nameof(ControlLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex.InnerException.Message}", LoggerType.Error);
+                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex.Message}", "Error beim öffnen");
             }
-
         }
 
         void EditLoko_Click(Object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Does not work yet! Sorry!");
+            try
+            {
+                var menu = ((MenuItem)e.Source);
+                Vehicle? vehicle = (menu.Tag as Vehicle);
+                if (vehicle is not null)
+                    new EditVehicleWindow(db, vehicle).Show();
+                else
+                    MessageBox.Show("Öffnen nicht möglich da Vehicle null ist!", "Error");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"{DateTime.UtcNow}: Method {nameof(EditLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex.InnerException.Message}", LoggerType.Error);
+                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex.Message}", "Error beim öffnen");
+            }
         }
 
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -198,10 +212,10 @@ namespace Wpf_Application
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
-            if (Controler is not null)
+            if (Controller is not null)
             {
-                Controler.LogOFF();
-                Controler = null;
+                Controller.LogOFF();
+                Controller = null;
             }
         }
 

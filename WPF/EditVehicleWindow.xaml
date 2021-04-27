@@ -8,12 +8,12 @@
         Title="EditVehicleWindow" Height="450" Width="800">
     <Grid>
         <TabControl>
-            <TabItem Header="Allgemeines">
-
-
-            </TabItem>
+            <TabItem Header="Allgemeines"></TabItem>
             <TabItem Header="Funktionen">
-
+                <ScrollViewer x:Name="SCFunctions">
+                    <StackPanel x:Name="SPFunctions">
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
     </Grid>

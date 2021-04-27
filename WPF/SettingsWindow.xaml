@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="SettingsWindow" Name="settingsw" Height="280" Width="451" Closed="settingsw_Closed">
+        Title="Einstellungen" Name="settingsw" MinHeight="170" MinWidth="400" Height="280" Width="451" Closed="settingsw_Closed">
     <Grid>
         <TabControl>
             <TabItem Header="Controller">
@@ -21,7 +21,7 @@
                     </Grid.RowDefinitions>
 
                     <Label Content="Zentrale:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
-                    <ComboBox Name="cmbxControllStations" SelectedIndex="0" Grid.Row="0" Grid.Column="1" Margin="5" VerticalAlignment="Center">
+                    <ComboBox Name="cmbxControllStations" IsEnabled="False" SelectedIndex="0" Grid.Row="0" Grid.Column="1" Margin="5" VerticalAlignment="Center">
                         <ComboBoxItem  Content="Z21" />
                     </ComboBox>
 
