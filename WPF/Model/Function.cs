@@ -18,5 +18,6 @@ namespace Model
         public int FunctionIndex { get; set; }
         public bool ShowFunctionNumber { get; set; }
         public bool IsConfigured { get; set; }
+        public FunctionType Type { get; set; }
     }
 }

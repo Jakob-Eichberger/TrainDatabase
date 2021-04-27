@@ -124,7 +124,6 @@ namespace Importer
             {
                 NotLoadingData = Visibility.Collapsed;
                 await ImportAsync();
-                MessageBox.Show("Die ROCO DB wurde erfolgreich import! Sie können die Applikation nun wieder start!", "ERFOLG!", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.Close();
             }
         }
@@ -168,10 +167,9 @@ namespace Importer
                         var destination = $"{vehicleDirectory}\\{System.IO.Path.GetFileName(image)}";
                         File.Move(image, destination);
                     }
-
-
                 });
                 await FillDbFromDB(sqlLiteDB);
+                MessageBox.Show("Die ROCO DB wurde erfolgreich import! Sie können die Applikation nun wieder start!", "ERFOLG!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -193,27 +191,6 @@ namespace Importer
 
                     connection.Open();
                     var command = connection.CreateCommand();
-                    command.CommandText = @"SELECT id, vehicle_id, button_type, shortcut, time, position, image_name, function, show_function_number, is_configured  FROM functions;";
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            db.Functions.Add(new()
-                            {
-                                Id = reader.GetString(0).ToInt32(),
-                                VehicleId = reader.GetString(1).ToInt32(),
-                                ButtonType = reader.GetString(2).ToInt32(),
-                                Shortcut = reader.GetString(3),
-                                //Time = reader.GetString(4).ToInt32(),
-                                Position = reader.GetString(5).ToInt32(),
-                                ImageName = reader.GetString(6),
-                                FunctionIndex = reader.GetString(7).ToInt32(),
-                                ShowFunctionNumber = reader.GetString(8).ToBoolean(),
-                                IsConfigured = reader.GetString(9).ToBoolean()
-                            });
-                        }
-                        db.SaveChanges();
-                    }
                     command.CommandText = @"SELECT id, name, image_name, type, max_speed, address, active, position, drivers_cab ,full_name, speed_display, railway,buffer_lenght,model_buffer_lenght,service_weight,model_weight,rmin,article_number,decoder_type,owner,build_year,owning_since,traction_direction,description,dummy,ip,video,crane,direct_steering FROM vehicles";
                     using (var reader = command.ExecuteReader())
                     {
@@ -250,6 +227,28 @@ namespace Importer
                                 Video = reader.GetString(26).ToInt64(),
                                 Crane = reader.GetString(27).ToBoolean(),
                                 Direct_Steering = reader.GetString(28).ToInt64()
+                            });
+                        }
+                        db.SaveChanges();
+                    }
+
+                    command.CommandText = @"SELECT id, vehicle_id, button_type, shortcut, time, position, image_name, function, show_function_number, is_configured  FROM functions;";
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            db.Functions.Add(new()
+                            {
+                                Id = reader.GetString(0).ToInt32(),
+                                Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
+                                ButtonType = reader.GetString(2).ToInt32(),
+                                Shortcut = reader.GetString(3),
+                                //Time = reader.GetString(4).ToInt32(),
+                                Position = reader.GetString(5).ToInt32(),
+                                ImageName = reader.GetString(6),
+                                FunctionIndex = reader.GetString(7).ToInt32(),
+                                ShowFunctionNumber = reader.GetString(8).ToBoolean(),
+                                IsConfigured = reader.GetString(9).ToBoolean()
                             });
                         }
                         db.SaveChanges();

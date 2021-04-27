@@ -75,5 +75,7 @@ namespace Model
 
         public Epoch Epoche { get; set; } = Epoch.@default;
 
+        public List<Function> Functions { get; set; } = new();
+
     }
 }

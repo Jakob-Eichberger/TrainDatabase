@@ -47,6 +47,23 @@ namespace WPF_Application
                 }
             }
         }
+        public string ControllerPort
+        {
+            get => Settings.ControllerPort.ToString();
+            set
+            {
+                try
+                {
+                    ValueChanged = value != ControllerIp;
+                    Settings.ControllerPort = int.Parse(value);
+                }
+                catch
+                {
+                    ValueChanged = false;
+                    MessageBox.Show($"'{value}' ist kein valider Port!");
+                }
+            }
+        }
 
         public bool UsingJoyStick
         {
@@ -100,7 +117,7 @@ namespace WPF_Application
                     Grid.SetRow(button, functionTypeGrid.RowDefinitions.Count - 1);
                     functionTypeGrid.Children.Add(button);
 
-                    Button button1 = new() { Content = "Zurücksetzen", Padding = new(5), Margin = new Thickness(0, 0, 20, 5), Tag = (FunctionType)item };
+                    Button button1 = new() { Content = "Zurücksetzen", Padding = new(5), Margin = new Thickness(0, 0, 20, 5), Tag = (FunctionType)item, IsEnabled = "-" != (string)currentJoystickOffset!.Content! };
                     button1.Click += RemoveButtonFromFunction_Click;
                     Grid.SetColumn(button1, 3);
                     Grid.SetRow(button1, functionTypeGrid.RowDefinitions.Count - 1);

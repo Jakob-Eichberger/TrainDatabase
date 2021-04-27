@@ -1,4 +1,5 @@
 ﻿using Helper;
+using Microsoft.EntityFrameworkCore;
 using Model;
 using ModelTrainController;
 using ModelTrainController.Z21;
@@ -27,7 +28,7 @@ namespace WPF_Application
     {
         public ModelTrainController.CentralStationClient controler = default!;
         private LokInfoData lokState = new();
-        public Database db = new();
+        public Database db;
         private int maxDccStep = 126;
         private bool direction = true;
         private int speedStep;
@@ -160,16 +161,18 @@ namespace WPF_Application
             get => TrackPower.GetString();
         }
 
-        public TrainControl(ModelTrainController.CentralStationClient _controler, Vehicle _vehicle, Database db)
+        public TrainControl(ModelTrainController.CentralStationClient _controler, Vehicle _vehicle, Database _db)
         {
             try
             {
                 if (_controler is null) throw new NullReferenceException($"Parameter {nameof(_controler)} ist null!");
                 if (_vehicle is null) throw new NullReferenceException($"Paramter{nameof(_vehicle)}ist null!");
+                if (_db is null) throw new NullReferenceException($"Paramter{nameof(_db)}ist null!");
                 InitializeComponent();
+                db = _db;
                 this.DataContext = this;
                 controler = _controler!;
-                Vehicle = _vehicle!;
+                Vehicle = db.Vehicles.Include(e => e.Functions).FirstOrDefault(e => e.Id == _vehicle.Id)!;
                 lokState.Adresse = new((byte)Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
 
@@ -201,7 +204,7 @@ namespace WPF_Application
         {
             FunctionGrid.Children.Clear();
             int i = 0;
-            foreach (var item in (db.Functions.Where(e => e.VehicleId == Vehicle.Id).OrderBy(e => e.FunctionIndex).ToList() ?? new()))
+            foreach (var item in Vehicle.Functions)
             {
                 i++;
                 Border border = new();
@@ -307,6 +310,14 @@ namespace WPF_Application
                                 SetLocoDrive(direction: LokState.drivingDirection.ConvertToBool() ? DrivingDirection.R : DrivingDirection.F);
                             break;
                         default:
+                            var function = db.Functions.Where(e => e.VehicleId == vehicle.Id && e.Type == Function.Key).ToList();
+                            if (function is not null)
+                            {
+                                foreach (var item in function)
+                                {
+
+                                }
+                            }
                             break;
                     }
 

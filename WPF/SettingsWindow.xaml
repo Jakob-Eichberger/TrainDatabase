@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="SettingsWindow" Name="settingsw" Height="450" Width="800" Closed="settingsw_Closed">
+        Title="SettingsWindow" Name="settingsw" Height="280" Width="451" Closed="settingsw_Closed">
     <Grid>
         <TabControl>
             <TabItem Header="Controller">
@@ -15,16 +15,23 @@
                         <ColumnDefinition Width="300*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="35"/>
                     </Grid.RowDefinitions>
-                    <Label Content="IPAdress:" Grid.Row="0" Grid.Column="0"/>
-                    <TextBox Text="{Binding ElementName=settingsw,Path=ControllerIp}" Grid.Row="0" Grid.Column="1" />
+
+                    <Label Content="Zentrale:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                    <ComboBox Name="cmbxControllStations" SelectedIndex="0" Grid.Row="0" Grid.Column="1" Margin="5" VerticalAlignment="Center">
+                        <ComboBoxItem  Content="Z21" />
+                    </ComboBox>
+
+                    <Label Content="IP-Address:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding ElementName=settingsw,Path=ControllerIp}" Grid.Row="1" Grid.Column="1"  Margin="5"/>
+                    <Label Content="Port:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding ElementName=settingsw,Path=ControllerPort}" Grid.Row="2" Grid.Column="1"  Margin="5"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Theme">
-
+            <TabItem Header="Theme" IsEnabled="False">
             </TabItem>
             <TabItem Header="JoyStick">
                 <Grid>

@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Collections.Specialized;
 using Model;
 using WPF_Application.Extensions;
+using WPF_Application.CentralStation;
 
 namespace WPF_Application
 {
@@ -30,6 +31,36 @@ namespace WPF_Application
             set
             {
                 Set(nameof(ControllerIP), value.ToString());
+            }
+        }
+
+        public static int ControllerPort
+        {
+            get
+            {
+                return int.TryParse(Get(nameof(ControllerPort)), out int port) ? port : 21105;
+            }
+            set
+            {
+                if (value > 0 && value < 65535)
+                    Set(nameof(ControllerPort), value.ToString());
+                else
+                    throw new ApplicationException($"'{value}' ist kein valider Port!");
+            }
+        }
+
+        public static CentralStationType? CentralStation
+        {
+            get
+            {
+                return Enum.TryParse(typeof(CentralStationType), Get(nameof(CentralStation)), out var type) ? (CentralStationType)type! : null;
+            }
+            set
+            {
+                if (value is not null)
+                    Set(nameof(CentralStation), Enum.GetName((CentralStationType)value)!);
+                else
+                    Set(nameof(CentralStation), null!);
             }
         }
 
@@ -110,6 +141,5 @@ namespace WPF_Application
             }
             return l;
         }
-
     }
 }

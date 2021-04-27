@@ -37,6 +37,7 @@ namespace WPF_Application.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Vehicle>().HasOne(e => e.Category);
+            modelBuilder.Entity<Vehicle>().HasMany(e => e.Functions);
             modelBuilder.Entity<Category>().HasMany(e => e.Vehicles);
             OnModelCreatingPartial(modelBuilder);
         }

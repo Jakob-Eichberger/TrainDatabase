@@ -41,7 +41,7 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>Settings.settings</DependentUpon>
 	  </Compile>
-	  <Compile Update="Z21.xaml.cs">
+	  <Compile Update="Import\Z21.xaml.cs">
 	    <SubType>Code</SubType>
 	  </Compile>
 	</ItemGroup>
@@ -54,11 +54,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Update="ImportSelecter.xaml">
+	  <Page Update="Import\ImportSelecter.xaml">
 	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	    <SubType>Designer</SubType>
 	  </Page>
-	  <Page Update="Z21.xaml">
+	  <Page Update="Import\Z21.xaml">
 	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	    <SubType>Designer</SubType>
 	  </Page>

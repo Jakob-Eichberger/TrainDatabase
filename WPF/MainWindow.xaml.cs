@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPF_Application;
+using WPF_Application.CentralStation;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
 
@@ -73,13 +74,23 @@ namespace Wpf_Application
                     new Importer.ImportSelecter(db).Show();
                     this.Close();
                 }
-                Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = 21105 });
-                Settings.FunctionToJoyStickDictionary();
+                //switch (Settings.CentralStation)
+                //{
+                //    case CentralStationType.None:
+                //        Controler = null!;
+                //        break;
+                //    case CentralStationType.Z21:
+                Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
+                //        break;
+                //    case CentralStationType.ECoS:
+                //        //Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
+                //        break;
+                //}
             }
             catch (Exception e)
             {
                 Logger.Log($"Fehler beim öffnen vom Main Window: ex-Message:{e?.Message ?? ""}\ninnerex: {e?.InnerException?.ToString() ?? ""}\ninner ex message:{e?.InnerException?.Message ?? ""}", LoggerType.Error);
-                MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e.Message}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ichs fixen) ;) ");
+                MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e.Message}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ich's fixen ;) ) ");
             }
         }
 
@@ -195,6 +206,5 @@ namespace Wpf_Application
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
-
     }
 }
