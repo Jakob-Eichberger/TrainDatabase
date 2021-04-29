@@ -226,7 +226,7 @@ namespace Importer
                                 Ip = IPAddress.Parse(reader.GetString(25)),
                                 Video = reader.GetString(26).ToInt64(),
                                 Crane = reader.GetString(27).ToBoolean(),
-                                Direct_Steering = reader.GetString(28).ToInt64()
+                                Direct_Steering = reader.GetString(28).ToInt64(),
                             });
                         }
                         db.SaveChanges();
@@ -242,13 +242,14 @@ namespace Importer
                                 Id = reader.GetString(0).ToInt32(),
                                 Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
                                 ButtonType = reader.GetString(2).ToInt32(),
-                                Shortcut = reader.GetString(3),
+                                Name = reader.GetString(3).IsNullOrWhiteSpace() ? reader.GetString(6) : reader.GetString(3),
                                 //Time = reader.GetString(4).ToInt32(),
                                 Position = reader.GetString(5).ToInt32(),
                                 ImageName = reader.GetString(6),
                                 FunctionIndex = reader.GetString(7).ToInt32(),
                                 ShowFunctionNumber = reader.GetString(8).ToBoolean(),
-                                IsConfigured = reader.GetString(9).ToBoolean()
+                                IsConfigured = reader.GetString(9).ToBoolean(),
+                                EnumType = FunctionType.None
                             });
                         }
                         db.SaveChanges();

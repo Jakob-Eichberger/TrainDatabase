@@ -10,16 +10,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Data\VehicleImage\default.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="Data\VehicleImage\default.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
@@ -62,6 +52,10 @@
 	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	    <SubType>Designer</SubType>
 	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Data\VehicleImage\" />
 	</ItemGroup>
 
 </Project>

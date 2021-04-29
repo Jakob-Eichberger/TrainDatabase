@@ -4,22 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="EditFunctionWindow" Height="450" Width="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+        Title="EditFunctionWindow" SizeToContent="WidthAndHeight" MinWidth="250" MinHeight="180" Height="180" Name="ew">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="AUTO"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
+            </Grid.RowDefinitions>
 
+            <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Padding="5" Margin="5" Text="{Binding ElementName=ew,Path=Function.Name}"/>
 
+            <Label Content="Function" Grid.Row="1" Grid.Column="0"/>
+            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Padding="5" Margin="5" Value="{Binding ElementName=ew,Path=Function.FunctionIndex}"/>
 
+            <Label Content="Function" Grid.Row="2" Grid.Column="0"/>
+            <ComboBox Grid.Row="2" Grid.Column="1"  SelectedItem="{Binding Function.EnumType}" ItemsSource="{Binding EnumList}" Padding="5" Margin="5"/>
 
-    </Grid>
+            <Button Content="Speicherung und schließen" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Padding="5" Margin="5" Click="SaveChanges_Click"/>
+        </Grid>
+    </ScrollViewer>
+
 </Window>

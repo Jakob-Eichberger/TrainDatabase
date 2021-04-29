@@ -3,12 +3,54 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="EditVehicleWindow" Height="450" Width="800">
+        Title="EditVehicleWindow" Width="350" Height="350" SizeToContent="WidthAndHeight" MinWidth="320" MinHeight="200"  Name="ew" >
     <Grid>
-        <TabControl>
-            <TabItem Header="Allgemeines"></TabItem>
+        <TabControl Margin="5">
+            <TabItem Header="Allgemeines">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="AUTO" />
+                            <ColumnDefinition  Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition  Height="AUTO"/>
+                            <RowDefinition  Height="AUTO"/>
+                            <RowDefinition Height="AUTO" />
+                            <RowDefinition Height="AUTO" />
+                            <RowDefinition Height="AUTO" />
+                            <RowDefinition Height="AUTO" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" BorderBrush="Gray" BorderThickness="1" Margin="5" Height="100" Width="250" VerticalAlignment="Top" HorizontalAlignment="Left">
+                            <Image Name="ImageVehicle" >
+                                <Image.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Bild ändern" Click="ChangeImage_Click" />
+                                    </ContextMenu>
+                                </Image.ContextMenu>
+                            </Image>
+                        </Border>
+
+                        <Label Content="Full Name: "  Grid.Column="0"  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"  Grid.Row="1" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Full_Name}" Margin="5" Padding="5" />
+
+                        <Label Content="Name: "  Grid.Column="0"  Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"  Grid.Row="2" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Name}" Margin="5" Padding="5" />
+
+                        <Label Content="Address:  "  Grid.Column="0"  Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="3" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Address}" Margin="5" Padding="5" />
+
+                        <Label Content="Bahngesellschaft: "  Grid.Column="0"  Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"  Grid.Row="4" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Railway}" Margin="5" Padding="5" />
+
+                        <Button Content="Änderungen speichern und schließen" Click="SaveChanges_Click" Grid.Column="0"  Grid.Row="5" Grid.ColumnSpan="2" Padding="5" Margin="5"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
             <TabItem Header="Funktionen">
                 <ScrollViewer x:Name="SCFunctions">
                     <StackPanel x:Name="SPFunctions">

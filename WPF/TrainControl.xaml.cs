@@ -220,7 +220,7 @@ namespace WPF_Application
                     var tb = new ToggleButton();
                     tb.Height = 50;
                     tb.Width = 90;
-                    tb.Content = $"({item.FunctionIndex}) {(string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut)}";
+                    tb.Content = $"({item.FunctionIndex}) {item.Name}";
                     tb.Click += FunctionToggle_Click;
                     tb.Tag = item;
                     tb.Name = $"btn_Function_{item.Id}";
@@ -232,7 +232,7 @@ namespace WPF_Application
                     var btn = new Button();
                     btn.Height = 50;
                     btn.Width = 90;
-                    btn.Content = $"({item.FunctionIndex}) {(string.IsNullOrWhiteSpace(item.Shortcut) ? item.ImageName : item.Shortcut)}";
+                    btn.Content = $"({item.FunctionIndex}) {item.Name}";
                     btn.PreviewMouseDown += FunctionButtonDown_Click;
                     btn.PreviewMouseUp += FunctionButtonUp_Click;
                     btn.Tag = item;
@@ -310,7 +310,7 @@ namespace WPF_Application
                                 SetLocoDrive(direction: LokState.drivingDirection.ConvertToBool() ? DrivingDirection.R : DrivingDirection.F);
                             break;
                         default:
-                            var function = db.Functions.Where(e => e.VehicleId == vehicle.Id && e.Type == Function.Key).ToList();
+                            var function = db.Functions.Where(e => e.VehicleId == vehicle.Id && e.EnumType == Function.Key).ToList();
                             if (function is not null)
                             {
                                 foreach (var item in function)

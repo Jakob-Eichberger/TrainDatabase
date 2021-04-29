@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -87,6 +88,7 @@ namespace Wpf_Application
                 //        //Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
                 //        break;
                 //}
+                RemoveUnneededImages();
             }
             catch (Exception e)
             {
@@ -108,7 +110,7 @@ namespace Wpf_Application
             VehicleGrid.Children.Clear();
             foreach (var item in list)
             {
-                if (item is null) return;
+                if (item is null) continue;
                 Border border = new();
                 border.Padding = new(2);
                 border.Margin = new(10);
@@ -118,8 +120,7 @@ namespace Wpf_Application
                 StackPanel sp = new();
                 try
                 {
-                    string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\";
-                    path += string.IsNullOrWhiteSpace(item?.Image_Name) ? "default.png" : item?.Image_Name;
+                    string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.Image_Name}";
                     Image image = new();
                     BitmapImage bitmap = new();
                     bitmap.BeginInit();
@@ -129,12 +130,9 @@ namespace Wpf_Application
                     image.Width = 250;
                     image.Height = 100;
                     sp.Children.Add(image);
+                }
+                catch { }
 
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{item?.Address}' not found. Message: {ex.Message}", LoggerType.Warning);
-                }
                 TextBlock tb = new();
                 tb.Text = !string.IsNullOrWhiteSpace(item?.Full_Name) ? item?.Full_Name : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
                 sp.Height = 120;
@@ -148,17 +146,37 @@ namespace Wpf_Application
                 MenuItem miControlLoko = new();
                 miControlLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok steuern" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
                 miControlLoko.Click += ControlLoko_Click;
-                sp.ContextMenu.Items.Add(miControlLoko);
                 miControlLoko.Tag = item;
+                sp.ContextMenu.Items.Add(miControlLoko);
                 MenuItem miEditLoko = new();
                 miEditLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok bearbeiten" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
                 miEditLoko.Tag = item;
                 miEditLoko.Click += EditLoko_Click;
-
                 sp.ContextMenu.Items.Add(miEditLoko);
                 border.Child = sp;
                 VehicleGrid.Children.Add(border);
             }
+        }
+
+        public void RemoveUnneededImages()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    List<string> images = db.Vehicles.Select(e => e.Image_Name).ToList();
+                    foreach (var item in Directory.GetFiles($"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\"))
+                    {
+                        if (!images.Where(e => e == Path.GetFileName(item)).Any())
+                            File.Delete(item);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"Deleting file failed: {ex.Message}", LoggerType.Warning);
+                }
+
+            });
         }
 
         void ControlLoko_Click(Object sender, RoutedEventArgs e)
@@ -186,7 +204,14 @@ namespace Wpf_Application
                 var menu = ((MenuItem)e.Source);
                 Vehicle? vehicle = (menu.Tag as Vehicle);
                 if (vehicle is not null)
-                    new EditVehicleWindow(db, vehicle).Show();
+                {
+                    EditVehicleWindow evw = new(db, vehicle);
+                    if (evw.ShowDialog() ?? false)
+                    {
+                        Search();
+                        RemoveUnneededImages();
+                    }
+                }
                 else
                     MessageBox.Show("Öffnen nicht möglich da Vehicle null ist!", "Error");
             }
@@ -197,13 +222,15 @@ namespace Wpf_Application
             }
         }
 
-        private void TbSearch_TextChanged(object sender, TextChangedEventArgs e)
+        private void Search()
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
         }
+
+        private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
         {
