@@ -19,16 +19,22 @@ namespace ModelTrainController.Z21
 {
     public class LokInfoData
     {
-        public LokAdresse Adresse = default!;
+        private int speed = default!;
 
-        public bool Besetzt;
+        public LokAdresse Adresse { get; set; } = default!;
 
-        public bool DrivingDirection { get; set; }
+        public bool InUse { get; set; } = default!;
 
-        private byte fahrstufe = 2;
+        public bool DrivingDirection { get; set; } = default!;
 
-        // TODO: Change the max value
-        public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value; } }
+        public int Speed
+        {
+            get => speed; set
+            {
+                speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
+                speed = value;
+            }
+        }
 
         /// <summary>
         /// int -> <see cref="Function.FunctionIndex"/> |

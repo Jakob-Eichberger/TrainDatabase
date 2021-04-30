@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Minimum="0" Maximum="{Binding ElementName=mw,Path=MaxDccStep}" Value="{Binding ElementName=mw,Path=SpeedStep}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp" Margin="0,0,5,0"/>
-        <ToggleButton Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=mw,Path=GetDirectionString}" IsChecked="{Binding ElementName=mw,Path=Direction}" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
+        <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=mw,Path=GetDirectionString}" Click="BtnDirection_Click" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
         <DockPanel Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" >
             <Label  Content="{Binding ElementName=mw,Path=SpeedStep}" HorizontalAlignment="Center"/>
             <Label Content="/"/>

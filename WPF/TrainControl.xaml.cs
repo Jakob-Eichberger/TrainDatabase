@@ -96,7 +96,7 @@ namespace WPF_Application
                 {
                     speedStep = value == 1 ? (speedStep > 1 ? 0 : 2) : value;
                     OnPropertyChanged();
-                    if (speedStep != (LokInfo.Fahrstufe))
+                    if (speedStep != (LokInfo.Speed))
                         SetLocoDrive(speedstep: speedStep);
                 }
             }
@@ -141,13 +141,12 @@ namespace WPF_Application
                 lokInfo = value;
                 if (!SliderInUser && (DateTime.Now - SliderLastused).TotalSeconds > 2)
                 {
-                    SpeedStep = value.Fahrstufe;
+                    SpeedStep = value.Speed;
                 }
                 OnPropertyChanged();
             }
         }
 
-        [Obsolete("Use Vehicle class instead")]
         /// <summary>
         /// This is the Max Acceleration Step.
         /// </summary>
@@ -214,7 +213,7 @@ namespace WPF_Application
                 this.DataContext = this;
                 controler = _controler!;
                 Vehicle = db.Vehicles.Include(e => e.Functions).FirstOrDefault(e => e.Id == _vehicle.Id)!;
-                LokInfo.Adresse = new((byte)Vehicle.Address);
+                LokInfo = new((byte)Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
 
                 controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
@@ -317,6 +316,7 @@ namespace WPF_Application
         {
             if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
             DoubleTractionVehicles.Add(new(new(((Vehicle)(sender as CheckBox)!.Tag).Address), false));
+            controler.GetLocoInfo(new(((Vehicle)(sender as CheckBox)!.Tag).Address));
         }
 
         /// <summary>
@@ -337,14 +337,22 @@ namespace WPF_Application
         /// <param name="speedstep"></param>
         /// <param name="direction"></param>
         /// <param name="inUse"></param>
-        private void SetLocoDrive(int? locoAdress = null, int? speedstep = null, bool? direction = null, bool? inUse = null) =>
-            controler.SetLocoDrive(new LokInfoData()
+        private void SetLocoDrive(int? speedstep = null, bool? direction = null, bool? inUse = null)
+        {
+            var dat = new LokInfoData()
             {
-                Adresse = new LokAdresse((int)(locoAdress is null ? (int)Vehicle.Address : locoAdress)),
-                Besetzt = inUse ?? LokInfo.Besetzt,
+                Adresse = new LokAdresse(Vehicle.Address),
+                InUse = inUse ?? LokInfo.InUse,
                 DrivingDirection = direction ?? LokInfo.DrivingDirection,
-                Fahrstufe = (byte)(speedstep ?? LokInfo.Fahrstufe)
-            });
+                Speed = (byte)(speedstep ?? LokInfo.Speed)
+            };
+            controler.SetLocoDrive(dat);
+            foreach (var item in DoubleTractionVehicles)
+            {
+                dat.Adresse = item.lokinfo.Adresse;
+                controler.SetLocoDrive(dat);
+            }
+        }
 
         /// <summary>
         /// Function used to set a Function on/off or switch its state. 
@@ -352,28 +360,32 @@ namespace WPF_Application
         /// <param name="type"></param>
         /// <param name="function"></param>
         /// <param name="locoAdress"></param>
-        private void SetLocoFunction(ToggleType type, Function function, int? locoAdress = null) =>
+        private void SetLocoFunction(ToggleType type, Function function, int? locoAdress = null)
+        {
             controler.SetLocoFunction(new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)), function, type);
+        }
 
         #region Events
         public void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
         {
             if (e.Data.Adresse.Value == Vehicle.Address || DoubleTractionVehicles.Where(f => f.lokinfo.Adresse == e.Data.Adresse).Any())
             {
-                LokInfo = e.Data;
-                if (Direction != e.Data.DrivingDirection)
+                if (e.Data.Adresse.Value == Vehicle.Address)
                 {
+                    LokInfo = e.Data;
                     Direction = e.Data.DrivingDirection;
-                }
-                foreach (var (functionIndex, state) in e.Data.Functions)
-                {
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    foreach (var (functionIndex, state) in e.Data.Functions)
                     {
-                        var x = FunctionToggleButtons.FirstOrDefault(e => (e?.Tag as Function)?.FunctionIndex == functionIndex);
-                        if (x is not null)
-                            x.IsChecked = state;
-                    }));
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            var x = FunctionToggleButtons.FirstOrDefault(e => (e?.Tag as Function)?.FunctionIndex == functionIndex);
+                            if (x is not null)
+                                x.IsChecked = state;
+                        }));
+                    }
                 }
+                else
+                    DoubleTractionVehicles.Where(f => f.lokinfo.Adresse == e.Data.Adresse).ToList().ForEach(i => i.lokinfo = e.Data);
             }
         }
 
@@ -485,5 +497,9 @@ namespace WPF_Application
         private void Mw_Deactivated(object sender, EventArgs e) => IsActive = false;
         #endregion
 
+        private void BtnDirection_Click(object sender, RoutedEventArgs e)
+        {
+            Direction = !LokInfo.DrivingDirection;
+        }
     }
 }

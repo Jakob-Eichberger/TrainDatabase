@@ -24,6 +24,11 @@ namespace ModelTrainController.Z21
             Value = adresse;
         }
 
+        public LokAdresse(long adresse)
+        {
+            Value = (int)adresse;
+        }
+
         public LokAdresse(ValueBytesStruct valueBytes)
         {
             ValueBytes = valueBytes;

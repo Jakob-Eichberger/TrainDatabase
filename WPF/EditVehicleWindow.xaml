@@ -51,7 +51,7 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Funktionen">
+            <TabItem Header="Funktionen" ToolTip="Dieses Fenster ist noch 'work in progress'.">
                 <ScrollViewer x:Name="SCFunctions">
                     <StackPanel x:Name="SPFunctions">
                     </StackPanel>

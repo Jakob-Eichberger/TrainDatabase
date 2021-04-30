@@ -94,7 +94,6 @@ namespace Helper
 
         private void Evaluation(byte[] received)
         {
-            bool b;
             int i, j;
 
             switch (received[2])
@@ -194,8 +193,8 @@ namespace Helper
                             vbs.Adr_LSB = received[6];
                             LokInfoData infodata = new LokInfoData();
                             infodata.Adresse = new LokAdresse(vbs);
-                            infodata.Besetzt = ((received[7] & 8) == 8);
-                            infodata.Fahrstufe = (byte)(received[8] & 0x7F);
+                            infodata.InUse = ((received[7] & 8) == 8);
+                            infodata.Speed = (byte)(received[8] & 0x7F);
                             infodata.DrivingDirection = ((received[8] & 0x80) == 0x80);
 
                             int functionIndexCount = 5;
@@ -467,9 +466,9 @@ namespace Helper
         /// LAN_X_SET_LOCO_DRIVE
         /// </summary>
         /// <param name="data"></param>
-        public override void SetLocoDrive(LokInfoData data)
+        private void SetDrive(LokInfoData data)
         {
-            if (data.DrivingDirection) data.Fahrstufe |= 0x080;
+            if (data.DrivingDirection) data.Speed |= 0x080;
 
             byte[] bytes = new byte[10];
             bytes[0] = 0x0A;
@@ -480,10 +479,15 @@ namespace Helper
             bytes[5] = 0x13; //  = 128 Fahrstufen
             bytes[6] = data.Adresse.ValueBytes.Adr_MSB;
             bytes[7] = data.Adresse.ValueBytes.Adr_LSB;
-            bytes[8] = data.Fahrstufe;
+            bytes[8] = (byte)data.Speed;
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Console.WriteLine("LAN X SET LOCO DRIVE " + getByteString(bytes) + "  (" + data.Adresse + " - " + data.Fahrstufe.ToString() + ")");
+            Console.WriteLine("LAN X SET LOCO DRIVE " + getByteString(bytes) + "  (" + data.Adresse + " - " + data.Speed.ToString() + ")");
             Senden(bytes);
+        }
+
+        public override void SetLocoDrive(LokInfoData data)
+        {
+            SetDrive(data);
         }
 
         /// <summary>
