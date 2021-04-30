@@ -112,7 +112,7 @@ namespace WPF_Application
                 direction = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(GetDirectionString));
-                SetLocoDrive(direction: value.GetDrivingDirection());
+                SetLocoDrive(direction: value);
             }
         }
 
@@ -337,7 +337,7 @@ namespace WPF_Application
         /// <param name="speedstep"></param>
         /// <param name="direction"></param>
         /// <param name="inUse"></param>
-        private void SetLocoDrive(int? locoAdress = null, int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) =>
+        private void SetLocoDrive(int? locoAdress = null, int? speedstep = null, bool? direction = null, bool? inUse = null) =>
             controler.SetLocoDrive(new LokInfoData()
             {
                 Adresse = new LokAdresse((int)(locoAdress is null ? (int)Vehicle.Address : locoAdress)),
@@ -361,9 +361,9 @@ namespace WPF_Application
             if (e.Data.Adresse.Value == Vehicle.Address || DoubleTractionVehicles.Where(f => f.lokinfo.Adresse == e.Data.Adresse).Any())
             {
                 LokInfo = e.Data;
-                if (Direction != e.Data.DrivingDirection.ConvertToBool())
+                if (Direction != e.Data.DrivingDirection)
                 {
-                    Direction = e.Data.DrivingDirection.ConvertToBool();
+                    Direction = e.Data.DrivingDirection;
                 }
                 foreach (var (functionIndex, state) in e.Data.Functions)
                 {
@@ -402,7 +402,7 @@ namespace WPF_Application
                             break;
                         case FunctionType.ChangeDirection:
                             if (e.currentValue == e.maxValue)
-                                SetLocoDrive(direction: LokInfo.DrivingDirection.ConvertToBool() ? DrivingDirection.R : DrivingDirection.F);
+                                SetLocoDrive(direction: LokInfo.DrivingDirection);
                             break;
                         default:
                             if (Function.Key == FunctionType.None) return;

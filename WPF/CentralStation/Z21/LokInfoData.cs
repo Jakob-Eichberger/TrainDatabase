@@ -23,7 +23,7 @@ namespace ModelTrainController.Z21
 
         public bool Besetzt;
 
-        public DrivingDirection DrivingDirection { get; set; }
+        public bool DrivingDirection { get; set; }
 
         private byte fahrstufe = 2;
 
