@@ -24,12 +24,6 @@ namespace Model
 
         public long Speed​​step { get; set; } = 128;
 
-        [NotMapped]
-        public int CurrentSpeed { get; set; }
-
-        [NotMapped]
-        public DrivingDirection Direction { get; set; }
-
         [Required]
         public long Address { get; set; } = 0;
 

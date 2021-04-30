@@ -29,7 +29,7 @@ namespace WPF_Application
     public partial class TrainControl : Window, INotifyPropertyChanged
     {
         public ModelTrainController.CentralStationClient controler = default!;
-        private LokInfoData lokState = new();
+        private LokInfoData lokInfo = new();
         public Database db = default!;
         private int maxDccStep = 126;
         private bool direction = true;
@@ -63,7 +63,7 @@ namespace WPF_Application
             }
         }
 
-        public List<Vehicle> DoubleTractionVehicles { get; } = new();
+        public List<(LokInfoData lokinfo, bool invert)> DoubleTractionVehicles { get; } = new();
 
         public GridLength VehicleTypeGridLength
         {
@@ -96,7 +96,7 @@ namespace WPF_Application
                 {
                     speedStep = value == 1 ? (speedStep > 1 ? 0 : 2) : value;
                     OnPropertyChanged();
-                    if (speedStep != (LokState.Fahrstufe))
+                    if (speedStep != (LokInfo.Fahrstufe))
                         SetLocoDrive(speedstep: speedStep);
                 }
             }
@@ -134,11 +134,11 @@ namespace WPF_Application
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the vehicle. 
         /// </summary>
-        public LokInfoData LokState
+        public LokInfoData LokInfo
         {
-            get => lokState; set
+            get => lokInfo; set
             {
-                lokState = value;
+                lokInfo = value;
                 if (!SliderInUser && (DateTime.Now - SliderLastused).TotalSeconds > 2)
                 {
                     SpeedStep = value.Fahrstufe;
@@ -214,7 +214,7 @@ namespace WPF_Application
                 this.DataContext = this;
                 controler = _controler!;
                 Vehicle = db.Vehicles.Include(e => e.Functions).FirstOrDefault(e => e.Id == _vehicle.Id)!;
-                lokState.Adresse = new((byte)Vehicle.Address);
+                LokInfo.Adresse = new((byte)Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
 
                 controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
@@ -223,7 +223,7 @@ namespace WPF_Application
                 controler.OnTrackShortCircuit += new EventHandler(OnTrackShortCircuitEventArgs);
                 controler.OnProgrammingMode += new EventHandler(OnProgrammingModeEventArgs);
 
-                controler.GetLocoInfo(LokState.Adresse);
+                controler.GetLocoInfo(LokInfo.Adresse);
                 controler.SetTrackPowerON();
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles);
@@ -316,7 +316,7 @@ namespace WPF_Application
         private void VehicleCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
-            DoubleTractionVehicles.Add(((Vehicle)(sender as CheckBox)!.Tag));
+            DoubleTractionVehicles.Add(new(new(((Vehicle)(sender as CheckBox)!.Tag).Address), false));
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace WPF_Application
         private void VehicleCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
-            DoubleTractionVehicles.Remove(((Vehicle)(sender as CheckBox)!.Tag));
+            DoubleTractionVehicles.Remove(new(new(((Vehicle)(sender as CheckBox)!.Tag).Address), false));
         }
 
         /// <summary>
@@ -341,9 +341,9 @@ namespace WPF_Application
             controler.SetLocoDrive(new LokInfoData()
             {
                 Adresse = new LokAdresse((int)(locoAdress is null ? (int)Vehicle.Address : locoAdress)),
-                Besetzt = inUse ?? LokState.Besetzt,
-                drivingDirection = direction ?? LokState.drivingDirection,
-                Fahrstufe = (byte)(speedstep ?? LokState.Fahrstufe)
+                Besetzt = inUse ?? LokInfo.Besetzt,
+                DrivingDirection = direction ?? LokInfo.DrivingDirection,
+                Fahrstufe = (byte)(speedstep ?? LokInfo.Fahrstufe)
             });
 
         /// <summary>
@@ -358,12 +358,12 @@ namespace WPF_Application
         #region Events
         public void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
         {
-            if (e.Data.Adresse.Value == Vehicle.Address)
+            if (e.Data.Adresse.Value == Vehicle.Address || DoubleTractionVehicles.Where(f => f.lokinfo.Adresse == e.Data.Adresse).Any())
             {
-                LokState = e.Data;
-                if (Direction != e.Data.drivingDirection.ConvertToBool())
+                LokInfo = e.Data;
+                if (Direction != e.Data.DrivingDirection.ConvertToBool())
                 {
-                    Direction = e.Data.drivingDirection.ConvertToBool();
+                    Direction = e.Data.DrivingDirection.ConvertToBool();
                 }
                 foreach (var (functionIndex, state) in e.Data.Functions)
                 {
@@ -402,7 +402,7 @@ namespace WPF_Application
                             break;
                         case FunctionType.ChangeDirection:
                             if (e.currentValue == e.maxValue)
-                                SetLocoDrive(direction: LokState.drivingDirection.ConvertToBool() ? DrivingDirection.R : DrivingDirection.F);
+                                SetLocoDrive(direction: LokInfo.DrivingDirection.ConvertToBool() ? DrivingDirection.R : DrivingDirection.F);
                             break;
                         default:
                             if (Function.Key == FunctionType.None) return;

@@ -14,9 +14,6 @@ namespace Model
 
         public int VehicleId { get; set; }
 
-        [NotMapped]
-        public bool State { get; set; }
-
         public ButtonType ButtonType { get; set; }
 
         public string Name { get; set; }

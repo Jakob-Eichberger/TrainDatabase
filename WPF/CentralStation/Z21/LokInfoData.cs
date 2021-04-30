@@ -20,9 +20,13 @@ namespace ModelTrainController.Z21
     public class LokInfoData
     {
         public LokAdresse Adresse = default!;
+
         public bool Besetzt;
-        public DrivingDirection drivingDirection;
+
+        public DrivingDirection DrivingDirection { get; set; }
+
         private byte fahrstufe = 2;
+
         // TODO: Change the max value
         public byte Fahrstufe { get { return fahrstufe; } set { fahrstufe = value; } }
 
@@ -31,5 +35,18 @@ namespace ModelTrainController.Z21
         /// bool -> TRUE: ON, FALSE, OFF
         /// </summary>
         public List<(int functionIndex, bool state)> Functions = new();
+
+        public LokInfoData(LokAdresse adresse)
+        {
+            Adresse = adresse;
+        }
+
+        public LokInfoData(int adresse) => Adresse = new(adresse);
+
+        public LokInfoData(long adresse) => Adresse = new((int)adresse);
+
+        public LokInfoData()
+        {
+        }
     }
 }

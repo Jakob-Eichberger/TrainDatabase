@@ -197,7 +197,7 @@ namespace Helper
                             infodata.Besetzt = ((received[7] & 8) == 8);
                             infodata.Fahrstufe = (byte)(received[8] & 0x7F);
                             b = ((received[8] & 0x80) == 0x80);
-                            if (b) infodata.drivingDirection = DrivingDirection.F; else infodata.drivingDirection = DrivingDirection.R;
+                            if (b) infodata.DrivingDirection = DrivingDirection.F; else infodata.DrivingDirection = DrivingDirection.R;
 
                             int functionIndexCount = 5;
                             for (int index = 9; index < received.Length && index <= 12; index++)
@@ -470,7 +470,7 @@ namespace Helper
         /// <param name="data"></param>
         public override void SetLocoDrive(LokInfoData data)
         {
-            if (data.drivingDirection == DrivingDirection.F) data.Fahrstufe |= 0x080;
+            if (data.DrivingDirection == DrivingDirection.F) data.Fahrstufe |= 0x080;
 
             byte[] bytes = new byte[10];
             bytes[0] = 0x0A;
