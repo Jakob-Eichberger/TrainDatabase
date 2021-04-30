@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
+﻿#nullable disable
 
 namespace Model
 {

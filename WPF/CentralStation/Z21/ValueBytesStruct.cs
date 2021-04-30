@@ -11,9 +11,6 @@
  * unter http://www.gnu.org/licenses/gpl.html.
  */
 
-using System.Collections.Generic;
-using System.Text;
-
 namespace ModelTrainController.Z21
 {
     public struct ValueBytesStruct

@@ -1,15 +1,11 @@
-﻿using SharpDX.DirectInput;
+﻿using Model;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Configuration;
-using System.Collections.Specialized;
-using Model;
-using WPF_Application.Extensions;
+using System.Net;
 using WPF_Application.CentralStation;
+using WPF_Application.Extensions;
 
 namespace WPF_Application
 {

@@ -1,5 +1,4 @@
-﻿using Helper;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 
 namespace WPF_Application.Exceptions
