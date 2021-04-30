@@ -24,33 +24,33 @@ namespace Helper
 {
     public class Z21 : ModelTrainController.CentralStationClient
     {
-        public Z21(IPAddress address, int port) : base(address,port)
+        public Z21(IPAddress address, int port) : base(address, port)
         {
             BeginReceive(new AsyncCallback(Empfang), null);
             Console.WriteLine("Z21 initialisiert.");
         }
 
-        public override event EventHandler<DataEventArgs> OnReceive;                         //  Allgemeiner Empfang von Daten
-        public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
-        public override event EventHandler<VersionInfoEventArgs> OnGetVersion;               //  40 21 LAN X GET VERSION  2.3 (xx)
-        public override event EventHandler OnTrackPowerOFF;                                  //  40 61 LAN X BC TRACK POWER OFF 2.7 (12) 
-        public override event EventHandler OnTrackPowerON;                                   //  40 61 LAN X BC TRACK POWER ON  2.8 (12) 
-        public override event EventHandler OnProgrammingMode;                                //  40 61 LAN X BC PROGRAMMING MODE 2.9 (12) 
-        public override event EventHandler OnTrackShortCircuit;                              //  40 61 LAN X BC TRACK SHORT CIRCUIT 2.10 (12) 
-        public override event EventHandler<StateEventArgs> OnStatusChanged;                  //  40 62 LAN X STATUS CHANGED 2.12 (13)
-        public override event EventHandler OnStopped;                                        //  40 81 LAN X BC STOPPED 2.14 (14)
-        public override event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion;// 40 F3 LAN X GET FIRMWARE VERSION 2.15 (xx)
-        public override event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged;   //  84    LAN SYSTEMSTATE_DATACHANGED 2.18 (16) 
-        public override event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo;         //  1A    LAN GET HWINFO
-        public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;              //  40 EF LAN X LOCO INFO   4.4 (22)
-        public override event EventHandler<TrackPowerEventArgs> OnTrackPower;                //  ist Zusammenfassung von 
+        public override event EventHandler<DataEventArgs> OnReceive = default!;                         //  Allgemeiner Empfang von Daten
+        public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
+        public override event EventHandler<VersionInfoEventArgs> OnGetVersion = default!;               //  40 21 LAN X GET VERSION  2.3 (xx)
+        public override event EventHandler OnTrackPowerOFF = default!;                                  //  40 61 LAN X BC TRACK POWER OFF 2.7 (12) 
+        public override event EventHandler OnTrackPowerON = default!;                                   //  40 61 LAN X BC TRACK POWER ON  2.8 (12) 
+        public override event EventHandler OnProgrammingMode = default!;                                //  40 61 LAN X BC PROGRAMMING MODE 2.9 (12) 
+        public override event EventHandler OnTrackShortCircuit = default!;                              //  40 61 LAN X BC TRACK SHORT CIRCUIT 2.10 (12) 
+        public override event EventHandler<StateEventArgs> OnStatusChanged = default!;                  //  40 62 LAN X STATUS CHANGED 2.12 (13)
+        public override event EventHandler OnStopped = default!;                                        //  40 81 LAN X BC STOPPED 2.14 (14)
+        public override event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion = default!;// 40 F3 LAN X GET FIRMWARE VERSION 2.15 (xx)
+        public override event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;   //  84    LAN SYSTEMSTATE_DATACHANGED 2.18 (16) 
+        public override event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo = default!;         //  1A    LAN GET HWINFO
+        public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo = default!;              //  40 EF LAN X LOCO INFO   4.4 (22)
+        public override event EventHandler<TrackPowerEventArgs> OnTrackPower = default!;                //  ist Zusammenfassung von 
 
         internal override void Empfang(IAsyncResult res)
         {
             try
             {
-                IPEndPoint RemoteIpEndPoint = null;
-                byte[] received = EndReceive(res, ref RemoteIpEndPoint);
+                IPEndPoint RemoteIpEndPoint = null!;
+                byte[] received = EndReceive(res, ref RemoteIpEndPoint!);
                 BeginReceive(new AsyncCallback(Empfang), null);
                 if (OnReceive != null) OnReceive(this, new DataEventArgs(received));
                 CutTelegramm(received);
@@ -599,13 +599,13 @@ namespace Helper
 
         public override void SetBroadcastFlag()
         {
-            byte[] bytes = new byte[8];
-            bytes[0] = 0x08;
-            bytes[1] = 0;
-            bytes[2] = 0x50;
-            bytes[3] = 0;
+            //byte[] bytes = new byte[8];
+            //bytes[0] = 0x08;
+            //bytes[1] = 0;
+            //bytes[2] = 0x50;
+            //bytes[3] = 0;
             //bytes[4] = 0x00010000;
-            var x = unchecked((int)0x00010000);
+            //var x = /*u*/nchecked((int)0x00010000);
             //Senden(bytes);
         }
     }

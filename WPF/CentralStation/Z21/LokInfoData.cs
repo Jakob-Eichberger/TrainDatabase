@@ -19,7 +19,7 @@ namespace ModelTrainController.Z21
 {
     public class LokInfoData
     {
-        public LokAdresse Adresse;
+        public LokAdresse Adresse = default!;
         public bool Besetzt;
         public DrivingDirection drivingDirection;
         private byte fahrstufe = 2;

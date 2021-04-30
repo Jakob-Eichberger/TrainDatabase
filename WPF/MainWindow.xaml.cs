@@ -93,7 +93,7 @@ namespace Wpf_Application
             catch (Exception e)
             {
                 Logger.Log($"Fehler beim öffnen vom Main Window: ex-Message:{e?.Message ?? ""}\ninnerex: {e?.InnerException?.ToString() ?? ""}\ninner ex message:{e?.InnerException?.Message ?? ""}", LoggerType.Error);
-                MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e.Message}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ich's fixen ;) ) ");
+                MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e?.Message ?? ""}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ich's fixen ;) ) ");
             }
         }
 
@@ -148,12 +148,12 @@ namespace Wpf_Application
 
                 sp.ContextMenu = new();
                 MenuItem miControlLoko = new();
-                miControlLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok steuern" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
+                miControlLoko.Header = item?.Type == VehicleType.Lokomotive ? "Lok steuern" : (item?.Type == VehicleType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
                 miControlLoko.Click += ControlLoko_Click;
                 miControlLoko.Tag = item;
                 sp.ContextMenu.Items.Add(miControlLoko);
                 MenuItem miEditLoko = new();
-                miEditLoko.Header = item.Type == VehicleType.Lokomotive ? "Lok bearbeiten" : (item.Type == VehicleType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
+                miEditLoko.Header = item?.Type == VehicleType.Lokomotive ? "Lok bearbeiten" : (item?.Type == VehicleType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
                 miEditLoko.Tag = item;
                 miEditLoko.Click += EditLoko_Click;
                 sp.ContextMenu.Items.Add(miEditLoko);
@@ -196,8 +196,8 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Method {nameof(ControlLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex.InnerException.Message}", LoggerType.Error);
-                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex.Message}", "Error beim öffnen");
+                Logger.Log($"{DateTime.UtcNow}: Method {nameof(ControlLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex?.InnerException?.Message}", LoggerType.Error);
+                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
 
@@ -221,8 +221,8 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Method {nameof(EditLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex.InnerException.Message}", LoggerType.Error);
-                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex.Message}", "Error beim öffnen");
+                Logger.Log($"{DateTime.UtcNow}: Method {nameof(EditLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex?.InnerException?.Message}", LoggerType.Error);
+                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
 
