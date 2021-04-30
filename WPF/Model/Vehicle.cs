@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ModelTrainController.Z21;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 
 #nullable disable
@@ -19,6 +21,12 @@ namespace Model
         public VehicleType Type { get; set; } = VehicleType.Lokomotive;
 
         public long? Max_Speed { get; set; } = 0;
+
+        [NotMapped]
+        public int CurrentSpeed { get; set; }
+
+        [NotMapped]
+        public DrivingDirection Direction { get; set; }
 
         [Required]
         public long Address { get; set; } = 0;

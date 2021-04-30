@@ -57,6 +57,8 @@ namespace WPF_Application
             }
         }
 
+        public List<Vehicle> DoubleTractionVehicles { get; } = new();
+
         public GridLength VehicleTypeGridLength
         {
             get => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
@@ -187,6 +189,7 @@ namespace WPF_Application
                 controler.GetLocoInfo(LokState.Adresse);
                 controler.SetTrackPowerON();
                 DrawAllFunctions();
+                DrawAllVehicles(db.Vehicles);
                 if (Vehicle.Type.IsLokomotive() && Settings.UsingJoyStick)
                 {
                     Joystick = new(Guid.Empty);
@@ -244,15 +247,46 @@ namespace WPF_Application
             }
         }
 
-        private void SetLocoDrive(int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) => controler.SetLocoDrive(new LokInfoData()
+        public void DrawAllVehicles(IEnumerable<Vehicle> vehicles)
         {
-            Adresse = new LokAdresse((int)vehicle.Address),
-            Besetzt = inUse ?? LokState.Besetzt,
-            drivingDirection = direction ?? LokState.drivingDirection,
-            Fahrstufe = (byte)(speedstep ?? LokState.Fahrstufe)
-        });
+            SPVehilces.Children.Clear();
+            foreach (var item in vehicles.Where(e => e.Id != Vehicle.Id))
+            {
+                CheckBox c = new()
+                {
+                    Content = item.Name,
+                    Tag = item,
+                    Margin = new Thickness(5)
+                };
+                c.Unchecked += VehicleCheckBox_Unchecked;
+                c.Checked += VehicleCheckBox_Checked;
+                SPVehilces.Children.Add(c);
+            }
+        }
 
-        private void SetLocoFunction(ToggleType type, Function function) => controler.SetLocoFunction(new LokAdresse((int)Vehicle.Address), function, type);
+        private void VehicleCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
+            DoubleTractionVehicles.Add(((Vehicle)(sender as CheckBox)!.Tag));
+        }
+
+        private void VehicleCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
+            DoubleTractionVehicles.Remove(((Vehicle)(sender as CheckBox)!.Tag));
+        }
+
+        private void SetLocoDrive(int? locoAdress = null, int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) =>
+            controler.SetLocoDrive(new LokInfoData()
+            {
+                Adresse = new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)),
+                Besetzt = inUse ?? LokState.Besetzt,
+                drivingDirection = direction ?? LokState.drivingDirection,
+                Fahrstufe = (byte)(speedstep ?? LokState.Fahrstufe)
+            });
+
+        private void SetLocoFunction(ToggleType type, Function function, int? locoAdress = null) =>
+            controler.SetLocoFunction(new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)), function, type);
 
         #region Events
         public void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
@@ -374,5 +408,12 @@ namespace WPF_Application
         private void Mw_Activated(object sender, EventArgs e) => IsActive = true;
 
         private void Mw_Deactivated(object sender, EventArgs e) => IsActive = false;
+        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(tbSearch.Text))
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+            else
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
+        }
     }
 }

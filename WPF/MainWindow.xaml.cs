@@ -82,7 +82,7 @@ namespace Wpf_Application
                 //        Controler = null!;
                 //        break;
                 //    case CentralStationType.Z21:
-                Controller = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
+                Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
                 //        break;
                 //    case CentralStationType.ECoS:
                 //        //Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });

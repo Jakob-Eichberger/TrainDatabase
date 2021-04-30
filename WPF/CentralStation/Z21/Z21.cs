@@ -24,9 +24,8 @@ namespace Helper
 {
     public class Z21 : ModelTrainController.CentralStationClient
     {
-        public Z21(StartData startData) : base(startData)
+        public Z21(IPAddress address, int port) : base(address,port)
         {
-
             BeginReceive(new AsyncCallback(Empfang), null);
             Console.WriteLine("Z21 initialisiert.");
         }

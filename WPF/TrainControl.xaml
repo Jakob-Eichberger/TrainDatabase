@@ -33,16 +33,16 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Doppeltraktion" Visibility="{Binding ElementName=mw,Path=VehicleTypeVisbility}">
-            </TabItem>
-            <TabItem Header="Einstellungen">
-                <TabControl>
-                    <TabItem Header="Lok">
-
-                    </TabItem>
-                    <TabItem Header="Funktionen">
-
-                    </TabItem>
-                </TabControl>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="AUTO"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBox Name="tbSearch" Grid.Row="0" Margin="5" Padding="5" TextChanged="SearchBar_TextChanged"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Name="SPVehilces"/>
+                    </ScrollViewer>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

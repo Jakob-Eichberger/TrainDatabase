@@ -9,12 +9,12 @@ namespace ModelTrainController
 {
     public abstract class CentralStationClient : UdpClient
     {
-        public CentralStationClient(StartData startData) : base(startData.LanPort)
+        public CentralStationClient(IPAddress address, int port) : base(port)
         {
-            lanAdresse = IPAddress.Parse(startData.LanAdresse);
-            lanAdresseS = startData.LanAdresse;
-            lanPort = startData.LanPort;
-            Connect(lanAdresse, lanPort);
+            lanAdresse = address;
+            lanAdresseS = address.ToString();
+            lanPort = port;
+            Connect(address, lanPort);
             DontFragment = false;
             EnableBroadcast = false;
         }
@@ -58,7 +58,7 @@ namespace ModelTrainController
         public abstract event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo;         //  1A    LAN GET HWINFO
         public abstract event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;              //  40 EF LAN X LOCO INFO   4.4 (22)
         public abstract event EventHandler<TrackPowerEventArgs> OnTrackPower;                //  ist Zusammenfassung von 
-              //  ist Zusammenfassung von 
+                                                                                             //  ist Zusammenfassung von 
 
         public abstract void GetSerialNumber();
 
@@ -95,7 +95,7 @@ namespace ModelTrainController
         public abstract void SetLocoDrive(LokInfoData data);
 
         public abstract void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType);
-  
+
         public abstract void LogOFF();
 
         public abstract void Reconnect();
