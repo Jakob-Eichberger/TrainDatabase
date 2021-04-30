@@ -18,6 +18,7 @@
                 <RowDefinition Height="AUTO"/>
                 <RowDefinition Height="AUTO"/>
                 <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="AUTO"/>
             </Grid.RowDefinitions>
 
             <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
@@ -26,10 +27,17 @@
             <Label Content="Function" Grid.Row="1" Grid.Column="0"/>
             <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Padding="5" Margin="5" Value="{Binding ElementName=ew,Path=Function.FunctionIndex}"/>
 
-            <Label Content="Function" Grid.Row="2" Grid.Column="0"/>
-            <ComboBox Grid.Row="2" Grid.Column="1"  SelectedItem="{Binding Function.EnumType}" ItemsSource="{Binding EnumList}" Padding="5" Margin="5"/>
+            <Label Content="Type:" Grid.Row="2" Grid.Column="0"/>
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <RadioButton GroupName="type"  Content="Schalter "/>
+                <RadioButton GroupName="type" Content="Taster "/>
+                <RadioButton GroupName="type" Content="Zeit"/>
+            </StackPanel>
 
-            <Button Content="Speicherung und schließen" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Padding="5" Margin="5" Click="SaveChanges_Click"/>
+            <Label Content="Function" Grid.Row="3" Grid.Column="0"/>
+            <ComboBox Grid.Row="3" Grid.Column="1"  SelectedItem="{Binding Function.EnumType}" ItemsSource="{Binding EnumList}" Padding="5" Margin="5"/>
+
+            <Button Content="Speicherung und schließen" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Padding="5" Margin="5" Click="SaveChanges_Click"/>
         </Grid>
     </ScrollViewer>
 

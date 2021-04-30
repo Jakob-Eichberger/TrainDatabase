@@ -30,7 +30,7 @@ namespace WPF_Application
     public partial class EditVehicleWindow : Window, INotifyPropertyChanged
     {
         public readonly Database db;
-        private Vehicle vehicle;
+        private Vehicle vehicle = default!;
         public event PropertyChangedEventHandler? PropertyChanged;
         VehicleService VehicleService { get; }
 
@@ -108,6 +108,7 @@ namespace WPF_Application
         {
             var menu = ((MenuItem)e.Source);
             Function? vehicle = (menu.Tag as Function);
+            if (vehicle is null) return;
             EditFunctionWindow w = new(db, vehicle);
             if (w.ShowDialog() ?? false)
             {

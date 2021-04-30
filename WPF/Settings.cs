@@ -120,12 +120,10 @@ namespace WPF_Application
                     }
                     else
                     {
-                        var i = "";
                     }
                 }
                 catch
                 {
-                    var i = "";
                     //Just do nothing;
                 }
             }

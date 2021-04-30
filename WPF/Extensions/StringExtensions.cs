@@ -16,7 +16,8 @@ namespace WPF_Application.Extensions
 
         public static bool ToBoolean(this string e) => Convert.ToBoolean(Convert.ToInt32(string.IsNullOrEmpty(e) ? "0" : e));
 
-        public static decimal ToDecimal(this string e) => Convert.ToDecimal(Convert.ToInt32(string.IsNullOrEmpty(e) ? "0" : e));
+        public static decimal ToDecimal(this string e) => Convert.ToDecimal(string.IsNullOrEmpty(e) ? 0 : e);
+
         public static long ToInt64(this string e) => Convert.ToInt64(Convert.ToInt32(string.IsNullOrEmpty(e) ? "0" : e));
     }
 }

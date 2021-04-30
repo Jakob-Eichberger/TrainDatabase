@@ -5,12 +5,19 @@ using System.Collections.Generic;
 
 namespace Model
 {
+
+    public enum ButtonType
+    {
+        Switch = 0,
+        PushButton = 1,
+        Timer = 2
+    }
     public partial class Function
     {
         public int Id { get; set; }
         public Vehicle Vehicle { get; set; }
         public int VehicleId { get; set; }
-        public int ButtonType { get; set; }
+        public ButtonType ButtonType { get; set; }
         public string Name { get; set; }
         public decimal Time { get; set; }
         public int Position { get; set; }

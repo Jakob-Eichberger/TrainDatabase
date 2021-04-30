@@ -7,8 +7,10 @@ using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -28,15 +30,15 @@ namespace WPF_Application
     {
         public ModelTrainController.CentralStationClient controler = default!;
         private LokInfoData lokState = new();
-        public Database db;
+        public Database db = default!;
         private int maxDccStep = 126;
         private bool direction = true;
         private int speedStep;
         public event PropertyChangedEventHandler? PropertyChanged;
         private TrackPower trackPower;
-        private Vehicle vehicle;
+        private Vehicle vehicle = default!;
         private bool lastTrackPowerUpdateWasShort = false;
-        readonly Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> functionToJoyStickDictionary;
+        readonly Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> functionToJoyStickDictionary = new();
 
         private JoyStick.JoyStick? Joystick { get; }
 
@@ -96,9 +98,9 @@ namespace WPF_Application
 
         public string GetDirectionString { get => Direction ? "Vorwärts" : "Rückwärts"; }
 
-        private List<Button> FunctionButtons = new();
+        private readonly List<Button> FunctionButtons = new();
 
-        private List<ToggleButton> FunctionToggleButtons = new();
+        private readonly List<ToggleButton> FunctionToggleButtons = new();
 
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the Loko. 
@@ -139,7 +141,7 @@ namespace WPF_Application
                     OnPropertyChanged(nameof(TrackPowerBoolean));
                     OnPropertyChanged(nameof(TrackPowerMessage));
                 }
-                lastTrackPowerUpdateWasShort = (value == TrackPower.Short) ? true : false;
+                lastTrackPowerUpdateWasShort = (value == TrackPower.Short);
 
             }
         }
@@ -217,10 +219,7 @@ namespace WPF_Application
 
                 if (item.ButtonType == 0)
                 {
-                    var tb = new ToggleButton();
-                    tb.Height = 50;
-                    tb.Width = 90;
-                    tb.Content = $"({item.FunctionIndex}) {item.Name}";
+                    ToggleButton tb = new() { Height = 50, Width = 90, Content = $"({item.FunctionIndex}) {item.Name}" };
                     tb.Click += FunctionToggle_Click;
                     tb.Tag = item;
                     tb.Name = $"btn_Function_{item.Id}";
@@ -229,10 +228,7 @@ namespace WPF_Application
                 }
                 else
                 {
-                    var btn = new Button();
-                    btn.Height = 50;
-                    btn.Width = 90;
-                    btn.Content = $"({item.FunctionIndex}) {item.Name}";
+                    Button btn = new() { Height = 50, Width = 90, Content = $"({item.FunctionIndex}) {item.Name}" };
                     btn.PreviewMouseDown += FunctionButtonDown_Click;
                     btn.PreviewMouseUp += FunctionButtonUp_Click;
                     btn.Tag = item;
@@ -268,14 +264,13 @@ namespace WPF_Application
                 {
                     Direction = e.Data.drivingDirection.ConvertToBool();
                 }
-                foreach (var item in e.Data.Functions)
+                foreach (var (functionIndex, state) in e.Data.Functions)
                 {
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        //var x = FunctionButtons.FirstOrDefault(e=> (e.Tag as Function).FunctionIndex == item.Item1);
-                        var x = FunctionToggleButtons.FirstOrDefault(e => (e.Tag as Function).FunctionIndex == item.Item1);
+                        var x = FunctionToggleButtons.FirstOrDefault(e => (e.Tag as Function).FunctionIndex == functionIndex);
                         if (x is not null)
-                            x.IsChecked = item.Item2;
+                            x.IsChecked = state;
                     }));
                 }
             }
@@ -310,12 +305,25 @@ namespace WPF_Application
                                 SetLocoDrive(direction: LokState.drivingDirection.ConvertToBool() ? DrivingDirection.R : DrivingDirection.F);
                             break;
                         default:
-                            var function = db.Functions.Where(e => e.VehicleId == vehicle.Id && e.EnumType == Function.Key).ToList();
-                            if (function is not null)
+                            if (Function.Key == FunctionType.None) return;
+                            var function = Vehicle.Functions.Where(e => e.EnumType == Function.Key).ToList();
+                            if (function is null) return;
+                            foreach (var item in function)
                             {
-                                foreach (var item in function)
+                                switch (item.ButtonType)
                                 {
-
+                                    case ButtonType.Switch:
+                                        if (e.currentValue == Function.Value.maxValue)
+                                            SetLocoFunction(ToggleType.@switch, item);
+                                        break;
+                                    case ButtonType.PushButton:
+                                        if (e.currentValue == Function.Value.maxValue)
+                                            SetLocoFunction(ToggleType.on, item);
+                                        if (e.currentValue == 0)
+                                            SetLocoFunction(ToggleType.off, item);
+                                        break;
+                                    case ButtonType.Timer:
+                                        break;
                                 }
                             }
                             break;
@@ -356,15 +364,15 @@ namespace WPF_Application
             Joystick?.Dispose();
         }
 
-        private void mw_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void Mw_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             SpeedStep = e.Delta < 0 ? SpeedStep - 1 : SpeedStep + 1;
             e.Handled = true;
             SliderLastused = DateTime.Now;
         }
 
-        private void mw_Activated(object sender, EventArgs e) => IsActive = true;
+        private void Mw_Activated(object sender, EventArgs e) => IsActive = true;
 
-        private void mw_Deactivated(object sender, EventArgs e) => IsActive = false;
+        private void Mw_Deactivated(object sender, EventArgs e) => IsActive = false;
     }
 }

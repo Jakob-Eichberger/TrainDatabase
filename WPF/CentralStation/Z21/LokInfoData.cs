@@ -30,6 +30,6 @@ namespace ModelTrainController.Z21
         /// int -> <see cref="Function.FunctionIndex"/> |
         /// bool -> TRUE: ON, FALSE, OFF
         /// </summary>
-        public List<Tuple<int, bool>> Functions = new();
+        public List<(int functionIndex, bool state)> Functions = new();
     }
 }

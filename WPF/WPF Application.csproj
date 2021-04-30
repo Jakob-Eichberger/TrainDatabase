@@ -26,36 +26,36 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Properties\Settings.Designer.cs">
-	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Settings.settings</DependentUpon>
-	  </Compile>
-	  <Compile Update="Import\Z21.xaml.cs">
-	    <SubType>Code</SubType>
-	  </Compile>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+		<Compile Update="Import\Z21.xaml.cs">
+			<SubType>Code</SubType>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Properties\Settings.settings">
-	    <Generator>SettingsSingleFileGenerator</Generator>
-	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-	  </None>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Update="Import\ImportSelecter.xaml">
-	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-	    <SubType>Designer</SubType>
-	  </Page>
-	  <Page Update="Import\Z21.xaml">
-	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-	    <SubType>Designer</SubType>
-	  </Page>
+		<Page Update="Import\ImportSelecter.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="Import\Z21.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Data\VehicleImage\" />
+		<Folder Include="Data\VehicleImage\" />
 	</ItemGroup>
 
 </Project>

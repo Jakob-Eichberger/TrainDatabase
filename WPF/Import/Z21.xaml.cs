@@ -23,7 +23,7 @@ namespace Importer
     public partial class Z21 : Window, INotifyPropertyChanged
     {
 
-        private Database db;
+        private readonly Database db;
         private Visibility isNotLoading;
         private string statusText = "";
         private bool isIndeterminate = true;
@@ -97,7 +97,7 @@ namespace Importer
             db = _db;
         }
 
-        private void btnOpenFileDalog_Click(object sender, RoutedEventArgs e)
+        private void BtnOpenFileDalog_Click(object sender, RoutedEventArgs e)
         {
             DataContext = this;
             OpenFileDialog ofp = new();
@@ -158,8 +158,8 @@ namespace Importer
                 IsIndeterminate = false;
                 await Task.Run(() =>
                 {
-                    MaxProgress = images.Count();
-                    for (int i = 0; i <= (images.Count() - 1); i++)
+                    MaxProgress = images.Count;
+                    for (int i = 0; i <= (images.Count - 1); i++)
                     {
                         StatusText = $"{i + 1}/{MaxProgress} Fotos kopiert.";
                         Progress = i + 1;
@@ -185,76 +185,75 @@ namespace Importer
             await Task.Run(() =>
             {
                 IsIndeterminate = true;
-                using (SqliteConnection connection = new($"Data Source={sqlLiteLocation}"))
+                using SqliteConnection connection = new($"Data Source={sqlLiteLocation}");
+                StatusText = "Importing Table: Functions";
+
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"SELECT id, name, image_name, type, max_speed, address, active, position, drivers_cab ,full_name, speed_display, railway,buffer_lenght,model_buffer_lenght,service_weight,model_weight,rmin,article_number,decoder_type,owner,build_year,owning_since,traction_direction,description,dummy,ip,video,crane,direct_steering FROM vehicles";
+                using (var reader = command.ExecuteReader())
                 {
-                    StatusText = "Importing Table: Functions";
-
-                    connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = @"SELECT id, name, image_name, type, max_speed, address, active, position, drivers_cab ,full_name, speed_display, railway,buffer_lenght,model_buffer_lenght,service_weight,model_weight,rmin,article_number,decoder_type,owner,build_year,owning_since,traction_direction,description,dummy,ip,video,crane,direct_steering FROM vehicles";
-                    using (var reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        db.Vehicles.Add(new()
                         {
-                            db.Vehicles.Add(new()
-                            {
-                                Id = reader.GetString(0).ToInt32(),
-                                Name = reader.GetString(1),
-                                Image_Name = reader.GetString(2),
-                                Type = (VehicleType)reader.GetString(3).ToInt32(),
-                                Max_Speed = reader.GetString(4).ToInt64(),
-                                Address = reader.GetString(5).ToInt64(),
-                                Active = reader.GetString(6).ToBoolean(),
-                                Position = reader.GetString(7).ToInt64(),
-                                Drivers_Cab = reader.GetString(8),
-                                Full_Name = reader.GetString(9),
-                                Speed_Display = reader.GetString(10).ToInt64(),
-                                Railway = reader.GetString(11),
-                                Buffer_Lenght = reader.GetString(12).ToInt64(),
-                                Model_Buffer_Lenght = reader.GetString(13).ToInt64(),
-                                Service_Weight = reader.GetString(14).ToInt64(),
-                                Model_Weight = reader.GetString(15).ToInt64(),
-                                Rmin = reader.GetString(16).ToInt64(),
-                                Article_Number = reader.GetString(17),
-                                Decoder_Type = reader.GetString(18),
-                                Owner = reader.GetString(19),
-                                Build_Year = reader.GetString(20),
-                                Owning_Since = reader.GetString(21),
-                                Traction_Direction = reader.GetString(22).ToBoolean(),
-                                Description = reader.GetString(23),
-                                Dummy = reader.GetString(24).ToBoolean(),
-                                Ip = IPAddress.Parse(reader.GetString(25)),
-                                Video = reader.GetString(26).ToInt64(),
-                                Crane = reader.GetString(27).ToBoolean(),
-                                Direct_Steering = reader.GetString(28).ToInt64(),
-                            });
-                        }
-                        db.SaveChanges();
+                            Id = reader.GetString(0).ToInt32(),
+                            Name = reader.GetString(1),
+                            Image_Name = reader.GetString(2),
+                            Type = (VehicleType)reader.GetString(3).ToInt32(),
+                            Max_Speed = reader.GetString(4).ToInt64(),
+                            Address = reader.GetString(5).ToInt64(),
+                            Active = reader.GetString(6).ToBoolean(),
+                            Position = reader.GetString(7).ToInt64(),
+                            Drivers_Cab = reader.GetString(8),
+                            Full_Name = reader.GetString(9),
+                            Speed_Display = reader.GetString(10).ToInt64(),
+                            Railway = reader.GetString(11),
+                            Buffer_Lenght = reader.GetString(12).ToInt64(),
+                            Model_Buffer_Lenght = reader.GetString(13).ToInt64(),
+                            Service_Weight = reader.GetString(14).ToInt64(),
+                            Model_Weight = reader.GetString(15).ToInt64(),
+                            Rmin = reader.GetString(16).ToInt64(),
+                            Article_Number = reader.GetString(17),
+                            Decoder_Type = reader.GetString(18),
+                            Owner = reader.GetString(19),
+                            Build_Year = reader.GetString(20),
+                            Owning_Since = reader.GetString(21),
+                            Traction_Direction = reader.GetString(22).ToBoolean(),
+                            Description = reader.GetString(23),
+                            Dummy = reader.GetString(24).ToBoolean(),
+                            Ip = IPAddress.Parse(reader.GetString(25)),
+                            Video = reader.GetString(26).ToInt64(),
+                            Crane = reader.GetString(27).ToBoolean(),
+                            Direct_Steering = reader.GetString(28).ToInt64(),
+                        });
                     }
-
-                    command.CommandText = @"SELECT id, vehicle_id, button_type, shortcut, time, position, image_name, function, show_function_number, is_configured  FROM functions;";
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            db.Functions.Add(new()
-                            {
-                                Id = reader.GetString(0).ToInt32(),
-                                Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
-                                ButtonType = reader.GetString(2).ToInt32(),
-                                Name = reader.GetString(3).IsNullOrWhiteSpace() ? reader.GetString(6) : reader.GetString(3),
-                                //Time = reader.GetString(4).ToInt32(),
-                                Position = reader.GetString(5).ToInt32(),
-                                ImageName = reader.GetString(6),
-                                FunctionIndex = reader.GetString(7).ToInt32(),
-                                ShowFunctionNumber = reader.GetString(8).ToBoolean(),
-                                IsConfigured = reader.GetString(9).ToBoolean(),
-                                EnumType = FunctionType.None
-                            });
-                        }
-                        db.SaveChanges();
-                    }
+                    db.SaveChanges();
                 }
+
+                command.CommandText = @"SELECT id, vehicle_id, button_type, shortcut, time, position, image_name, function, show_function_number, is_configured  FROM functions;";
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        db.Functions.Add(new()
+                        {
+                            Id = reader.GetString(0).ToInt32(),
+                            Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
+                            ButtonType = (ButtonType)reader.GetString(2).ToInt32(),
+                            Name = reader.GetString(3).IsNullOrWhiteSpace() ? reader.GetString(6) : reader.GetString(3),
+                            Time = reader.GetString(4).ToDecimal(),
+                            Position = reader.GetString(5).ToInt32(),
+                            ImageName = reader.GetString(6),
+                            FunctionIndex = reader.GetString(7).ToInt32(),
+                            ShowFunctionNumber = reader.GetString(8).ToBoolean(),
+                            IsConfigured = reader.GetString(9).ToBoolean(),
+                            EnumType = FunctionType.None
+                        });
+                    }
+                    db.SaveChanges();
+                }
+                connection.Dispose();
             });
         }
     }

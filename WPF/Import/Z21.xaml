@@ -16,7 +16,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Label Content=".Z21 File auswählen:" Grid.Row="0" Grid.Column="0" Margin="2" Visibility="{Binding ElementName=Z21import,Path=NotLoadingData}"/>
-        <Button x:Name="btnOpenFileDalog"  Grid.Row="0" Grid.Column="1" Margin="2" Content="File auswählen." Click="btnOpenFileDalog_Click" Visibility="{Binding ElementName=Z21import,Path=NotLoadingData}"></Button>
+        <Button x:Name="btnOpenFileDalog"  Grid.Row="0" Grid.Column="1" Margin="2" Content="File auswählen." Click="BtnOpenFileDalog_Click" Visibility="{Binding ElementName=Z21import,Path=NotLoadingData}"></Button>
         <Button Content="Go!" Grid.Row="1" Grid.Column="0" Margin="2" Visibility="{Binding ElementName=Z21import,Path=NotLoadingData}" Click="BtnGo_Click"/>
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding ElementName=Z21import,Path=LoadingData}" >
             <Label Content="Status: "/>

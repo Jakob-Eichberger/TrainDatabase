@@ -30,7 +30,7 @@ namespace Wpf_Application
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private ModelTrainController.CentralStationClient? controler;
-        private Theme theme;
+        private Theme theme = default!;
 
         ModelTrainController.CentralStationClient? Controller
         {
@@ -97,12 +97,16 @@ namespace Wpf_Application
             }
         }
 
-        private void DB_Import_Z21_new(object sender, RoutedEventArgs e)
+        private void DB_Import_new(object sender, RoutedEventArgs e)
         {
-            VehicleGrid.Children.Clear();
-            var x = new Importer.Z21(db);
-            this.Close();
-            x.Show();
+            if (MessageBoxResult.Yes == MessageBox.Show("Sind Sie sicher dass Sie eine neue Datenbank importieren wollen? Wenn Sie Ja drücken kann die aktuelle Datenbank nicht mehr verwendet.", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question))
+            {
+                VehicleGrid.Children.Clear();
+                db.Database.EnsureDeleted();
+                var x = new Importer.ImportSelecter(db);
+                this.Close();
+                x.Show();
+            }
         }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
