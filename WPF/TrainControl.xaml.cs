@@ -42,8 +42,14 @@ namespace WPF_Application
 
         private JoyStick.JoyStick? Joystick { get; }
 
+        /// <summary>
+        /// Used to determin if this window is in focus.
+        /// </summary>
         public new bool IsActive { get; set; } = false;
 
+        /// <summary>
+        /// The <see cref="Vehicle"/> the application is trying to controll
+        /// </summary>
         public Vehicle Vehicle
         {
             get => vehicle;
@@ -69,10 +75,19 @@ namespace WPF_Application
             get => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// True if the speed controll slider is currently used by the user. 
+        /// </summary>
         public bool SliderInUser { get; set; }
 
+        /// <summary>
+        /// The date and time the user last used the speed controll slider.
+        /// </summary>
         public DateTime SliderLastused { get; set; }
 
+        /// <summary>
+        /// The speedstep the vehicle should drive at.
+        /// </summary>
         public int SpeedStep
         {
             get => speedStep; set
@@ -82,11 +97,14 @@ namespace WPF_Application
                     speedStep = value == 1 ? (speedStep > 1 ? 0 : 2) : value;
                     OnPropertyChanged();
                     if (speedStep != (LokState.Fahrstufe))
-                        SetLocoDrive(speedStep);
+                        SetLocoDrive(speedstep: speedStep);
                 }
             }
         }
 
+        /// <summary>
+        /// The direction of the vehicle. 
+        /// </summary>
         public bool Direction
         {
             get => direction; set
@@ -98,14 +116,23 @@ namespace WPF_Application
             }
         }
 
+        /// <summary>
+        /// Returns a string that describes the current direction of travel. 
+        /// </summary>
         public string GetDirectionString { get => Direction ? "Vorwärts" : "Rückwärts"; }
 
+        /// <summary>
+        /// List of all buttons on a grid which controll vehicle <see cref="Function"/>s.
+        /// </summary>
         private readonly List<Button> FunctionButtons = new();
 
+        /// <summary>
+        /// List of all togglebuttons on a grid which controll vehicle <see cref="Function"/>s.
+        /// </summary>
         private readonly List<ToggleButton> FunctionToggleButtons = new();
 
         /// <summary>
-        /// Data directly from the Z21. Not Used to controll the Loko. 
+        /// Data directly from the Z21. Not Used to controll the vehicle. 
         /// </summary>
         public LokInfoData LokState
         {
@@ -120,6 +147,7 @@ namespace WPF_Application
             }
         }
 
+        [Obsolete("Use Vehicle class instead")]
         /// <summary>
         /// This is the Max Acceleration Step.
         /// </summary>
@@ -132,6 +160,9 @@ namespace WPF_Application
             }
         }
 
+        /// <summary>
+        /// Data from the Z21.
+        /// </summary>
         public TrackPower TrackPower
         {
             get => trackPower; set
@@ -148,6 +179,9 @@ namespace WPF_Application
             }
         }
 
+        /// <summary>
+        /// True if the TrackPower is on. False otherwhise. Used to set the trackpower.
+        /// </summary>
         public bool TrackPowerBoolean
         {
             set
@@ -160,6 +194,9 @@ namespace WPF_Application
             get => TrackPower.ToBoolean();
         }
 
+        /// <summary>
+        /// Gets a string describing the current track power mode. (Needed for UI)
+        /// </summary>
         public string TrackPowerMessage
         {
             get => TrackPower.GetString();
@@ -205,6 +242,9 @@ namespace WPF_Application
             }
         }
 
+        /// <summary>
+        /// Functions draws every single Function of a vehicle for the user to click on. 
+        /// </summary>
         public void DrawAllFunctions()
         {
             FunctionGrid.Children.Clear();
@@ -247,6 +287,10 @@ namespace WPF_Application
             }
         }
 
+        /// <summary>
+        /// Draws every vehicle in a list as a checkbox
+        /// </summary>
+        /// <param name="vehicles"></param>
         public void DrawAllVehicles(IEnumerable<Vehicle> vehicles)
         {
             SPVehilces.Children.Clear();
@@ -264,27 +308,50 @@ namespace WPF_Application
             }
         }
 
+        /// <summary>
+        /// Method for event when user checks a checkbox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void VehicleCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
             DoubleTractionVehicles.Add(((Vehicle)(sender as CheckBox)!.Tag));
         }
 
+        /// <summary>
+        /// Method for event when user unchecks a checkbox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void VehicleCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
             DoubleTractionVehicles.Remove(((Vehicle)(sender as CheckBox)!.Tag));
         }
 
+        /// <summary>
+        /// Function used to Set the speed and direction of a Loco. 
+        /// </summary>
+        /// <param name="locoAdress"></param>
+        /// <param name="speedstep"></param>
+        /// <param name="direction"></param>
+        /// <param name="inUse"></param>
         private void SetLocoDrive(int? locoAdress = null, int? speedstep = null, DrivingDirection? direction = null, bool? inUse = null) =>
             controler.SetLocoDrive(new LokInfoData()
             {
-                Adresse = new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)),
+                Adresse = new LokAdresse((int)(locoAdress is null ? (int)Vehicle.Address : locoAdress)),
                 Besetzt = inUse ?? LokState.Besetzt,
                 drivingDirection = direction ?? LokState.drivingDirection,
                 Fahrstufe = (byte)(speedstep ?? LokState.Fahrstufe)
             });
 
+        /// <summary>
+        /// Function used to set a Function on/off or switch its state. 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="function"></param>
+        /// <param name="locoAdress"></param>
         private void SetLocoFunction(ToggleType type, Function function, int? locoAdress = null) =>
             controler.SetLocoFunction(new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)), function, type);
 
@@ -322,8 +389,7 @@ namespace WPF_Application
         {
             try
             {
-
-                if (this.IsActive)
+                if (IsActive)
                 {
                     var i = e.joyStickOffset;
                     var Function = functionToJoyStickDictionary.Where(f => f.Value.joyStick == e.joyStickOffset).FirstOrDefault();
@@ -376,6 +442,14 @@ namespace WPF_Application
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
+        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(tbSearch.Text))
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+            else
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
+        }
         #endregion
 
         #region Click_Events
@@ -392,6 +466,7 @@ namespace WPF_Application
         private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
         #endregion
 
+        #region Window Events
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
             SetLocoDrive(inUse: false);
@@ -408,12 +483,7 @@ namespace WPF_Application
         private void Mw_Activated(object sender, EventArgs e) => IsActive = true;
 
         private void Mw_Deactivated(object sender, EventArgs e) => IsActive = false;
-        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
-            else
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
-        }
+        #endregion
+
     }
 }

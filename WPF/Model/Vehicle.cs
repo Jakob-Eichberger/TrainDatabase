@@ -22,6 +22,8 @@ namespace Model
 
         public long? Max_Speed { get; set; } = 0;
 
+        public long Speed​​step { get; set; } = 128;
+
         [NotMapped]
         public int CurrentSpeed { get; set; }
 
