@@ -45,11 +45,33 @@ namespace WPF_Application
             if (Function is null) throw new ApplicationException($"Funktion  mit der ID '{function.Id} konnte nicht geöffnet werden!");
             functionService = new(db);
             this.Name = Function.Name;
+            BtnSaveAndClose.Click += SaveChanges_Click;
+            BtnSaveAndClose.Content = "Speicherung und schließen";
+        }
+
+        public EditFunctionWindow(Database _db)
+        {
+            this.DataContext = this;
+            Function = new();
+            InitializeComponent();
+            if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
+            db = _db;
+            functionService = new(db);
+            this.Name = "Neue Funktion";
+            BtnSaveAndClose.Click += AddFunction_Click;
+            BtnSaveAndClose.Content = "Speicherung und schließen";
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
+        {
+            functionService.Update(Function);
+            this.DialogResult = true;
+            this.Close();
+        }
+
+        private void AddFunction_Click(object sender, RoutedEventArgs e)
         {
             functionService.Update(Function);
             this.DialogResult = true;

@@ -16,7 +16,7 @@ namespace WPF_Application.Services
 
         public IQueryable<TEntity> GetTable<TEntity>() where TEntity : class => _db.Set<TEntity>();
 
-        protected void AddAsync<TEntity>(TEntity obj) where TEntity : class
+        protected void Add<TEntity>(TEntity obj) where TEntity : class
         {
             _db.Set<TEntity>().Add(obj);
 

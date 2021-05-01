@@ -37,7 +37,7 @@
             <Label Content="Function" Grid.Row="3" Grid.Column="0"/>
             <ComboBox Grid.Row="3" Grid.Column="1"  SelectedItem="{Binding Function.EnumType}" ItemsSource="{Binding EnumList}" Padding="5" Margin="5"/>
 
-            <Button Content="Speicherung und schließen" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Padding="5" Margin="5" Click="SaveChanges_Click"/>
+            <Button Name="BtnSaveAndClose" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Padding="5" Margin="5"/>
         </Grid>
     </ScrollViewer>
 

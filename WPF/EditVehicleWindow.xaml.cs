@@ -65,6 +65,19 @@ namespace WPF_Application
                 Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", LoggerType.Warning);
             }
             DrawAllFunctions();
+            btnSaveVehicleAndClose.Click += SaveChanges_Click;
+        }
+
+        public EditVehicleWindow(Database _db)
+        {
+            this.DataContext = this;
+            Vehicle = new();
+            InitializeComponent();
+            if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
+            db = _db;
+            VehicleService = new(db);
+            this.Title = "Neues Fahrzeug";
+            btnSaveVehicleAndClose.Click += AddVehicle_Click;
         }
 
         private void DrawAllFunctions()
@@ -131,6 +144,13 @@ namespace WPF_Application
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
             VehicleService.Update(Vehicle);
+            this.DialogResult = true;
+            this.Close();
+        }
+
+        private void AddVehicle_Click(object sender, RoutedEventArgs e)
+        {
+            VehicleService.Add(Vehicle);
             this.DialogResult = true;
             this.Close();
         }

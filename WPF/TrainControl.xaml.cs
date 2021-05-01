@@ -412,7 +412,7 @@ namespace WPF_Application
                             break;
                         case FunctionType.ChangeDirection:
                             if (e.currentValue == e.maxValue)
-                                SetLocoDrive(direction: LokInfo.DrivingDirection);
+                                SetLocoDrive(direction: !LokInfo.DrivingDirection);
                             break;
                         default:
                             if (Function.Key == FunctionType.None) return;

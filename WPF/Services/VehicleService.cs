@@ -13,5 +13,10 @@ namespace WPF_Application.Services
         {
             base.Update<Vehicle>(vehicle);
         }
+
+        public void Add(Vehicle vehicle)
+        {
+            base.Add<Vehicle>(vehicle);
+        }
     }
 }

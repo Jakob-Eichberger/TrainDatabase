@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using Model;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
@@ -248,7 +249,7 @@ namespace Importer
                             FunctionIndex = reader.GetString(7).ToInt32(),
                             ShowFunctionNumber = reader.GetString(8).ToBoolean(),
                             IsConfigured = reader.GetString(9).ToBoolean(),
-                            EnumType = FunctionType.None
+                            EnumType = GetFunctionType(reader.GetString(6))
                         });
                     }
                     db.SaveChanges();
@@ -256,5 +257,27 @@ namespace Importer
                 connection.Dispose();
             });
         }
+        private FunctionType GetFunctionType(string name)
+        {
+            Dictionary<string, FunctionType> dic = new();
+            dic.Add("sound", FunctionType.Sound);
+            dic.Add("sound2", FunctionType.Sound);
+            dic.Add("main_beam", FunctionType.Highbeam);
+            dic.Add("light", FunctionType.Lowbeam);
+            dic.Add("main_beam2", FunctionType.Lowbeam);
+            dic.Add("horn_high", FunctionType.HornHigh);
+            dic.Add("horn_low", FunctionType.HornLow);
+            dic.Add("hump_gear", FunctionType.Humpgear);
+            dic.Add("curve_sound", FunctionType.CurveSound);
+            dic.Add("compressor", FunctionType.Compressor);
+            dic.Add("cabin", FunctionType.Cabin);
+            dic.Add("cabin_light", FunctionType.CabinLight);
+            dic.Add("mute", FunctionType.Mute);
+            if (dic.TryGetValue(name, out FunctionType func))
+                return func;
+            else
+                return FunctionType.None;
+        }
+
     }
 }

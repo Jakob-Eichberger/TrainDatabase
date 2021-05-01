@@ -248,5 +248,15 @@ namespace Wpf_Application
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
+
+        private void NewVehicle_Click(object sender, RoutedEventArgs e)
+        {
+            EditVehicleWindow w = new(db);
+            if (w.ShowDialog() ?? false)
+            {
+                Search();
+                RemoveUnneededImages();
+            }
+        }
     }
 }
