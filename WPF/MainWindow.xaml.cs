@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPF_Application;
@@ -87,8 +88,14 @@ namespace Wpf_Application
                 //}
                 RemoveUnneededImages();
             }
+            catch (System.Net.Sockets.SocketException)
+            {
+                Close();
+                MessageBox.Show("Achtung mehr als eine Instanz der Software kann nicht geöffnet werden!");
+            }
             catch (Exception e)
             {
+                Close();
                 Logger.Log($"Fehler beim öffnen vom Main Window: ex-Message:{e?.Message ?? ""}\ninnerex: {e?.InnerException?.ToString() ?? ""}\ninner ex message:{e?.InnerException?.Message ?? ""}", LoggerType.Error);
                 MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e?.Message ?? ""}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ich's fixen ;) ) ");
             }
@@ -206,7 +213,7 @@ namespace Wpf_Application
                 Vehicle? vehicle = (menu.Tag as Vehicle);
                 if (vehicle is not null)
                 {
-                    EditVehicleWindow evw = new(db, vehicle);
+                    EditVehicleWindow evw = new(db, vehicle, controler);
                     if (evw.ShowDialog() ?? false)
                     {
                         Search();
@@ -251,7 +258,7 @@ namespace Wpf_Application
 
         private void NewVehicle_Click(object sender, RoutedEventArgs e)
         {
-            EditVehicleWindow w = new(db);
+            EditVehicleWindow w = new(db, controler);
             if (w.ShowDialog() ?? false)
             {
                 Search();

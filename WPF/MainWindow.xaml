@@ -20,7 +20,7 @@
                 <MenuItem Header="Neue Datenbank importieren" Click="DB_Import_new"/>
             </MenuItem>
             <MenuItem Header="Fahrzeuge">
-                <MenuItem Header="Hinzufügen" Click="NewVehicle_Click" IsEnabled="False"/>
+                <MenuItem Header="Hinzufügen" Click="NewVehicle_Click" IsEnabled="True"/>
             </MenuItem>
             <MenuItem Header="Optionen" Click="Settings_Click">
             </MenuItem>

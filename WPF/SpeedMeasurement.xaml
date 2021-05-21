@@ -12,6 +12,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="AUTO"/>
             <RowDefinition Height="30" MinHeight="30"/>
+            <RowDefinition Height="AUTO"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -34,6 +35,19 @@
         <ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" x:Name="svLog" VerticalScrollBarVisibility="Auto" >
             <TextBlock Name="tbLog" ></TextBlock>
         </ScrollViewer>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="AUTO"/>
+                <ColumnDefinition Width="AUTO"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="AUTO"/>
+            </Grid.RowDefinitions>
+
+            <Button Content="Start"  Margin="5" Padding="5" Grid.Column="0" />
+            <Button Content="Stop"  Margin="5" Padding="5"  IsEnabled="False" Grid.Column="1"/>
+        </Grid>
 
     </Grid>
 </Window>

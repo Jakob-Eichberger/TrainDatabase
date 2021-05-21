@@ -184,7 +184,7 @@ namespace WPF_Application
                 _sshClient.Disconnect();
             }
 
-            Log($"DONE!\n");
+            Log($"\nDONE!");
         }
 
         private async Task GetNextResult(int speed)
@@ -201,7 +201,7 @@ namespace WPF_Application
                 throw new ApplicationException("Script am Pi ist unerwarted abgestürtzt.");
             if (!decimal.TryParse(result.Result, out decimal mps))
                 throw new ApplicationException($"Wert vom Raspberry Pi '{result.Result}' konte nicht als decimal geparsed werden.");
-            SetTractionSpeed(speed, direction, Math.Round((((DistanceBetweenSensors_Measurement / 100.0m) / mps)) * 87, 2));
+            SetTractionSpeed(speed, direction, Math.Round(((DistanceBetweenSensors_Measurement / 100.0m) / mps) * 87, 2));
             if (speed < 10)
                 await Task.Delay((int)new TimeSpan(0, 0, 10).TotalMilliseconds);
             else if (speed < 40)
@@ -235,10 +235,10 @@ namespace WPF_Application
             await Task.Delay(1500);
             if (!(speed == _lokInfo.Speed && _lokInfo.DrivingDirection == direction))
             {
-                Log($"failed \n");
+                Log($"failed ");
                 await SetLocoDrive(speed, direction);
             }
-            else { Log($"OK\n"); }
+            else { Log($"OK"); }
         }
 
         private void SetTractionSpeed(int speedStep, bool direction, decimal speed)
@@ -298,13 +298,11 @@ namespace WPF_Application
             // Add each point to the new series
             linePoints_Forward.Points.Clear();
             linePoints_Forward.Points.AddRange(PointsForward);
-
             LineSeries linePoints_Backward = new LineSeries()
             { StrokeThickness = 1, MarkerSize = 1, Title = "Rückwärts", Color = OxyPlot.OxyColors.Blue };
             // Add each point to the new series
             linePoints_Backward.Points.Clear();
             linePoints_Backward.Points.AddRange(PointsBackward);
-
             // Add Chart Title
             //model.Title = "Model Title";
 

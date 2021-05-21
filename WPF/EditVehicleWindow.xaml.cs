@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using Model;
+using ModelTrainController;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -22,20 +23,29 @@ namespace WPF_Application
     public partial class EditVehicleWindow : Window, INotifyPropertyChanged
     {
         public readonly Database db;
-        private Vehicle vehicle = default!;
+        private Vehicle _vehicle = default!;
+        public readonly CentralStationClient _controller;
         public event PropertyChangedEventHandler? PropertyChanged;
         VehicleService VehicleService { get; }
 
+        public int DistanceBetweenSensors_Measurement { get { return Settings.GetInt(nameof(DistanceBetweenSensors_Measurement)) ?? 20; } set { Settings.Set(nameof(DistanceBetweenSensors_Measurement), value.ToString()); } }
+
+        public int Start_Measurement { get { return Settings.GetInt(nameof(Start_Measurement)) ?? 2; } set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
+
+        public int End_Measurement { get { return Settings.GetInt(nameof(End_Measurement)) ?? 127; } set { Settings.Set(nameof(End_Measurement), value.ToString()); } }
+
+        public int Step_Measurement { get { return Settings.GetInt(nameof(Step_Measurement)) ?? 1; } set { Settings.Set(nameof(Step_Measurement), value.ToString()); } }
+
         public Vehicle Vehicle
         {
-            get => vehicle; set
+            get => _vehicle; set
             {
-                vehicle = value;
+                _vehicle = value;
                 OnPropertyChanged();
             }
         }
 
-        public EditVehicleWindow(Database _db, Vehicle _vehicle)
+        public EditVehicleWindow(Database _db, Vehicle _vehicle, CentralStationClient controller)
         {
             this.DataContext = this;
             InitializeComponent();
@@ -45,7 +55,7 @@ namespace WPF_Application
             Vehicle = db.Vehicles.Include(i => i.Functions).FirstOrDefault(e => e.Id == _vehicle.Id) ?? throw new ApplicationException($"Fahrzeg mit der Id'{_vehicle.Id}' wurde nicht in der Datenbank gefunden!");
             VehicleService = new(db);
             this.Title = Vehicle.Full_Name.IsNullOrWhiteSpace() ? Vehicle.Name : Vehicle.Full_Name;
-
+            DrawTable();
             try
             {
                 string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\";
@@ -66,9 +76,10 @@ namespace WPF_Application
             }
             DrawAllFunctions();
             btnSaveVehicleAndClose.Click += SaveChanges_Click;
+            this._controller = controller;
         }
 
-        public EditVehicleWindow(Database _db)
+        public EditVehicleWindow(Database _db, CentralStationClient controller)
         {
             this.DataContext = this;
             Vehicle = new();
@@ -78,6 +89,8 @@ namespace WPF_Application
             VehicleService = new(db);
             this.Title = "Neues Fahrzeug";
             btnSaveVehicleAndClose.Click += AddVehicle_Click;
+            this._controller = controller;
+            DrawTable();
         }
 
         private void DrawAllFunctions()
@@ -102,6 +115,57 @@ namespace WPF_Application
                 Grid.SetRow(enumLabel, functionGrid.RowDefinitions.Count);
                 SPFunctions.Children.Add(enumLabel);
             }
+        }
+
+        private void DrawTable()
+        {
+            SPTable.Children.Clear();
+            Grid functionGrid = new();
+            functionGrid.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+            //functionGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            int row = functionGrid.RowDefinitions.Count();
+            functionGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            Label stepColumnName = new() { Content = $"Step", Margin = new Thickness(0, 0, 2, 5), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+            Grid.SetColumn(stepColumnName, 0);
+            Grid.SetRow(stepColumnName, row);
+            functionGrid.Children.Add(stepColumnName);
+
+            Label forwardColumnName = new() { Content = $"M/S (V)", Margin = new Thickness(0, 0, 2, 5), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+            Grid.SetColumn(forwardColumnName, 1);
+            Grid.SetRow(forwardColumnName, row);
+            functionGrid.Children.Add(forwardColumnName);
+
+            Label backwardColumnName = new() { Content = $"M/S (R)", Margin = new Thickness(0, 0, 2, 5), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+            Grid.SetColumn(backwardColumnName, 2);
+            Grid.SetRow(backwardColumnName, row);
+            functionGrid.Children.Add(backwardColumnName);
+
+            for (int i = Start_Measurement; i <= End_Measurement; i += Step_Measurement)
+            {
+
+                row = functionGrid.RowDefinitions.Count();
+                functionGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                Label step = new() { Content = $"Step {i}", Margin = new Thickness(0, 0, 2, 1), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+                Grid.SetColumn(step, 0);
+                Grid.SetRow(step, row);
+                functionGrid.Children.Add(step);
+
+                Label forward = new() { Content = $"{(_vehicle.TractionForward[i] is null ? "-" : _vehicle.TractionForward[i])} m/s", Margin = new Thickness(0, 0, 2, 1), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+                Grid.SetColumn(forward, 1);
+                Grid.SetRow(forward, row);
+                functionGrid.Children.Add(forward);
+
+                Label backward = new() { Content = $"{(_vehicle.TractionBackward[i] is null ? "-" : _vehicle.TractionBackward[i])}  m/s", Margin = new Thickness(0, 0, 2, 1), HorizontalAlignment = System.Windows.HorizontalAlignment.Left };
+                Grid.SetColumn(backward, 2);
+                Grid.SetRow(backward, row);
+                functionGrid.Children.Add(backward);
+
+            }
+            SPTable.Children.Add(functionGrid);
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
@@ -153,6 +217,25 @@ namespace WPF_Application
             VehicleService.Add(Vehicle);
             this.DialogResult = true;
             this.Close();
+        }
+
+        private void btnLokEinmessen_Click(object sender, RoutedEventArgs e)
+        {
+            SpeedMeasurement messen = new(_vehicle, _controller, db);
+            if (messen.ShowDialog() ?? false)
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Exports the current traction table to a csv. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnLokEinmessen_export_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

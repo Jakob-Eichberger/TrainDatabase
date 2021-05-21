@@ -72,7 +72,7 @@ namespace WPF_Application.JoyStick
                         {
                             if (OnValueUpdate is not null) OnValueUpdate(this, new JoyStickUpdateEventArgs(state.Offset, state.Value, JoyStickMaxValue.TryGetValue(state.Offset, out int maxval) ? maxval : 0));
                         }
-                        Thread.Sleep(rate);
+                        //Thread.Sleep(rate);
                     }
                 }
                 catch (SharpDX.SharpDXException ex)
