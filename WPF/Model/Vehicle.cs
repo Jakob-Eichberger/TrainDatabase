@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
@@ -77,6 +78,17 @@ namespace Model
         public Epoch Epoche { get; set; } = Epoch.@default;
 
         public List<Function> Functions { get; set; } = new();
+
+        public decimal?[] TractionForward = new decimal?[128];
+        public decimal?[] TractionBackward = new decimal?[128];
+
+        /// <summary>
+        /// Gets the real world speed for a given speed step and direction
+        /// </summary>
+        /// <param name="speed"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        public decimal? GetTractionSpeed(int speed, bool direction) => (speed <= 127 && speed >= 2) ? (direction ? TractionForward[speed] : TractionBackward[speed]) : throw new ArgumentOutOfRangeException();
 
     }
 }

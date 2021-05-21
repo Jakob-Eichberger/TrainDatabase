@@ -79,6 +79,11 @@ namespace WPF_Application
             }
         }
 
+        /// <summary>
+        /// Sets a value for a key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public static void Set(string key, string value)
         {
             if (key.IsNullOrWhiteSpace()) return;
@@ -97,10 +102,40 @@ namespace WPF_Application
             }
         }
 
-        public static string Get(string key)
-        {
-            return ConfigurationManager.AppSettings[key] ?? "";
-        }
+        /// <summary>
+        /// Tries to get the value for the key as a <see cref="string"/>. Does not return null.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string Get(string key) => ConfigurationManager.AppSettings[key] ?? "";
+
+        /// <summary>
+        /// Tries to get the value for the key as a <see cref="bool"/>.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static bool? GetBool(string key) => bool.TryParse(Get(key), out bool result) ? result : null;
+
+        /// <summary>
+        /// Tries to get the value for the key as a <see cref="int"/>.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static int? GetInt(string key) => int.TryParse(Get(key), out int result) ? result : null;
+
+        /// <summary>
+        /// Tries to get the value for the key as a <see cref="long"/>.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static long? GetLong(string key) => long.TryParse(Get(key), out long result) ? result : null;
+
+        /// <summary>
+        /// Tries to get the value for the key as a <see cref="decimal"/>.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static decimal? GetDecimal(string key) => decimal.TryParse(Get(key), out decimal result) ? result : null;
 
         public static Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> FunctionToJoyStickDictionary()
         {

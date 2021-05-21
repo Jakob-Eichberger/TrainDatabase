@@ -29,7 +29,7 @@ namespace WPF_Application
         public ModelTrainController.CentralStationClient controler = default!;
         private LokInfoData lokInfo = new();
         public Database db = default!;
-        private int maxDccStep = 126;
+        private int maxDccStep = 127;
         private bool direction = true;
         private int speedStep;
         public event PropertyChangedEventHandler? PropertyChanged;
