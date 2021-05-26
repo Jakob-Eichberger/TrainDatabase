@@ -213,7 +213,7 @@ namespace Wpf_Application
                 Vehicle? vehicle = (menu.Tag as Vehicle);
                 if (vehicle is not null)
                 {
-                    EditVehicleWindow evw = new(db, vehicle, controler);
+                    EditVehicleWindow evw = new(db, vehicle);
                     if (evw.ShowDialog() ?? false)
                     {
                         Search();
@@ -258,7 +258,7 @@ namespace Wpf_Application
 
         private void NewVehicle_Click(object sender, RoutedEventArgs e)
         {
-            EditVehicleWindow w = new(db, controler);
+            EditVehicleWindow w = new(db);
             if (w.ShowDialog() ?? false)
             {
                 Search();
