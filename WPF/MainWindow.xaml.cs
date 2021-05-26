@@ -27,18 +27,9 @@ namespace Wpf_Application
         private readonly Database db = new();
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private ModelTrainController.CentralStationClient? controler;
         private Theme theme = default!;
 
-        ModelTrainController.CentralStationClient? Controller
-        {
-            get => controler; set
-            {
-                controler = value;
-                if (controler is not null)
-                    controler.LogOn();
-            }
-        }
+        ModelTrainController.CentralStationClient? Controller { get; set; }
 
         public Theme Theme
         {
@@ -81,6 +72,7 @@ namespace Wpf_Application
                 //        break;
                 //    case CentralStationType.Z21:
                 Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
+                Controller.LogOn();
                 //        break;
                 //    case CentralStationType.ECoS:
                 //        //Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
@@ -96,7 +88,7 @@ namespace Wpf_Application
             catch (Exception e)
             {
                 Close();
-                Logger.Log($"Fehler beim öffnen vom Main Window: ex-Message:{e?.Message ?? ""}\ninnerex: {e?.InnerException?.ToString() ?? ""}\ninner ex message:{e?.InnerException?.Message ?? ""}", LoggerType.Error);
+                Logger.Log($"Fehler beim start", true, e);
                 MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e?.Message ?? ""}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ich's fixen ;) ) ");
             }
         }
@@ -181,7 +173,7 @@ namespace Wpf_Application
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log($"Deleting file failed: {ex.Message}", LoggerType.Warning);
+                    Logger.Log($"Deleting file failed", true, ex);
                 }
 
             });
@@ -200,7 +192,7 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Method {nameof(ControlLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex?.InnerException?.Message}", LoggerType.Error);
+                Logger.Log($"-", true, ex);
                 MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
@@ -225,7 +217,7 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Method {nameof(EditLoko_Click)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex?.InnerException?.Message}", LoggerType.Error);
+                Logger.Log($"-", true, ex);
                 MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
@@ -264,6 +256,11 @@ namespace Wpf_Application
                 Search();
                 RemoveUnneededImages();
             }
+        }
+
+        private void MeasureLoko_Click(object sender, RoutedEventArgs e)
+        {
+            new Einmessen(db, Controller).Show();
         }
     }
 }

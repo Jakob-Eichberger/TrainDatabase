@@ -63,7 +63,7 @@ namespace WPF_Application
             }
         }
 
-        public Einmessen(Database _db, Vehicle _vehicle, CentralStationClient controller)
+        public Einmessen(Database _db, CentralStationClient controller)
         {
             InitializeComponent();
 
@@ -390,7 +390,7 @@ namespace WPF_Application
             catch (SshAuthenticationException ex) { MessageBox.Show($"Authentifizierung hat fehlgeschlagen: {ex.Message}"); }
             catch (Exception ex)
             {
-                Logger.Log($"Error in Function {nameof(btnStartSpeedMeasurement_Click)}: {ex.Message}", LoggerType.Error);
+                Logger.Log($"", true, ex);
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex.Message}");
             }
             finally

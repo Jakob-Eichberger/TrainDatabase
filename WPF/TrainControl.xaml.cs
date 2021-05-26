@@ -230,7 +230,7 @@ namespace WPF_Application
             catch (Exception ex)
             {
                 Close();
-                Logger.Log($"{DateTime.UtcNow}: {ex}", LoggerType.Error);
+                Logger.Log($"-", true, ex);
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

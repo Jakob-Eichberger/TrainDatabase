@@ -21,6 +21,7 @@
             </MenuItem>
             <MenuItem Header="Fahrzeuge">
                 <MenuItem Header="Hinzufügen" Click="NewVehicle_Click" IsEnabled="True"/>
+                <MenuItem Header="Lok einmessen" Click="MeasureLoko_Click" IsEnabled="True"/>
             </MenuItem>
             <MenuItem Header="Optionen" Click="Settings_Click">
             </MenuItem>

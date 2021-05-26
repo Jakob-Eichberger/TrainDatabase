@@ -84,7 +84,7 @@ namespace WPF_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", LoggerType.Warning);
+                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", false, ex);
             }
         }
 

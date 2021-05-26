@@ -174,7 +174,7 @@ namespace Importer
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Method {nameof(ImportAsync)} threw an exception! \nMessage: {ex.Message}\nIE: {ex.InnerException}\nIE Message: {ex?.InnerException?.Message}", LoggerType.Error);
+                Logger.Log($"-", true, ex);
                 NotLoadingData = Visibility.Visible;
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex?.Message}");
             }
