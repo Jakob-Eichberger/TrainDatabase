@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -55,13 +56,10 @@ namespace WPF_Application
             {
                 vehicle = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(VehicleTypeGridLength));
-                OnPropertyChanged(nameof(VehicleTypeVisbility));
-
             }
         }
 
-        public List<(LokInfoData lokinfo, bool invert)> DoubleTractionVehicles { get; } = new();
+        public List<(long Address, bool TractionDirection, (decimal?[] Forwards, decimal?[] Backwards) Traction)> DoubleTractionVehicles { get; } = new();
 
         public GridLength VehicleTypeGridLength
         {
@@ -109,7 +107,6 @@ namespace WPF_Application
             {
                 direction = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(GetDirectionString));
                 SetLocoDrive(direction: value);
             }
         }
@@ -168,11 +165,8 @@ namespace WPF_Application
                 {
                     trackPower = value;
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(TrackPowerBoolean));
-                    OnPropertyChanged(nameof(TrackPowerMessage));
                 }
-                lastTrackPowerUpdateWasShort = (value == TrackPower.Short);
-
+                lastTrackPowerUpdateWasShort = value == TrackPower.Short;
             }
         }
 
@@ -213,6 +207,7 @@ namespace WPF_Application
                 Vehicle = db.Vehicles.Include(e => e.Functions).FirstOrDefault(e => e.Id == _vehicle.Id)!;
                 LokInfo = new((byte)Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
+                DoubleTractionVehicles.Add((Vehicle.Address, false, (Vehicle.TractionForward, Vehicle.TractionBackward)));
 
                 controler.OnGetLocoInfo += new EventHandler<GetLocoInfoEventArgs>(OnGetLocoInfoEventArgs);
                 controler.OnTrackPowerOFF += new EventHandler(OnGetTrackPowerOffEventArgs);
@@ -230,12 +225,13 @@ namespace WPF_Application
                     Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
                     functionToJoyStickDictionary = Settings.FunctionToJoyStickDictionary();
                 }
+
             }
             catch (Exception ex)
             {
                 Close();
-                Logger.Log($"{DateTime.UtcNow}: '{(string.IsNullOrWhiteSpace(ex.Message) ? "Keine Exception Message" : ex.Message)}' - Inner Exception: {ex?.InnerException?.Message ?? "Keine Inner Exception"}", LoggerType.Error);
-                MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "Keine Exception Message" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                Logger.Log($"{DateTime.UtcNow}: {ex}", LoggerType.Error);
+                MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -312,8 +308,9 @@ namespace WPF_Application
         /// <param name="e"></param>
         private void VehicleCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
-            DoubleTractionVehicles.Add(new(new(((Vehicle)(sender as CheckBox)!.Tag).Address), false));
+            if (((sender as CheckBox)?.Tag ?? null) is null) return;
+            var temp = (Vehicle)(sender as CheckBox)!.Tag;
+            DoubleTractionVehicles.Add((temp.Address, temp.Traction_Direction, (temp.TractionForward, temp.TractionForward)));
             controler.GetLocoInfo(new(((Vehicle)(sender as CheckBox)!.Tag).Address));
         }
 
@@ -324,8 +321,9 @@ namespace WPF_Application
         /// <param name="e"></param>
         private void VehicleCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (sender is not CheckBox || (sender as CheckBox)!.Tag is null) return;
-            DoubleTractionVehicles.Remove(new(new(((Vehicle)(sender as CheckBox)!.Tag).Address), false));
+            if (((sender as CheckBox)?.Tag ?? null) is null) return;
+            var temp = (Vehicle)(sender as CheckBox)!.Tag;
+            DoubleTractionVehicles.Remove((temp.Address, temp.Traction_Direction, (temp.TractionForward, temp.TractionForward)));
         }
 
         /// <summary>
@@ -335,22 +333,21 @@ namespace WPF_Application
         /// <param name="speedstep"></param>
         /// <param name="direction"></param>
         /// <param name="inUse"></param>
-        private void SetLocoDrive(int? speedstep = null, bool? direction = null, bool? inUse = null)
+        private async Task SetLocoDrive(int? speedstep = null, bool? direction = null, bool inUse = true) => await Task.Run(() =>
         {
-            var dat = new LokInfoData()
+            direction ??= LokInfo.DrivingDirection;
+            foreach (var (Adresse, InvertTraction, Traction) in DoubleTractionVehicles)
             {
-                Adresse = new LokAdresse(Vehicle.Address),
-                InUse = inUse ?? LokInfo.InUse,
-                DrivingDirection = direction ?? LokInfo.DrivingDirection,
-                Speed = (byte)(speedstep ?? LokInfo.Speed)
-            };
-            controler.SetLocoDrive(dat);
-            foreach (var item in DoubleTractionVehicles)
-            {
-                dat.Adresse = item.lokinfo.Adresse;
+                var dat = new LokInfoData()
+                {
+                    Adresse = new(Adresse),
+                    DrivingDirection = Adresse == Vehicle.Address ? (bool)direction : (bool)(InvertTraction ? direction : !direction),
+                    InUse = inUse,
+                    Speed = (byte)(speedstep ?? LokInfo.Speed)
+                };
                 controler.SetLocoDrive(dat);
             }
-        }
+        });
 
         /// <summary>
         /// Function used to set a Function on/off or switch its state. 
@@ -366,7 +363,7 @@ namespace WPF_Application
         #region Events
         public void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
         {
-            if (e.Data.Adresse.Value == Vehicle.Address || DoubleTractionVehicles.Where(f => f.lokinfo.Adresse == e.Data.Adresse).Any())
+            if (e.Data.Adresse.Value == Vehicle.Address || DoubleTractionVehicles.Where(f => f.Address == e.Data.Adresse.Value).Any())
             {
                 if (e.Data.Adresse.Value == Vehicle.Address)
                 {
@@ -382,8 +379,6 @@ namespace WPF_Application
                         }));
                     }
                 }
-                else
-                    DoubleTractionVehicles.Where(f => f.lokinfo.Adresse == e.Data.Adresse).ToList().ForEach(i => i.lokinfo = e.Data);
             }
         }
 
@@ -448,9 +443,9 @@ namespace WPF_Application
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null!)
+        protected void OnPropertyChanged()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
         }
 
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)

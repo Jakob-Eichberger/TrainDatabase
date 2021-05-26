@@ -82,6 +82,7 @@ namespace WPF_Application
             FillPointsList();
             DrawTable();
             PlotSpeedData();
+            DrawAllFunctions();
             try
             {
                 string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\";
@@ -111,9 +112,7 @@ namespace WPF_Application
             this.Title = "Neues Fahrzeug";
             this._controller = controller;
             btnSaveVehicleAndClose.Click += AddVehicle_Click;
-            _controller.OnGetLocoInfo += OnGetLocoInfoEventArgs;
-            DrawTable();
-            PlotSpeedData();
+            TabItemEinmessen.IsEnabled = false;
         }
 
         private void DrawAllFunctions()
@@ -140,9 +139,9 @@ namespace WPF_Application
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null!)
+        protected void OnPropertyChanged()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
         }
 
         private void EditFunction_Click(Object sender, RoutedEventArgs e)
@@ -190,8 +189,6 @@ namespace WPF_Application
             this.DialogResult = true;
             this.Close();
         }
-
-        #region SpeedMeasurments
 
         private void FillPointsList()
         {
@@ -285,8 +282,7 @@ namespace WPF_Application
                 }
                 Vehicle.TractionForward = TractionForward;
                 Vehicle.TractionBackward = TractionBackward;
-                _db.Update<Vehicle>(Vehicle);
-                _db.SaveChanges();
+                VehicleService.Update(Vehicle);
                 await ReturnHome();
                 await ReturnHome();
             }
@@ -515,6 +511,21 @@ namespace WPF_Application
             Log("\nStopping...\n");
         }
 
-        #endregion
+        private void IntegerUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            FillPointsList();
+            DrawTable();
+            PlotSpeedData();
+        }
+
+        private async void BtnCV6Go_Click(object sender, RoutedEventArgs e)
+        {
+            //await SetLocoDrive(50, false);
+            //while (true)
+            //{
+            //    var direction = GetDirection();
+            //    await SetLocoDrive(0, direction);
+            //}
+        }
     }
 }
