@@ -18,20 +18,19 @@ namespace ModelTrainController.Z21
 {
     public class LokInfoData
     {
-        private int speed = default!;
+        private int speed = 0;
 
         public LokAdresse Adresse { get; set; } = default!;
 
         public bool InUse { get; set; } = default!;
 
-        public bool DrivingDirection { get; set; } = default!;
+        public bool DrivingDirection { get; set; } = true;
 
         public int Speed
         {
             get => speed; set
             {
                 speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
-                speed = value;
             }
         }
 

@@ -9,6 +9,8 @@ namespace ModelTrainController
 {
     public abstract class CentralStationClient : UdpClient
     {
+        public const int maxDccStep = 127;
+
         public CentralStationClient(IPAddress address, int port) : base(port)
         {
             lanAdresse = address;

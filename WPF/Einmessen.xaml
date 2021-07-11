@@ -5,129 +5,126 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Einmessen" Height="450" Width="800">
+        Title="Einmessen" Height="450" Width="800" Name="mw">
     <Grid>
-        <TabControl>
-            <TabItem Header="Einmessen" Name="TabItemEinmessen">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="AUTO"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TabControl Grid.Row="1">
+                <TabItem Header="Mehrfachtraktion">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="AUTO"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="AUTO"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border   Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  BorderBrush="Black" BorderThickness="1" Margin="5">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                                <StackPanel Name="sp_Table" VerticalAlignment="Stretch" HorizontalAlignment="Left"></StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                        <Border   Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  BorderBrush="Black" BorderThickness="1" Margin="5">
+                            <Grid Name="sp_Plot" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                        </Border>
 
-                <TabControl>
-                    <TabItem Header="Mehrfachtraktion">
-
-                        <Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="AUTO"/>
+                                <ColumnDefinition Width="AUTO"/>
+                            </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="AUTO"/>
-                                <RowDefinition Height="30" MinHeight="30" />
                                 <RowDefinition Height="AUTO"/>
                             </Grid.RowDefinitions>
-
+                            <Button Name="btnStart" Content="Start"  Margin="5" Padding="5" Grid.Column="0" Click="BtnStartSpeedMeasurement_Click" />
+                            <Button x:Name="btnStop" Content="Abbrechen und Schließen"  Margin="5" Padding="5"  IsEnabled="False" Grid.Column="1" Click="BtnStopSpeedMeasurement_Click"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="CV6" >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="47*"/>
+                            <ColumnDefinition Width="598*"/>
+                            <ColumnDefinition Width="149"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="AUTO"/>
+                            <RowDefinition Height="AUTO"/>
+                            <RowDefinition Height="AUTO"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Content="Gewünschte kmh:" VerticalAlignment="Center" Grid.ColumnSpan="2"/>
+                        <xctk:IntegerUpDown Grid.Column="2" Margin="5,0,5,0" Padding="5" VerticalAlignment="Center" Minimum="50" Maximum="300"/>
+                        <Label Content="Gemessen:" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,38" Grid.RowSpan="2"/>
+                        <DockPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,38" Grid.RowSpan="2">
+                            <Label Content="-"  Name="lblCV6SpeedMeasurt" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <Label Content="km/h" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        </DockPanel>
+                        <Button x:Name="BtnCV6Go" Content="Go" Grid.Row="2" Grid.Column="0" Margin="5,0,5,0" Padding="5" VerticalAlignment="Center" Click="BtnCV6Go_Click" Grid.ColumnSpan="2"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="CV5" IsEnabled="False">
+                </TabItem>
+                <TabItem Header="Einstellungen" Name="TabTraktionSettings">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="AUTO"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="AUTO"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="AUTO"/>
+                                <RowDefinition Height="AUTO"/>
+                                <RowDefinition Height="AUTO"/>
+                                <RowDefinition Height="AUTO"/>
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <!--<ColumnDefinition Width="100"/>-->
                                 <ColumnDefinition Width="AUTO"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-
-                            <Border   Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  BorderBrush="Black" BorderThickness="1" Margin="5">
-                                <ScrollViewer VerticalScrollBarVisibility="Auto" >
-                                    <StackPanel Name="sp_Table" VerticalAlignment="Stretch" HorizontalAlignment="Left"></StackPanel>
-                                </ScrollViewer>
-                            </Border>
-
-                            <Border   Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"  BorderBrush="Black" BorderThickness="1" Margin="5">
-                                <Grid Name="sp_Plot" Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-                            </Border>
-
-                            <GridSplitter  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="3" Margin="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="Black"/>
-
-                            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="3" x:Name="svLog" VerticalScrollBarVisibility="Auto" >
-                                <TextBlock Name="tbLog" ></TextBlock>
-                            </ScrollViewer>
-
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="AUTO"/>
-                                    <ColumnDefinition Width="AUTO"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="AUTO"/>
-                                </Grid.RowDefinitions>
-
-                                <Button Name="btnStart" Content="Start"  Margin="5" Padding="5" Grid.Column="0" Click="btnStartSpeedMeasurement_Click" />
-                                <Button x:Name="btnStop" Content="Stop"  Margin="5" Padding="5"  IsEnabled="False" Grid.Column="1" Click="btnStopSpeedMeasurement_Click"/>
-                            </Grid>
-
+                            <Label Grid.Row="0" Grid.Column="0" Content="Abstand zwischen Sensoren:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <xctk:IntegerUpDown Text="cm"  Grid.Column="1"  Grid.Row="0" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="10" Maximum="1000" Value="{Binding ElementName=mw,Path=DistanceBetweenSensors_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
+                            <Label Grid.Row="1" Grid.Column="0" Content="Startgeschwindigkeit:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="1" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="2" Maximum="15" Value="{Binding ElementName=mw,Path=Start_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
+                            <Label Grid.Row="3" Grid.Column="0" Content="Stufe:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="3" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="1" Maximum="10" Value="{Binding ElementName=mw,Path=Step_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
                         </Grid>
-
-                    </TabItem>
-
-                    <TabItem Header="CV6" >
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="149"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="AUTO"/>
-                                <RowDefinition Height="AUTO"/>
-                                <RowDefinition Height="AUTO"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Content="Gewünschte kmh:" VerticalAlignment="Center"/>
-
-                            <xctk:IntegerUpDown Grid.Row="0" Grid.Column="1" Margin="5" Padding="5" VerticalAlignment="Center" Minimum="50" Maximum="300"/>
-
-                            <Label Content="Gemessen:" Grid.Row="1" Grid.Column="0"/>
-                            <DockPanel Grid.Row="1" Grid.Column="1">
-                                <Label Content="-"  Name="lblCV6SpeedMeasurt" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                <Label Content="km/h" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                            </DockPanel>
-                            <Button x:Name="BtnCV6Go" Content="Go" Grid.Row="2" Grid.Column="0" Margin="5" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Click="BtnCV6Go_Click"/>
-                        </Grid>
-                    </TabItem>
-
-                    <TabItem Header="CV5" IsEnabled="False">
-
-                    </TabItem>
-                    <TabItem Header="Einstellungen" Name="TabTraktionSettings">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="AUTO"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="AUTO"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-
-                            </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="AUTO"/>
-                                    <RowDefinition Height="AUTO"/>
-                                    <RowDefinition Height="AUTO"/>
-                                    <RowDefinition Height="AUTO"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="AUTO"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Label Grid.Row="0" Grid.Column="0" Content="Abstand zwischen Sensoren:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                <xctk:IntegerUpDown Text="cm"  Grid.Column="1"  Grid.Row="0" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="10" Maximum="1000" Value="{Binding ElementName=ew,Path=DistanceBetweenSensors_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
-
-                                <Label Grid.Row="1" Grid.Column="0" Content="Startgeschwindigkeit:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="1" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="2" Maximum="127" Value="{Binding ElementName=ew,Path=Start_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
-
-                                <Label Grid.Row="2" Grid.Column="0" Content="Endgeschwindigkeit:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="2" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="3" Maximum="127" Value="{Binding ElementName=ew,Path=End_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
-
-                                <Label Grid.Row="3" Grid.Column="0" Content="Stufe:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="3" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="1" Maximum="10" Value="{Binding ElementName=ew,Path=Step_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
-                            </Grid>
-
-                        </Grid>
-                    </TabItem>
-                </TabControl>
-
-            </TabItem>
-        </TabControl>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Log">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="0" x:Name="lblLog"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="AUTO"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="AUTO"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="Lok Adresse" Margin="5" Padding="5"/>
+                <xctk:IntegerUpDown x:Name="IUVehicleAdress" Grid.Row="0" Grid.Column="1" Padding="5" Margin="5" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" Minimum="0" Maximum="255" ValueChanged="IUVehicleAdress_ValueChanged" Value="3"/>
+                <Label Name="lblStatus" Grid.Row="0" Grid.Column="2"/>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

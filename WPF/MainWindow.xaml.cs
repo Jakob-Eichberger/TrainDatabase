@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,7 +27,7 @@ namespace Wpf_Application
     {
         private readonly Database db = new();
         public event PropertyChangedEventHandler? PropertyChanged;
-
+        static readonly Mutex mutex = new(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
         private Theme theme = default!;
 
         ModelTrainController.CentralStationClient? Controller { get; set; }
@@ -45,7 +46,13 @@ namespace Wpf_Application
         {
             try
             {
-
+                if (!mutex.WaitOne(TimeSpan.Zero, true))
+                {
+                    MessageBox.Show("Achtung mehr als eine Instanz der Software kann nicht geöffnet werden!");
+                    Application.Current.Shutdown();
+                    return;
+                }
+                Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 #if RELEASE
                 if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
                 {
@@ -58,19 +65,22 @@ namespace Wpf_Application
                 db.Database.EnsureCreated();
 
                 if (db.Vehicles.Any())
-                    DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
-                else
-                if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
                 {
-                    new Importer.ImportSelecter(db).Show();
-                    this.Close();
+                    DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
+                }
+                else
+                {
+                    if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                    {
+                        new Importer.ImportSelecter(db).Show();
+                    }
                 }
                 //switch (Settings.CentralStation)
                 //{
                 //    case CentralStationType.None:
                 //        Controler = null!;
                 //        break;
-                //    case CentralStationType.Z21:
+                ////    case CentralStationType.Z21:
                 Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
                 Controller.LogOn();
                 //        break;
@@ -80,17 +90,19 @@ namespace Wpf_Application
                 //}
                 RemoveUnneededImages();
             }
-            catch (System.Net.Sockets.SocketException)
-            {
-                Close();
-                MessageBox.Show("Achtung mehr als eine Instanz der Software kann nicht geöffnet werden!");
-            }
             catch (Exception e)
             {
                 Close();
                 Logger.Log($"Fehler beim start", true, e);
-                MessageBox.Show($"Es ist ein Fehler beim öffnen der Applikation aufgetreten.\nException Message: '{e?.Message ?? ""}' \nIm Ordner '{Directory.GetCurrentDirectory() + @"\Log" + @"\Error"}' finden Sie ein Logfile. Bitte an jakob.eichberger@gmx.net als Zipfile schicken. (Dann kann ich's fixen ;) ) ");
+                MessageBox.Show($"Fehler beim Start!.\n Error: '{e?.Message ?? ""}' \nIm Ordner ...\\Log\\ finden Sie ein Logfile. Bitte an contact@jakob-eichberger.at schicken.");
             }
+        }
+
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Logger.Log(exception: e.Exception, isError: true);
+            e.Handled = true;
+            MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
 
         private void DB_Import_new(object sender, RoutedEventArgs e)
@@ -244,6 +256,7 @@ namespace Wpf_Application
                 Controller.LogOFF();
                 Controller = null;
             }
+            Application.Current.Shutdown();
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();

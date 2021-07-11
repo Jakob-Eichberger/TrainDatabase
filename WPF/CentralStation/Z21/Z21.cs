@@ -18,6 +18,7 @@ using System;
 using System.Collections;
 using System.Net;
 using System.Net.Sockets;
+using WPF_Application.Exceptions;
 
 namespace Helper
 {
@@ -556,28 +557,16 @@ namespace Helper
             {
                 Send(bytes, bytes.GetLength(0));
             }
-            catch (ArgumentNullException e)
-            {
-                Console.WriteLine("Fehler beim Senden. Zu sendende Bytes waren null.");
-                Console.WriteLine(e.Message);
-            }
-            catch (ObjectDisposedException e)
-            {
-                Console.WriteLine("Fehler beim Senden. Der UdpClient ist geschlossen.");
-                Console.WriteLine(e.Message);
-            }
-            catch (InvalidOperationException e)
-            {
-                Console.WriteLine("Fehler beim Senden. Der UdpClient hat bereits einen Standardremotehost eingerichtet.");
-                Console.WriteLine(e.Message);
-            }
+            catch (ArgumentNullException e) { throw new ControllerException(this, "Fehler beim Senden. Zu sendende Bytes waren null.", e); }
+            catch (ObjectDisposedException e) { throw new ControllerException(this, "Fehler beim Senden. Der UdpClient ist geschlossen.", e); }
+            catch (InvalidOperationException e) { throw new ControllerException(this, "Fehler beim Senden. Der UdpClient hat bereits einen Standardremotehost eingerichtet.", e); }
             catch (SocketException e)
             {
-                Console.WriteLine("Fehler beim Senden. Socket-Exception.");
-                Console.WriteLine("Versuche es erneut.");
                 Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
-                Console.WriteLine(e.Message);
-
+            }
+            catch (ControllerException e)
+            {
+                throw new ControllerException(this, $"Fehler: {e.Message}", e);
             }
         }
 

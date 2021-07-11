@@ -6,7 +6,7 @@ namespace WPF_Application.Helper
 {
     public class Logger
     {
-        public static void Log(string message, bool isError = false, Exception exception = null!, [CallerMemberName] string functionName = default!)
+        public static void Log(string message = "", bool isError = false, Exception exception = null!, [CallerMemberName] string functionName = default!)
         {
             string path = Directory.GetCurrentDirectory() + @"\Log";
             Directory.CreateDirectory(path);
