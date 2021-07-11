@@ -18,7 +18,6 @@ using System.Windows.Media.Imaging;
 using WPF_Application.Extensions;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
-using WPF_Application.Services;
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Renci.SshNet;
@@ -67,8 +66,6 @@ namespace WPF_Application
             set { Settings.Set(nameof(Step_Measurement), value.ToString()); OnPropertyChanged(); }
         }
 
-        VehicleService VehicleService { get; }
-
         public Vehicle Vehicle
         {
             get => _vehicle; set
@@ -87,7 +84,6 @@ namespace WPF_Application
             if (controller is null) throw new ApplicationException($"Paramter '{nameof(controller)}' darf nicht null sein!");
             this._db = db;
             this._controller = controller;
-            VehicleService = new(this._db);
             _controller.OnGetLocoInfo += OnGetLocoInfoEventArgs;
 
             FillPointsList();
@@ -183,7 +179,6 @@ namespace WPF_Application
                 }
                 Vehicle.TractionForward = TractionForward;
                 Vehicle.TractionBackward = TractionBackward;
-                VehicleService.Update(Vehicle);
 
                 direction = false;
                 for (int i = 0; i < 2; i++)

@@ -53,6 +53,11 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Funktionen" ToolTip="Dieses Fenster ist noch 'work in progress'.">
+                <TabItem.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Funktion hinzufügen" Click="AddFunction_Click"/>
+                    </ContextMenu>
+                </TabItem.ContextMenu>
                 <ScrollViewer x:Name="SCFunctions">
                     <StackPanel x:Name="SPFunctions">
                     </StackPanel>

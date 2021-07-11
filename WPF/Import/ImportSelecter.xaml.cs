@@ -16,7 +16,7 @@ namespace Importer
             InitializeComponent();
         }
 
-        private void newZ21_Click(object sender, RoutedEventArgs e)
+        private void NewZ21_Click(object sender, RoutedEventArgs e)
         {
             new Z21(Db).Show();
             this.Close();

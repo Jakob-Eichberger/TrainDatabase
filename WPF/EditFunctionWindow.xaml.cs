@@ -1,12 +1,13 @@
-﻿using Model;
+﻿using Microsoft.EntityFrameworkCore;
+using Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
 using WPF_Application.Infrastructure;
-using WPF_Application.Services;
 
 namespace WPF_Application
 {
@@ -15,10 +16,12 @@ namespace WPF_Application
     /// </summary>
     public partial class EditFunctionWindow : Window, INotifyPropertyChanged
     {
-        private Database db;
+        private readonly Database db;
+
         public event PropertyChangedEventHandler? PropertyChanged;
-        private FunctionService functionService;
-        private Function function = default!;
+
+        private Function? function = new();
+        private Vehicle? Vehicle { get; set; } = null;
 
         public Function Function
         {
@@ -29,53 +32,80 @@ namespace WPF_Application
             }
         }
 
-        public IEnumerable<FunctionType> EnumList
-        {
-            get => Enum.GetValues(typeof(FunctionType)).Cast<FunctionType>().Where(e => (int)e > 3 || (int)e == 0);
-        }
+        public static IEnumerable<FunctionType> EnumList => Enum.GetValues(typeof(FunctionType)).Cast<FunctionType>().Where(e => (int)e > 3 || (int)e == 0);
 
         public EditFunctionWindow(Database _db, Function function)
         {
             this.DataContext = this;
             InitializeComponent();
-            if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
+            db = _db ?? throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
             if (function is null) throw new ApplicationException($"Paramter '{nameof(function)}' darf nicht null sein!");
-            db = _db;
-            Function = db.Functions.FirstOrDefault(e => e.Id == function.Id)!;
-            if (Function is null) throw new ApplicationException($"Funktion  mit der ID '{function.Id} konnte nicht geöffnet werden!");
-            functionService = new(db);
-            this.Name = Function.Name;
+            Function = db.Functions.Include(m => m.Vehicle).ThenInclude(m => m.Functions).FirstOrDefault(e => e.Id == function.Id) ?? throw new ApplicationException($"Funktion  mit der ID '{function.Id} konnte nicht geöffnet werden!");
+            this.Title = Function.Name;
             BtnSaveAndClose.Click += SaveChanges_Click;
-            BtnSaveAndClose.Content = "Speicherung und schließen";
+            BtnSaveAndClose.Content = "Speicher und schließen";
+
+            switch (Function.ButtonType)
+            {
+                case ButtonType.PushButton:
+                    RbPushButton.IsChecked = true;
+                    break;
+                case ButtonType.Switch:
+                    RbSwitch.IsChecked = true;
+                    break;
+                case ButtonType.Timer:
+                    RbTimer.IsChecked = true;
+                    break;
+            }
         }
 
-        public EditFunctionWindow(Database _db)
+        public EditFunctionWindow(Database _db, Vehicle _vehicle)
         {
             this.DataContext = this;
-            Function = new();
             InitializeComponent();
-            if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
-            db = _db;
-            functionService = new(db);
-            this.Name = "Neue Funktion";
+            db = _db ?? throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
+            Vehicle = db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == _vehicle.Id) ?? throw new ApplicationException($"Vehicle with address '{_vehicle.Address}' was not found!");
+            Function = new();
+            this.Title = "Neue Funktion";
             BtnSaveAndClose.Click += AddFunction_Click;
-            BtnSaveAndClose.Content = "Speicherung und schließen";
+            BtnSaveAndClose.Content = "Speicher und schließen";
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
-            functionService.Update(Function);
+            if (!IsValid())
+            {
+                MessageBox.Show($"Der Funktionsname ist nicht valide!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             this.DialogResult = true;
+            db.Update(Function);
             this.Close();
         }
 
         private void AddFunction_Click(object sender, RoutedEventArgs e)
         {
-            functionService.Update(Function);
-            this.DialogResult = true;
-            this.Close();
+            if (Vehicle is not null)
+            {
+                if (!IsValid())
+                {
+                    MessageBox.Show($"Der Funktionsname ist nicht valide!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                this.DialogResult = true;
+                Vehicle.Functions.Add(Function);
+                db.Update(Vehicle);
+                this.Close();
+            }
+        }
+
+        public bool IsValid() => !string.IsNullOrWhiteSpace(Function?.Name ?? null);
+
+        private void TypeRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            Function.ButtonType = (ButtonType)Enum.Parse(typeof(ButtonType), (sender as RadioButton)!.Tag!.ToString()!);
         }
     }
 }

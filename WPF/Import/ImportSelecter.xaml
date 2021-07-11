@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Title="Import Selecter" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
     <Grid >
-        <Button Content="Import Z21 Layout (new App)" Margin="5" Click="newZ21_Click"/>
+        <Button Content="Import Z21 Layout (new App)" Margin="5" Click="NewZ21_Click"/>
     </Grid>
 </Window>

@@ -68,9 +68,9 @@ namespace WPF_Application.Infrastructure
             return result;
         }
 
-        public void Delete<TEntity>(TEntity obj) where TEntity : class
+        public override EntityEntry<TEntity> Remove<TEntity>(TEntity obj) where TEntity : class
         {
-            Set<TEntity>().Remove(obj);
+            var value = Set<TEntity>().Remove(obj);
             try
             {
                 SaveChanges();
@@ -83,6 +83,7 @@ namespace WPF_Application.Infrastructure
             {
                 throw;
             }
+            return value;
         }
 
         public override EntityEntry<TEntity> Update<TEntity>(TEntity obj) where TEntity : class

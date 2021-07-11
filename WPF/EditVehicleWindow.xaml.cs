@@ -18,7 +18,6 @@ using System.Windows.Media.Imaging;
 using WPF_Application.Extensions;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
-using WPF_Application.Services;
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Renci.SshNet;
@@ -34,9 +33,6 @@ namespace WPF_Application
         private Vehicle _vehicle = default!;
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        VehicleService VehicleService { get; }
-
-
 
         public int DistanceBetweenSensors_Measurement { get { return Settings.GetInt(nameof(DistanceBetweenSensors_Measurement)) ?? 20; } set { Settings.Set(nameof(DistanceBetweenSensors_Measurement), value.ToString()); } }
 
@@ -45,7 +41,6 @@ namespace WPF_Application
         public int End_Measurement { get { return Settings.GetInt(nameof(End_Measurement)) ?? 127; } set { Settings.Set(nameof(End_Measurement), value.ToString()); } }
 
         public int Step_Measurement { get { return Settings.GetInt(nameof(Step_Measurement)) ?? 1; } set { Settings.Set(nameof(Step_Measurement), value.ToString()); } }
-
 
         public Vehicle Vehicle
         {
@@ -65,7 +60,6 @@ namespace WPF_Application
             if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
             this._db = _db;
             Vehicle = _db.Vehicles.Include(i => i.Functions).FirstOrDefault(e => e.Id == _vehicle.Id) ?? throw new ApplicationException($"Fahrzeg mit der Id'{_vehicle.Id}' wurde nicht in der Datenbank gefunden!");
-            VehicleService = new(this._db);
             this.Title = Vehicle.Full_Name.IsNullOrWhiteSpace() ? Vehicle.Name : Vehicle.Full_Name;
             btnSaveVehicleAndClose.Click += SaveChanges_Click;
 
@@ -95,7 +89,6 @@ namespace WPF_Application
             InitializeComponent();
             if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
             this._db = _db;
-            VehicleService = new(this._db);
             this.Title = "Neues Fahrzeug";
             btnSaveVehicleAndClose.Click += AddVehicle_Click;
         }
@@ -118,6 +111,12 @@ namespace WPF_Application
                 miEditLoko.Tag = item;
                 miEditLoko.Click += EditFunction_Click;
                 enumLabel.ContextMenu.Items.Add(miEditLoko);
+
+                MenuItem miRemoveFunction = new();
+                miRemoveFunction.Header = "Funktion entfernen";
+                miRemoveFunction.Tag = item;
+                miRemoveFunction.Click += RemoveFunction_Click;
+                enumLabel.ContextMenu.Items.Add(miRemoveFunction);
                 Grid.SetColumn(enumLabel, 0);
                 Grid.SetRow(enumLabel, functionGrid.RowDefinitions.Count);
                 SPFunctions.Children.Add(enumLabel);
@@ -127,18 +126,6 @@ namespace WPF_Application
         protected void OnPropertyChanged()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
-        }
-
-        private void EditFunction_Click(Object sender, RoutedEventArgs e)
-        {
-            var menu = ((MenuItem)e.Source);
-            Function? vehicle = (menu.Tag as Function);
-            if (vehicle is null) return;
-            EditFunctionWindow w = new(_db, vehicle);
-            if (w.ShowDialog() ?? false)
-            {
-                DrawAllFunctions();
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -163,24 +150,50 @@ namespace WPF_Application
 
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
-            VehicleService.Update(Vehicle);
+            _db.Update(Vehicle);
             this.DialogResult = true;
             this.Close();
         }
 
         private void AddVehicle_Click(object sender, RoutedEventArgs e)
         {
-            VehicleService.Add(Vehicle);
+            _db.Add(Vehicle);
             this.DialogResult = true;
             this.Close();
         }
 
+        private void AddFunction_Click(object sender, RoutedEventArgs e)
+        {
+            if (new EditFunctionWindow(_db, Vehicle)?.ShowDialog() ?? false)
+            {
+                Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
+                DrawAllFunctions();
+            }
+        }
 
+        private void EditFunction_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = ((MenuItem)e.Source);
+            Function? function = (menu.Tag as Function);
+            if (function is null) return;
+            if (new EditFunctionWindow(_db, function).ShowDialog() ?? false)
+            {
+                Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
+                DrawAllFunctions();
+            }
+        }
 
-
-
-
-
-
+        private void RemoveFunction_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = ((MenuItem)e.Source);
+            Function? function = (menu.Tag as Function);
+            if (function is null) return;
+            if (MessageBoxResult.Yes == MessageBox.Show($"Sind Sie sicher, dass Sie die Funktion '{function.Name}' löschen möchten?", "Funktion löschen", MessageBoxButton.YesNo))
+            {
+                _db.Remove(function);
+                Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
+                DrawAllFunctions();
+            }
+        }
     }
 }
