@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Model;
+using System;
 
 #nullable disable
 
@@ -41,5 +43,68 @@ namespace WPF_Application.Infrastructure
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+
+        public override EntityEntry<TEntity> Add<TEntity>(TEntity obj) where TEntity : class
+        {
+            var result = Set<TEntity>().Add(obj);
+
+            try
+            {
+                SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ApplicationException($"Bei der Operation ist ein fehler aufgetreten.");
+            }
+            catch (DbUpdateException)
+            {
+                throw new ApplicationException($"Bei der Operation ist ein fehler aufgetreten.");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return result;
+        }
+
+        public void Delete<TEntity>(TEntity obj) where TEntity : class
+        {
+            Set<TEntity>().Remove(obj);
+            try
+            {
+                SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                throw new ApplicationException("Bei der Operation ist ein fehler aufgetreten.");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public override EntityEntry<TEntity> Update<TEntity>(TEntity obj) where TEntity : class
+        {
+            var result = Set<TEntity>().Update(obj);
+            try
+            {
+                SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ApplicationException($"Bei der Operation ist ein fehler aufgetreten.");
+            }
+            catch (DbUpdateException)
+            {
+                throw new ApplicationException($"Bei der Operation ist ein fehler aufgetreten.");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return result;
+        }
     }
 }

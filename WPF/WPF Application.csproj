@@ -58,6 +58,7 @@
 
 	<ItemGroup>
 		<Folder Include="Data\VehicleImage\" />
+		<Folder Include="Services\" />
 	</ItemGroup>
 
 </Project>
