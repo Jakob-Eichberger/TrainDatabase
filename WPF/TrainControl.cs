@@ -39,6 +39,7 @@ namespace WPF_Application
         private int speed = 0;
         private bool drivingDirection = true;
         public event PropertyChangedEventHandler? PropertyChanged;
+        public DateTime lastSpeedchange = DateTime.MinValue;
 
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the vehicle. 

@@ -212,8 +212,9 @@ namespace WPF_Application
         /// <param name="speedstep"></param>
         /// <param name="direction"></param>
         /// <param name="inUse"></param>
-        private async void SetLocoDrive(int? speedstep = null, bool? direction = null, bool inUse = true)
+        private async void SetLocoDrive(int? speedstep = null, bool? direction = null, bool inUse = true) => await Task.Run(() =>
         {
+            if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(50)) { return; } else { lastSpeedchange = DateTime.Now; }
             direction ??= DrivingDirection;
             foreach (var (Adresse, InvertTraction, Traction) in DoubleTractionVehicles)
             {
@@ -226,7 +227,7 @@ namespace WPF_Application
                 };
                 controler.SetLocoDrive(dat);
             }
-        }
+        });
 
         /// <summary>
         /// Function used to set a Function on/off or switch its state. 
