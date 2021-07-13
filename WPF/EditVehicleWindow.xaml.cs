@@ -62,8 +62,21 @@ namespace WPF_Application
             Vehicle = _db.Vehicles.Include(i => i.Functions).FirstOrDefault(e => e.Id == _vehicle.Id) ?? throw new ApplicationException($"Fahrzeg mit der Id'{_vehicle.Id}' wurde nicht in der Datenbank gefunden!");
             this.Title = Vehicle.Full_Name.IsNullOrWhiteSpace() ? Vehicle.Name : Vehicle.Full_Name;
             btnSaveVehicleAndClose.Click += SaveChanges_Click;
-
             DrawAllFunctions();
+
+            switch (Vehicle.Type)
+            {
+                case VehicleType.Lokomotive:
+                    RbLokomotive.IsChecked = true;
+                    break;
+                case VehicleType.Steuerwagen:
+                    RbSteuerwagen.IsChecked = true;
+                    break;
+                case VehicleType.Wagen:
+                    RbWagen.IsChecked = true;
+                    break;
+            }
+
             try
             {
                 string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\";
@@ -194,6 +207,11 @@ namespace WPF_Application
                 Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
                 DrawAllFunctions();
             }
+        }
+
+        private void TypeRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            Vehicle.Type = (VehicleType)Enum.Parse(typeof(VehicleType), (sender as RadioButton)!.Tag!.ToString()!);
         }
     }
 }
