@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:Model"
         mc:Ignorable="d"
-        Title="EditVehicleWindow" Width="400" Height="430" MinWidth="400" MinHeight="430"  Name="ew" >
+        Title="EditVehicleWindow" Width="400" Height="480" MinWidth="400" MinHeight="480"  Name="ew" >
     <Grid>
         <TabControl Margin="5">
             <TabItem Header="Allgemeines">
@@ -19,6 +19,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition  Height="AUTO"/>
                             <RowDefinition  Height="AUTO"/>
+                            <RowDefinition Height="AUTO" />
                             <RowDefinition Height="AUTO" />
                             <RowDefinition Height="AUTO" />
                             <RowDefinition Height="AUTO" />
@@ -45,22 +46,25 @@
                         <Label Content="Name: "  Grid.Column="0"  Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1"  Grid.Row="2" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Name}" Margin="5" Padding="5" />
 
-                        <Label Content="Address:  "  Grid.Column="0"  Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="4" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Address}" Margin="5" Padding="5" Minimum="0" Maximum="1000" />
+                        <Label Content="Beschreibung: "  Grid.Column="0"  Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"  Grid.Row="3" TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding ElementName=ew,Path=Vehicle.Description}" Margin="5" Padding="5"/>
 
-                        <Label Content="Type:" Grid.Row="3" Grid.Column="0"/>
-                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Label Content="Type:" Grid.Row="4" Grid.Column="0"/>
+                        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <RadioButton x:Name="RbLokomotive" GroupName="type"  Content="Lokomotive" IsChecked="True"  Margin="0,0,5,0" Click="TypeRadioButton_Click" Tag="{x:Static local:VehicleType.Lokomotive}"/>
                             <RadioButton x:Name="RbSteuerwagen" GroupName="type" Content="Steuerwagen" Margin="0,0,5,0"  Click="TypeRadioButton_Click" Tag="{x:Static local:VehicleType.Steuerwagen}"/>
                             <RadioButton x:Name="RbWagen" GroupName="type" Content="Wagen"  Click="TypeRadioButton_Click" Tag="{x:Static local:VehicleType.Wagen}"/>
                         </StackPanel>
 
-                        <Label Content="Bahngesellschaft: "  Grid.Column="0"  Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBox Grid.Column="1"  Grid.Row="5" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Railway}" Margin="5" Padding="5" />
+                        <Label Content="Address:  "  Grid.Column="0"  Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="5" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Address}" Margin="5" Padding="5" Minimum="0" Maximum="1000" />
 
-                        <CheckBox Content="Doppeltraktion Invertieren" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="6" VerticalAlignment="Center"  Margin="5" IsChecked="{Binding ElementName=ew,Path=Vehicle.Traction_Direction}" />
+                        <Label Content="Bahngesellschaft: "  Grid.Column="0"  Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1"  Grid.Row="6" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Railway}" Margin="5" Padding="5" />
 
-                        <Button Name="btnSaveVehicleAndClose" Content="Änderungen speichern und schließen" Grid.Column="0"  Grid.Row="8" Grid.ColumnSpan="2" Padding="5" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
+                        <CheckBox Content="Doppeltraktion Invertieren" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="7" VerticalAlignment="Center"  Margin="5" IsChecked="{Binding ElementName=ew,Path=Vehicle.Traction_Direction}" />
+
+                        <Button Name="btnSaveVehicleAndClose" Content="Änderungen speichern und schließen" Grid.Column="0"  Grid.Row="9" Grid.ColumnSpan="2" Padding="5" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
