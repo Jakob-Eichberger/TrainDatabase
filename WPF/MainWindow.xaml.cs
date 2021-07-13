@@ -237,7 +237,7 @@ namespace Wpf_Application
         private void Search()
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => (i.Address + i.Article_Number + i.Category?.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
         }
