@@ -72,7 +72,7 @@ namespace Wpf_Application
                 {
                     if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
                     {
-                        new Importer.ImportSelecter(db).Show();
+                        new Importer.Z21(db).Show();
                     }
                 }
                 //switch (Settings.CentralStation)
@@ -107,13 +107,13 @@ namespace Wpf_Application
 
         private void DB_Import_new(object sender, RoutedEventArgs e)
         {
-            if (MessageBoxResult.Yes == MessageBox.Show("Sind Sie sicher dass Sie eine neue Datenbank importieren wollen? Wenn Sie Ja drücken kann die aktuelle Datenbank nicht mehr verwendet.", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question))
+            if (MessageBoxResult.Yes == MessageBox.Show("Sind Sie sicher dass Sie eine neue Datenbank importieren wollen? Wenn Sie Ja drücken kann die aktuelle Datenbank nicht mehr verwendet werden.", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question))
             {
                 VehicleGrid.Children.Clear();
                 db.Database.EnsureDeleted();
-                var x = new Importer.ImportSelecter(db);
+                var importer = new Importer.Z21(db);
                 this.Close();
-                x.Show();
+                importer.Show();
             }
         }
 

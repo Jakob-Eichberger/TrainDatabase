@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.Win32;
 using Model;
 using System;
@@ -25,88 +26,39 @@ namespace Importer
     {
 
         private readonly Database db;
-        private Visibility isNotLoading;
-        private string statusText = "";
-        private bool isIndeterminate = true;
-        private int progress = 0;
-        private int maxProgress = 0;
+        private bool currentlyLoading = true;
 
         public string Path { get; set; } = "";
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public Visibility NotLoadingData
+        public bool CurrentlyLoading
         {
-            get => isNotLoading;
-            set
+            get => currentlyLoading; set
             {
-                isNotLoading = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(LoadingData));
-            }
-        }
-
-        public Visibility LoadingData
-        {
-            get => NotLoadingData == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        public bool IsIndeterminate
-        {
-            get => isIndeterminate;
-            set
-            {
-                isIndeterminate = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string StatusText
-        {
-            get => statusText;
-            set
-            {
-                statusText = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Max Value is 100;
-        /// </summary>
-        public int Progress
-        {
-            get => progress; set
-            {
-                progress = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public int MaxProgress
-        {
-            get => maxProgress; set
-            {
-                maxProgress = value;
-                OnPropertyChanged();
+                currentlyLoading = value;
+                OnPropertyChanged(null!);
             }
         }
 
         public Z21(Database _db)
         {
+            DataContext = this;
             InitializeComponent();
             db = _db;
         }
 
         private void BtnOpenFileDalog_Click(object sender, RoutedEventArgs e)
         {
-            DataContext = this;
             OpenFileDialog ofp = new();
             ofp.DefaultExt = ".z21";
             ofp.Filter = "Z21 DB FIle (*.z21)|*.z21";
-            if (ofp.ShowDialog() == true)
+            if (ofp.ShowDialog() ?? false)
             {
+                if (string.IsNullOrWhiteSpace(ofp.FileName)) return;
+                TbFileSelector.Text = ofp.FileName;
                 Path = ofp.FileName;
+                Log($"Pfad '{Path}' selected.");
             }
         }
 
@@ -117,17 +69,12 @@ namespace Importer
 
         private async void BtnGo_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(Path))
-            {
-                MessageBox.Show("Ausgewählter Pfad ist null or whitespaces!");
-            }
-            else
-            {
-                NotLoadingData = Visibility.Collapsed;
-                await ImportAsync();
-                this.Close();
-            }
+            CurrentlyLoading = false;
+            await ImportAsync();
+            this.Close();
         }
+
+        private void Log(string message) => Dispatcher.BeginInvoke(new Action(() => { TbLog.Text += message + "\n"; SvLog.ScrollToBottom(); }));
 
         private async Task ImportAsync()
         {
@@ -156,14 +103,10 @@ namespace Importer
                 var sqlLiteDB = files.FirstOrDefault(e => System.IO.Path.GetExtension(e) == ".sqlite");
                 if (string.IsNullOrWhiteSpace(sqlLiteDB)) throw new ApplicationException("Benötigte Datei (.sqlite) nicht gefunden!");
                 var images = files.Where(e => System.IO.Path.GetExtension(e) != ".sqlite").ToList();
-                IsIndeterminate = false;
                 await Task.Run(() =>
                 {
-                    MaxProgress = images.Count;
                     for (int i = 0; i <= (images.Count - 1); i++)
                     {
-                        StatusText = $"{i + 1}/{MaxProgress} Fotos kopiert.";
-                        Progress = i + 1;
                         var image = images[i];
                         var destination = $"{vehicleDirectory}\\{System.IO.Path.GetFileName(image)}";
                         File.Move(image, destination);
@@ -175,8 +118,11 @@ namespace Importer
             catch (Exception ex)
             {
                 Logger.Log($"-", true, ex);
-                NotLoadingData = Visibility.Visible;
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex?.Message}");
+            }
+            finally
+            {
+                CurrentlyLoading = true;
             }
         }
 
@@ -185,9 +131,8 @@ namespace Importer
             if (string.IsNullOrWhiteSpace(sqlLiteLocation)) throw new ApplicationException($"Paramter {nameof(sqlLiteLocation)} darf nicht leer sein!");
             await Task.Run(() =>
             {
-                IsIndeterminate = true;
                 using SqliteConnection connection = new($"Data Source={sqlLiteLocation}");
-                StatusText = "Importing Table: Functions";
+                Log("Importing Table: Functions");
 
                 connection.Open();
                 var command = connection.CreateCommand();
