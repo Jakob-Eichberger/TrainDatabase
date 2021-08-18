@@ -18,11 +18,11 @@ namespace ModelTrainController.Z21
 {
     public class StateEventArgs : EventArgs
     {
-        public StateEventArgs(CentralStateData data)
+        public StateEventArgs(TrackPower data)
             : base()
         {
-            Data = data;
+            TrackPower = data;
         }
-        public CentralStateData Data;
+        public TrackPower TrackPower { get; }
     }
 }

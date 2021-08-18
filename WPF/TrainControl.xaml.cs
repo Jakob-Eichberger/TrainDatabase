@@ -27,31 +27,30 @@ namespace WPF_Application
     /// <summary>
     /// Interaction logic for VehicleController.xaml
     /// </summary>
-    public partial class TrainControl : Window, INotifyPropertyChanged
+    public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
 
-        public TrainControl(ModelTrainController.CentralStationClient _controler, Vehicle _vehicle, Database _db)
+        public TrainControl(ModelTrainController.CentralStationClient _controller, Vehicle _vehicle, Database _db)
         {
             try
             {
-                if (_controler is null) throw new NullReferenceException($"Parameter {nameof(_controler)} ist null!");
+                if (_controller is null) throw new NullReferenceException($"Parameter {nameof(_controller)} ist null!");
                 if (_vehicle is null) throw new NullReferenceException($"Paramter{nameof(_vehicle)} ist null!");
                 if (_db is null) throw new NullReferenceException($"Paramter{nameof(_db)} ist null!");
                 db = _db;
                 this.DataContext = this;
                 InitializeComponent();
-                controler = _controler;
+                controller = _controller;
                 Vehicle = db.Vehicles.Include(e => e.Functions).FirstOrDefault(e => e.Id == _vehicle.Id)!;
                 if (Vehicle is null) throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
                 Adresse = new(Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
                 SlowestVehicleInTractionList = Vehicle.Address;
-                controler.OnGetLocoInfo += Controler_OnGetLocoInfo;
-                controler.OnTrackPowerOFF += Controler_OnTrackPowerOFF;
-                controler.OnTrackPowerON += Controler_OnTrackPowerON;
-                controler.OnTrackShortCircuit += Controler_OnTrackShortCircuit;
-                controler.OnProgrammingMode += Controler_OnProgrammingMode;
-                controler.GetLocoInfo(Adresse);
+                controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
+                controller.TrackPowerChanged += Controller_TrackPowerChanged;
+                controller.OnStatusChanged += Controller_OnStatusChanged;
+                controller.GetLocoInfo(Adresse);
+                controller.GetStatus();
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.Where(m => m.Id != Vehicle.Id));
                 DoubleTractionVehicles.Add((Vehicle.Address, false, (GetLineSeries(Vehicle.TractionForward), GetLineSeries(Vehicle.TractionBackward))));
@@ -66,20 +65,16 @@ namespace WPF_Application
             catch (Exception ex)
             {
                 Close();
-                Logger.Log(isError: true, exception: ex);
+                Logger.Log("", ex, Environment.StackTrace);
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void Controler_OnTrackPowerOFF(object? sender, EventArgs e) => TrackPower = TrackPower.OFF;
+        private void Controller_OnStatusChanged(object? sender, StateEventArgs e) => TrackPower = e.TrackPower;
 
-        private void Controler_OnTrackPowerON(object? sender, EventArgs e) => TrackPower = TrackPower.ON;
+        private void Controller_TrackPowerChanged(object? sender, CentralStation.TrackPowerEventArgs e) => TrackPower = e.TrackPower;
 
-        private void Controler_OnTrackShortCircuit(object? sender, EventArgs e) => TrackPower = TrackPower.Short;
-
-        private void Controler_OnProgrammingMode(object? sender, EventArgs e) => TrackPower = TrackPower.Programing;
-
-        private void Controler_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
+        private void Controller_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
         {
             if (e.Data.Adresse.Value == Vehicle.Address)
             {
@@ -112,13 +107,13 @@ namespace WPF_Application
         {
             if (((sender as CheckBox)?.Tag ?? null) is null) return;
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
-            if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[127] is null || temp.TractionForward[127] is null))
+            if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[CentralStationClient.maxDccStep] is null || temp.TractionForward[CentralStationClient.maxDccStep] is null))
             {
                 MessageBox.Show("Actung! Fahrzeug ist nicht eingemessen!");
             }
             DoubleTractionVehicles.Add((temp.Address, temp.Traction_Direction, (GetLineSeries(temp.TractionForward), GetLineSeries(temp.TractionBackward))));
             await DeterminSlowestVehicleInList();
-            controler.GetLocoInfo(new(((Vehicle)(sender as CheckBox)!.Tag).Address));
+            controller.GetLocoInfo(new(((Vehicle)(sender as CheckBox)!.Tag).Address));
         }
 
         /// <summary>
@@ -225,7 +220,7 @@ namespace WPF_Application
                     InUse = inUse,
                     Speed = (byte)(speedstep ?? Speed)
                 };
-                controler.SetLocoDrive(dat);
+                controller.SetLocoDrive(dat);
             }
         });
 
@@ -237,7 +232,7 @@ namespace WPF_Application
         /// <param name="locoAdress"></param>
         private void SetLocoFunction(ToggleType type, Function function, int? locoAdress = null)
         {
-            controler.SetLocoFunction(new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)), function, type);
+            controller.SetLocoFunction(new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)), function, type);
         }
 
         /// <summary>
@@ -265,9 +260,9 @@ namespace WPF_Application
             {
                 var v = db.Vehicles.FirstOrDefault(e => e.Address == Adress);
                 if (v is null) continue;
-                if (v.TractionForward[127] is not null)
+                if (v.TractionForward[CentralStationClient.maxDccStep] is not null)
                 {
-                    list.Add((v.Address, (decimal)v.TractionForward[127]!));
+                    list.Add((v.Address, (decimal)v.TractionForward[CentralStationClient.maxDccStep]!));
                 }
             }
             SlowestVehicleInTractionList = list.Count > 1 ? list.First(e => e.value == list.Min(e => e.value)).adress : Vehicle.Address;
@@ -279,11 +274,7 @@ namespace WPF_Application
         }
 
         #region Window Events
-        private void Mw_Closing(object sender, CancelEventArgs e)
-        {
-            SetLocoDrive(inUse: false);
-            Joystick?.Dispose();
-        }
+        private void Mw_Closing(object sender, CancelEventArgs e) => Dispose();
 
         private void Mw_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -364,6 +355,11 @@ namespace WPF_Application
             }
         }
 
+        public void Dispose()
+        {
+            SetLocoDrive(inUse: false);
+            Joystick?.Dispose();
+        }
     }
 
 }

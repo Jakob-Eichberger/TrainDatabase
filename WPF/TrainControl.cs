@@ -31,7 +31,7 @@ namespace WPF_Application
     {
         public Database db = default!;
         private Vehicle vehicle = default!;
-        public ModelTrainController.CentralStationClient controler = default!;
+        public ModelTrainController.CentralStationClient controller = default!;
         private LokInfoData liveData = new();
         private TrackPower trackPower;
         private bool lastTrackPowerUpdateWasShort = false;
@@ -146,13 +146,9 @@ namespace WPF_Application
             set
             {
                 if (value)
-                {
-                    controler.SetTrackPowerOFF();
-                }
+                    controller.SetTrackPowerON();
                 else
-                {
-                    controler.SetTrackPowerON();
-                }
+                    controller.SetTrackPowerOFF();
                 OnPropertyChanged();
             }
             get => TrackPower.ToBoolean();

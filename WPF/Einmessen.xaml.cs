@@ -30,35 +30,39 @@ namespace WPF_Application
     /// </summary>
     public partial class Einmessen : Window, INotifyPropertyChanged
     {
-        public readonly Database _db;
         public event PropertyChangedEventHandler? PropertyChanged;
-        public readonly CentralStationClient _controller;
-        private readonly SshClient _sshClient = new("192.168.0.73", "pi", "raspberry");
-        //private readonly SshClient _sshClient = new(Settings.Get("RaspberryPiHost"), Settings.Get("RaspberryPiUsername"), Settings.Get("RaspberryPiPassword"));
         private Vehicle _vehicle = default!;
-        private LokInfoData _lokInfo = new();
+
+        //private readonly SshClient _sshClient = new(Settings.Get("RaspberryPiHost"), Settings.Get("RaspberryPiUsername"), Settings.Get("RaspberryPiPassword"));
+
+        public Database Db { get; } = default!;
+
+        private CentralStationClient Controller { get; } = default!;
+
+        private SshClient SshClient { get; } = new("192.168.0.73", "pi", "raspberry");
+
+        private LokInfoData LokData { get; set; } = new();
+
         public List<DataPoint> PointsBackward { get; private set; } = new();
+
         public List<DataPoint> PointsForward { get; private set; } = new();
-        private bool direction = false;
+
         private bool IsDisposed = false;
 
-        public int DistanceBetweenSensors_Measurement
+        /// <summary>
+        /// Holds the distance between the two raspberry pi sensors in mm.
+        /// </summary>
+        public decimal DistanceBetweenSensorsInMM
         {
-            get
-            {
-                return Settings.GetInt(nameof(DistanceBetweenSensors_Measurement)) ?? 1;
-            }
-            set
-            {
-                Settings.Set(nameof(DistanceBetweenSensors_Measurement), value.ToString());
-            }
+            get => Settings.GetDecimal(nameof(DistanceBetweenSensorsInMM)) ?? 1.0m;
+            set => Settings.Set(nameof(DistanceBetweenSensorsInMM), value.ToString());
         }
 
-        decimal?[] TractionForward { get; set; } = new decimal?[128];
+        private decimal?[] TractionForward { get; set; } = new decimal?[128];
 
-        decimal?[] TractionBackward { get; set; } = new decimal?[128];
+        private decimal?[] TractionBackward { get; set; } = new decimal?[128];
 
-        public int Start_Measurement { get { return Settings.GetInt(nameof(Start_Measurement)) ?? 2; } set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
+        public int Start_Measurement { get => Settings.GetInt(nameof(Start_Measurement)) ?? 2; set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
 
         public int Step_Measurement
         {
@@ -66,7 +70,7 @@ namespace WPF_Application
             set { Settings.Set(nameof(Step_Measurement), value.ToString()); OnPropertyChanged(); }
         }
 
-        public Vehicle Vehicle
+        private Vehicle Vehicle
         {
             get => _vehicle; set
             {
@@ -78,41 +82,33 @@ namespace WPF_Application
         public Einmessen(Database db, CentralStationClient controller)
         {
             this.DataContext = this;
-            InitializeComponent();
-
             if (db is null) throw new ApplicationException($"Paramter '{nameof(db)}' darf nicht null sein!");
             if (controller is null) throw new ApplicationException($"Paramter '{nameof(controller)}' darf nicht null sein!");
-            this._db = db;
-            this._controller = controller;
-            _controller.OnGetLocoInfo += OnGetLocoInfoEventArgs;
-
-            FillPointsList();
-            DrawTable();
-            PlotSpeedData();
+            this.Db = db;
+            this.Controller = controller;
+            InitializeComponent();
+            Controller.OnGetLocoInfo += OnGetLocoInfoEventArgs;
         }
 
-        protected void OnPropertyChanged()
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
-        }
+        protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 
-        private void FillPointsList()
+        private async Task FillDataPointsList() => await Task.Run(() =>
         {
             PointsBackward = new();
             PointsForward = new();
-            for (int i = 2; i <= 127; i++)
+            for (int i = 2; i <= CentralStationClient.maxDccStep; i++)
             {
                 if (TractionBackward[i] is not null)
                     PointsBackward.Add(new(i, (double)(TractionBackward[i] ?? 0)));
             }
-            for (int i = 2; i <= 127; i++)
+            for (int i = 2; i <= CentralStationClient.maxDccStep; i++)
             {
                 if (TractionForward[i] is not null)
                     PointsForward.Add(new(i, (double)(TractionForward[i] ?? 0)));
             }
-        }
+        });
 
-        private void DrawTable()
+        private void DrawSpeedMeasurementTable()
         {
             sp_Table.Children.Clear();
             Grid functionGrid = new();
@@ -120,8 +116,16 @@ namespace WPF_Application
             functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            //functionGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            Action<string, string, string> CreatSpeedTableRow = (text1, text2, text3) =>
+
+            CreatSpeedTableRow($"Step", $"M/S (V)", $"M/S (R)");
+            bool lastStep = false;
+            for (int i = Start_Measurement; i <= CentralStationClient.maxDccStep; i += Step_Measurement)
+            {
+                CreatSpeedTableRow($"Step {i}", $"{(TractionForward[i] is null ? "-" : TractionForward[i])} m/s", $"{(TractionBackward[i] is null ? "-" : TractionBackward[i])}  m/s");
+                if (!lastStep && i + Step_Measurement > CentralStationClient.maxDccStep) { i = (CentralStationClient.maxDccStep - Step_Measurement); lastStep = true; }
+            }
+
+            void CreatSpeedTableRow(string text1, string text2, string text3)
             {
                 int row = functionGrid.RowDefinitions.Count;
                 functionGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -139,78 +143,80 @@ namespace WPF_Application
                 Grid.SetColumn(backward, 2);
                 Grid.SetRow(backward, row);
                 functionGrid.Children.Add(backward);
-            };
-
-            CreatSpeedTableRow($"Step", $"M/S (V)", $"M/S (R)");
-            bool lastStep = false;
-            for (int i = Start_Measurement; i <= 127; i += Step_Measurement)
-            {
-                CreatSpeedTableRow($"Step {i}", $"{(TractionForward[i] is null ? "-" : TractionForward[i])} m/s", $"{(TractionBackward[i] is null ? "-" : TractionBackward[i])}  m/s");
-                if (!lastStep && i + Step_Measurement > 127) { i = (127 - Step_Measurement); lastStep = true; }
             }
-
 
             sp_Table.Children.Add(functionGrid);
         }
 
-        private async void GetSpeed(int speed, bool direction)
+        private async Task GetSpeed(int speed, bool direction)
         {
             lblStatus.Content = $"{speed} - {direction}";
             decimal result = await GetTimeBetweenSensors(speed, direction);
-            decimal mps = Math.Round(((DistanceBetweenSensors_Measurement / 100.0m) / result) * 87);
-            SetTractionSpeed(speed, direction, mps);
+            decimal mps = Math.Round(((DistanceBetweenSensorsInMM / 100.0m) / result) * 87);
+            await SetTractionSpeed(speed, direction, mps);
+            Log($"Result:\n\tStepStep:\t'{speed}'\n\tDirection:\t'{direction}'\n\tmeasured in seconds:\t'{result}'\n\tDistance:\t{DistanceBetweenSensorsInMM}\n\tSpeed in m/s:\t{mps}\n");
         }
 
         /// <summary>
         /// Starts the process of messuring the lokospeed.
         /// </summary>
-        private async void Run()
+        private async Task Run()
         {
             try
             {
+                if (!SshClient.IsConnected)
+                    SshClient.Connect();
                 Log("Starting...");
                 bool lastStep = false;
                 bool direction = true;
-                for (int speed = Start_Measurement; speed <= 127; speed += Step_Measurement)
+                for (int speed = Start_Measurement; speed <= CentralStationClient.maxDccStep; speed += Step_Measurement)
                 {
-                    GetSpeed(speed, direction);
-                    GetSpeed(speed, !direction);
-                    if (!lastStep && speed + Step_Measurement > 127) { speed = (127 - Step_Measurement); lastStep = true; }
+                    await GetSpeed(speed, direction);
+                    await GetSpeed(speed, !direction);
+                    if (!lastStep && speed + Step_Measurement > CentralStationClient.maxDccStep) { speed = (CentralStationClient.maxDccStep - Step_Measurement); lastStep = true; }
                 }
+                await ReturnHome();
                 Vehicle.TractionForward = TractionForward;
                 Vehicle.TractionBackward = TractionBackward;
-
+                await SaveChanges();
                 direction = false;
-                for (int i = 0; i < 2; i++)
-                {
-                    direction = !direction;
-                    await KillPythonScript();
-                    await SetLocoDrive(40, direction);
-                    await Task.Run(() => { _sshClient.RunCommand("python /home/pi/Desktop/GetTimeBetweenSensors.py"); });
-                    await SetLocoDrive(0, direction);
-                }
             }
             catch (OperationCanceledException)
             {
                 TractionForward = Vehicle.TractionForward;
                 TractionBackward = Vehicle.TractionBackward;
-                FillPointsList();
-                DrawTable();
-                PlotSpeedData();
+                DrawSpeedMeasurementTable();
+                await DrawSpeedDataPlot();
             }
             catch { throw; }
             finally
             {
                 await SetLocoDrive(0, true);
                 await KillPythonScript();
-                _sshClient.Disconnect();
                 btnStart.IsEnabled = true;
                 btnStop.IsEnabled = false;
-                DrawTable();
-                PlotSpeedData();
+                DrawSpeedMeasurementTable();
+                await DrawSpeedDataPlot();
                 TabTraktionSettings.IsEnabled = true;
             }
 
+        }
+
+        private async Task ReturnHome()
+        {
+            await SetLocoDrive(40, true);
+            await ExecutePythonScriptAndGetResult();
+            await SetLocoDrive(40, false);
+            await ExecutePythonScriptAndGetResult(1);
+            await SetLocoDrive(40, true);
+        }
+
+        private async Task SaveChanges()
+        {
+            var temp = Db.Vehicles.FirstOrDefault(e => e.Id == Vehicle.Id) ?? throw new KeyNotFoundException();
+            temp.TractionBackward = TractionBackward;
+            temp.TractionForward = TractionForward;
+            await Db.SaveChangesAsync();
         }
 
         private async Task<decimal> GetTimeBetweenSensors(int speed, bool direction)
@@ -220,18 +226,14 @@ namespace WPF_Application
                 if (IsDisposed) throw new OperationCanceledException();
                 await KillPythonScript();
                 await SetLocoDrive(speed, direction);
-                SshCommand result = default!;
-                await Task.Run(() => { result = _sshClient.RunCommand("python /home/pi/Desktop/GetTimeBetweenSensors.py"); });
-                if (result.ExitStatus != 0) throw new ApplicationException("Script am Pi ist unerwarted abgestürtzt.");
+                Log($"{DateTime.Now:hh-mm-ss} Python script running...");
+                SshCommand result = await ExecutePythonScriptAndGetResult();
+                if (result.ExitStatus != 0) throw new ApplicationException($"Script am Pi ist unerwarted abgestürtzt. ()");
+                Log($"{DateTime.Now:hh-mm-ss} Python script complete...");
                 if (!decimal.TryParse(result.Result, out decimal mps)) throw new ApplicationException($"Wert vom Raspberry Pi '{result.Result}' konte nicht als decimal geparsed werden.");
-                await Task.Delay((int)new TimeSpan(0, 0, (int)(14 - (speed * 0.1))).TotalMilliseconds);
                 await SetLocoDrive(0, direction);
                 await Task.Delay((int)new TimeSpan(0, 0, 2).TotalMilliseconds);
                 return mps;
-            }
-            catch
-            {
-                throw;
             }
             finally
             {
@@ -239,12 +241,20 @@ namespace WPF_Application
             }
         }
 
-        private async Task KillPythonScript() => await Task.Run(() => { _sshClient.RunCommand("pkill -9 -f GetTimeBetweenSensors.py"); });
+        private async Task<SshCommand> ExecutePythonScriptAndGetResult(int itterations = 5)
+        {
+            SshCommand result = default!;
+            var task = Task.Run(() => { result = SshClient.RunCommand($"python /home/pi/Desktop/measure_speed.py {itterations}"); });
+            await Task.Run(() => task.Wait(new TimeSpan(0, 1, 0)));
+            return result;
+        }
+
+        private async Task KillPythonScript() => await Task.Run(() => SshClient.RunCommand("pkill -9 -f measure_speed.py"));
 
         private async Task SetLocoDrive(int speed, bool direction)
         {
             Log($"Speed: {speed} - Direction: {direction}");
-            _controller.SetLocoDrive(new() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
+            Controller.SetLocoDrive(new() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
             await CheckSpeed(speed, direction);
         }
 
@@ -259,17 +269,15 @@ namespace WPF_Application
         private async Task CheckSpeed(int speed, bool direction)
         {
             await Task.Delay(new TimeSpan(0, 0, 0, 1, 500));
-            if (!(speed == _lokInfo.Speed && _lokInfo.DrivingDirection == direction))
+            if (!(speed == LokData.Speed && LokData.DrivingDirection == direction))
             {
                 Log("Speed check failed. Trying again. ...");
                 await SetLocoDrive(speed, direction);
             }
         }
 
-        private void SetTractionSpeed(int speedStep, bool direction, decimal speed)
+        private async Task SetTractionSpeed(int speedStep, bool direction, decimal speed)
         {
-            if (speedStep < 2 || 127 < speedStep) throw new ApplicationException($"SpeedStep von '{speedStep}' nicht zulässig.");
-            if (speed < 0) throw new ApplicationException($"Geschwindigkeit '{speed}' nicht zulässig!");
             if (direction)
             {
                 TractionForward[speedStep] = speed;
@@ -280,8 +288,8 @@ namespace WPF_Application
                 TractionBackward[speedStep] = speed;
                 PointsBackward.Add(new(speedStep, (double)speed));
             }
-            DrawTable();
-            PlotSpeedData();
+            DrawSpeedMeasurementTable();
+            await DrawSpeedDataPlot();
             Log($"Loco drove {speed} m/s at dcc speed {speedStep} and direction {direction}.");
         }
 
@@ -290,19 +298,14 @@ namespace WPF_Application
             if (Vehicle is null) return;
             if (e.Data.Adresse.Value == Vehicle.Address)
             {
-                _lokInfo = e.Data;
+                LokData = e.Data;
             }
         }
 
-        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            IsDisposed = true;
-            await SetLocoDrive(0, false);
-        }
-
-        private void PlotSpeedData()
+        private async Task DrawSpeedDataPlot()
         {
             if (sp_Plot is null) return;
+            await FillDataPointsList();
             PlotModel model = new();
             // Create the OxyPlot graph for Salt Split
             OxyPlot.Wpf.PlotView plot = new();
@@ -310,12 +313,12 @@ namespace WPF_Application
             plot.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 
             // Create new Line Series
-            LineSeries linePoints_Forward = new LineSeries()
+            LineSeries linePoints_Forward = new()
             { StrokeThickness = 1, MarkerSize = 1, Title = "Vorwärts", Color = OxyPlot.OxyColors.Red };
             // Add each point to the new series
             linePoints_Forward.Points.Clear();
             linePoints_Forward.Points.AddRange(PointsForward);
-            LineSeries linePoints_Backward = new LineSeries()
+            LineSeries linePoints_Backward = new()
             { StrokeThickness = 1, MarkerSize = 1, Title = "Rückwärts", Color = OxyPlot.OxyColors.Blue };
             // Add each point to the new series
             linePoints_Backward.Points.Clear();
@@ -325,7 +328,7 @@ namespace WPF_Application
 
             // Define X-Axis
             OxyPlot.Axes.LinearAxis Xaxis = new();
-            Xaxis.Maximum = 127;
+            Xaxis.Maximum = CentralStationClient.maxDccStep;
             Xaxis.Minimum = Start_Measurement;
             Xaxis.Position = OxyPlot.Axes.AxisPosition.Bottom;
             Xaxis.Title = "Dcc Speed Step";
@@ -372,26 +375,26 @@ namespace WPF_Application
         {
             try
             {
-                if (Vehicle is null) { MessageBox.Show($"Fahrzeug mit Adresse {IUVehicleAdress.Value} wurde nicht gefunden!"); return; }
+                if (Vehicle is null) { return; }
                 Initialize();
-                TractionForward = new decimal?[128];
-                TractionBackward = new decimal?[128];
-                DrawTable();
+                TractionForward = new decimal?[CentralStationClient.maxDccStep + 1];
+                TractionBackward = new decimal?[CentralStationClient.maxDccStep + 1];
+                DrawSpeedMeasurementTable();
+                await DrawSpeedDataPlot();
 
-                _controller.SetTrackPowerON();
-                _controller.GetLocoInfo(new(Vehicle.Address));
-                await Task.Run(() => { _sshClient.Connect(); });
+                Controller.SetTrackPowerON();
+                Controller.GetLocoInfo(new(Vehicle.Address));
+                await Task.Run(() => { SshClient.Connect(); });
                 PointsBackward = new();
                 PointsForward = new();
-                PlotSpeedData();
-                Run();
+                await Run();
             }
             catch (SshConnectionException) { MessageBox.Show($"Die ssh Verbindung zum Pi wurde terminiert!"); }
             catch (System.Net.Sockets.SocketException) { MessageBox.Show($"Verbindung zum Raspberry Pi konnte nicht hergestellt werden."); }
             catch (SshAuthenticationException) { MessageBox.Show($"Authentifizierung hat fehlgeschlagen."); }
             catch (Exception ex)
             {
-                Logger.Log($"", true, ex);
+                Logger.Log($"", ex, Environment.StackTrace);
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex.Message}");
             }
             finally
@@ -407,49 +410,53 @@ namespace WPF_Application
             this.Close();
         }
 
-        private void IntegerUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private async void IntegerUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            FillPointsList();
-            DrawTable();
-            PlotSpeedData();
+            DrawSpeedMeasurementTable();
+            await DrawSpeedDataPlot();
         }
 
-        private async void BtnCV6Go_Click(object sender, RoutedEventArgs e)
+        //Vehicle = _db?.Vehicles?.FirstOrDefault(e => e.Address == IUVehicleAdress.Value && e.Type == VehicleType.Lokomotive) ?? throw new ApplicationException();
+        //TractionForward = Vehicle.TractionForward;
+        //TractionBackward = Vehicle.TractionBackward;
+        //Vehicle = null!;
+        //TractionForward = new decimal?[128];
+        //TractionBackward = new decimal?[128];
+
+        private static void Log(string message) => Console.WriteLine(message);
+
+        private async void EinmessenWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            //await SetLocoDrive(50, false);
-            //while (true)
-            //{
-            //    var direction = GetDirection();
-            //    await SetLocoDrive(0, direction);
-            //}
+            DrawSpeedMeasurementTable();
+            await DrawSpeedDataPlot();
         }
 
-        private void IUVehicleAdress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private async void CmbAllVehicles_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            CmbAllVehicles.Items.Clear();
+            foreach (var vehicle in await Db.Vehicles.Where(e => e.Type == VehicleType.Lokomotive).OrderBy(e => e.Address).ToListAsync())
             {
-
-                Vehicle = _db?.Vehicles?.FirstOrDefault(e => e.Address == IUVehicleAdress.Value && e.Type == VehicleType.Lokomotive) ?? throw new ApplicationException();
-                TractionForward = Vehicle.TractionForward;
-                TractionBackward = Vehicle.TractionBackward;
-            }
-            catch (ApplicationException)
-            {
-                Vehicle = null!;
-                TractionForward = new decimal?[128];
-                TractionBackward = new decimal?[128];
-            }
-            finally
-            {
-                PlotSpeedData();
-                DrawTable();
-                FillPointsList();
+                CmbAllVehicles.Items.Add(new ComboBoxItem() { Tag = vehicle, Content = $"({vehicle.Address:D3})  {(string.IsNullOrWhiteSpace(vehicle.Name) ? vehicle.Full_Name : vehicle.Name)}" });
             }
         }
 
-        private void Log(string message)
+        private async void CmbAllVehicles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Dispatcher.BeginInvoke(new Action(() => { lblLog.Text += message + "\n"; }));
+            TcMeasure.IsEnabled = CmbAllVehicles.SelectedItem is not Model.Vehicle;
+            if (CmbAllVehicles.SelectedItem is not ComboBoxItem cbi || cbi.Tag is not Vehicle vehicle) return;
+            Vehicle = vehicle;
+            TractionForward = vehicle.TractionForward;
+            TractionBackward = vehicle.TractionBackward;
+
+            DrawSpeedMeasurementTable();
+            await DrawSpeedDataPlot();
+        }
+
+        private async void EinmessenWindow_Closing(object sender, CancelEventArgs e)
+        {
+            SshClient.Disconnect();
+            IsDisposed = true;
+            await SetLocoDrive(0, false);
         }
     }
 }

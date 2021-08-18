@@ -5,24 +5,24 @@ namespace WPF_Application.Exceptions
 {
     public class ControllerException : Exception
     {
-        public ControllerException(ModelTrainController.CentralStationClient controler)
+        public ControllerException(ModelTrainController.CentralStationClient controller)
         {
-            controler.SetTrackPowerOFF();
+            controller.SetTrackPowerOFF();
         }
 
-        public ControllerException(ModelTrainController.CentralStationClient controler, string message) : base(message)
+        public ControllerException(ModelTrainController.CentralStationClient controller, string message) : base(message)
         {
-            controler.SetTrackPowerOFF();
+            controller.SetTrackPowerOFF();
         }
 
-        public ControllerException(ModelTrainController.CentralStationClient controler, string message, Exception innerException) : base(message, innerException)
+        public ControllerException(ModelTrainController.CentralStationClient controller, string message, Exception innerException) : base(message, innerException)
         {
-            controler.SetTrackPowerOFF();
+            controller.SetTrackPowerOFF();
         }
 
-        protected ControllerException(ModelTrainController.CentralStationClient controler, SerializationInfo info, StreamingContext context) : base(info, context)
+        protected ControllerException(ModelTrainController.CentralStationClient controller, SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            controler.SetTrackPowerOFF();
+            controller.SetTrackPowerOFF();
         }
     }
 }

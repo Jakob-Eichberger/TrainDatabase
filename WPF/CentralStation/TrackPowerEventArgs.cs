@@ -12,17 +12,18 @@
  * 
  */
 
+using ModelTrainController;
 using System;
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation
 {
     public class TrackPowerEventArgs : EventArgs
     {
-        public TrackPowerEventArgs(bool trackPowerOn)
-            : base()
+        public TrackPowerEventArgs(TrackPower trackPower)
         {
-            TrackPowerOn = trackPowerOn;
+            TrackPower = trackPower;
         }
-        public bool TrackPowerOn;
+
+        public TrackPower TrackPower { get; set; }
     }
 }

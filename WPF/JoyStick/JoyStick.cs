@@ -76,7 +76,7 @@ namespace WPF_Application.JoyStick
                 }
                 catch (SharpDX.SharpDXException ex)
                 {
-                    Logger.Log($"Fehler by {nameof(Joystick.GetBufferedData)}", true, ex);
+                    Logger.Log($"Fehler by {nameof(Joystick.GetBufferedData)}", ex, Environment.StackTrace);
                 }
             }).Start();
 

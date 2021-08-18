@@ -4,9 +4,11 @@ using Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +17,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPF_Application;
+using WPF_Application.CentralStation.Z21;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
 
@@ -62,45 +65,46 @@ namespace Wpf_Application
                 Theme = new();
                 this.DataContext = this;
                 InitializeComponent();
-                db.Database.EnsureCreated();
 
-                if (db.Vehicles.Any())
-                {
-                    DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
-                }
-                else
-                {
-                    if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                    {
-                        new Importer.Z21(db).Show();
-                    }
-                }
-                //switch (Settings.CentralStation)
-                //{
-                //    case CentralStationType.None:
-                //        Controler = null!;
-                //        break;
-                ////    case CentralStationType.Z21:
-                Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
-                Controller.LogOn();
-                //        break;
-                //    case CentralStationType.ECoS:
-                //        //Controler = new Z21(new StartData() { LanAdresse = Settings.ControllerIP.ToString(), LanPort = Settings.ControllerPort });
-                //        break;
-                //}
+                if (Debugger.IsAttached)
+                    ShowConsoleWindow();
+                CheckIfDbHasItemsDrawVehicle();
+                CreatController();
                 RemoveUnneededImages();
             }
             catch (Exception e)
             {
                 Close();
-                Logger.Log($"Fehler beim start", true, e);
+                Logger.Log($"Fehler beim start", e, Environment.StackTrace);
                 MessageBox.Show($"Fehler beim Start!.\n Error: '{e?.Message ?? ""}' \nIm Ordner ...\\Log\\ finden Sie ein Logfile. Bitte an contact@jakob-eichberger.at schicken.");
+            }
+        }
+
+        private void CreatController()
+        {
+            Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
+            Controller.LogOn();
+        }
+
+        private void CheckIfDbHasItemsDrawVehicle()
+        {
+            db.Database.EnsureCreated();
+            if (db.Vehicles.Any())
+            {
+                DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
+            }
+            else
+            {
+                if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                {
+                    new Importer.Z21(db).Show();
+                }
             }
         }
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            Logger.Log(exception: e.Exception, isError: true);
+            Logger.Log("", e.Exception, Environment.StackTrace);
             e.Handled = true;
             MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
@@ -185,7 +189,7 @@ namespace Wpf_Application
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log($"Deleting file failed", true, ex);
+                    Logger.Log($"Deleting file failed", ex, Environment.StackTrace);
                 }
 
             });
@@ -204,7 +208,7 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"-", true, ex);
+                Logger.Log($"-", ex, Environment.StackTrace);
                 MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
@@ -229,7 +233,7 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"-", true, ex);
+                Logger.Log($"-", ex, Environment.StackTrace);
                 MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
@@ -275,5 +279,33 @@ namespace Wpf_Application
         {
             new Einmessen(db, Controller).Show();
         }
+
+        #region Console
+        [DllImport(@"kernel32.dll", SetLastError = true)]
+        static extern bool AllocConsole();
+
+        [DllImport(@"kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport(@"user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        const int SwHide = 0;
+        const int SwShow = 5;
+
+        public static void ShowConsoleWindow()
+        {
+            var handle = GetConsoleWindow();
+
+            if (handle == IntPtr.Zero)
+            {
+                AllocConsole();
+            }
+            else
+            {
+                ShowWindow(handle, SwShow);
+            }
+        }
+        #endregion
     }
 }

@@ -12,7 +12,9 @@
  * 
  */
 
+using Helper;
 using Model;
+using ModelTrainController;
 using ModelTrainController.Z21;
 using System;
 using System.Collections;
@@ -20,9 +22,10 @@ using System.Net;
 using System.Net.Sockets;
 using WPF_Application.Exceptions;
 
-namespace Helper
+namespace WPF_Application.CentralStation.Z21
 {
-    public class Z21 : ModelTrainController.CentralStationClient
+
+    public class Z21 : CentralStationClient
     {
         public Z21(IPAddress address, int port) : base(address, port)
         {
@@ -33,17 +36,13 @@ namespace Helper
         public override event EventHandler<DataEventArgs> OnReceive = default!;                         //  Allgemeiner Empfang von Daten
         public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
         public override event EventHandler<VersionInfoEventArgs> OnGetVersion = default!;               //  40 21 LAN X GET VERSION  2.3 (xx)
-        public override event EventHandler OnTrackPowerOFF = default!;                                  //  40 61 LAN X BC TRACK POWER OFF 2.7 (12) 
-        public override event EventHandler OnTrackPowerON = default!;                                   //  40 61 LAN X BC TRACK POWER ON  2.8 (12) 
-        public override event EventHandler OnProgrammingMode = default!;                                //  40 61 LAN X BC PROGRAMMING MODE 2.9 (12) 
-        public override event EventHandler OnTrackShortCircuit = default!;                              //  40 61 LAN X BC TRACK SHORT CIRCUIT 2.10 (12) 
         public override event EventHandler<StateEventArgs> OnStatusChanged = default!;                  //  40 62 LAN X STATUS CHANGED 2.12 (13)
         public override event EventHandler OnStopped = default!;                                        //  40 81 LAN X BC STOPPED 2.14 (14)
         public override event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion = default!;// 40 F3 LAN X GET FIRMWARE VERSION 2.15 (xx)
         public override event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;   //  84    LAN SYSTEMSTATE_DATACHANGED 2.18 (16) 
         public override event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo = default!;         //  1A    LAN GET HWINFO
         public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo = default!;              //  40 EF LAN X LOCO INFO   4.4 (22)
-        public override event EventHandler<TrackPowerEventArgs> OnTrackPower = default!;                //  ist Zusammenfassung von 
+        public override event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
 
         internal override void Empfang(IAsyncResult res)
         {
@@ -76,7 +75,7 @@ namespace Helper
             while (z < max)
             {
                 length = bytes[z];
-                if ((length > 3) & ((z + length) <= max))
+                if (length > 3 & z + length <= max)
                 {
                     byte[] einzelbytes = new byte[length];
                     Array.Copy(bytes, z, einzelbytes, 0, length);
@@ -101,8 +100,8 @@ namespace Helper
                 case 0x1A:           //  LAN GET HWINFO  2.2 (xx)
                     Console.WriteLine("> LAN GET HWINFO " + getByteString(received));
                     HardwareTyp hardwareTyp;
-                    i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + (received[4]);
-                    j = (received[11] << 24) + (received[10] << 16) + (received[9] << 8) + (received[8]);
+                    i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
+                    j = (received[11] << 24) + (received[10] << 16) + (received[9] << 8) + received[8];
                     switch (i)
                     {
                         case 0x00000200: hardwareTyp = HardwareTyp.Z21_OLD; break;
@@ -111,12 +110,12 @@ namespace Helper
                         case 0x00000203: hardwareTyp = HardwareTyp.z21_SMALL; break;
                         default: hardwareTyp = HardwareTyp.None; break;
                     }
-                    if (OnGetHardwareInfo != null) OnGetHardwareInfo(this, new HardwareInfoEventArgs(new HardwareInfo(hardwareTyp, j)));
+                    OnGetHardwareInfo?.Invoke(this, new HardwareInfoEventArgs(new HardwareInfo(hardwareTyp, j)));
                     break;
                 case 0x10:           //  LAN GET SERIAL NUMBER  2.1 (10)
                     Console.WriteLine("> LAN GET SERIAL NUMBER " + getByteString(received));
-                    i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + (received[4]);
-                    if (OnGetSerialNumber != null) OnGetSerialNumber(this, new GetSerialNumberEventArgs(i));
+                    i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
+                    OnGetSerialNumber?.Invoke(this, new GetSerialNumberEventArgs(i));
 
                     break;
                 case 0x40:           //  X-Bus-Telegramm
@@ -125,23 +124,21 @@ namespace Helper
                         case 0x61:
                             switch (received[5])
                             {
-                                case 0x00:           //  LAN X BC TRACK POWER OFF  2.7 (12)
+                                case 0x00:
                                     Console.WriteLine("> LAN X BC TRACK POWER OFF " + getByteString(received));
-                                    if (OnTrackPowerOFF != null) OnTrackPowerOFF(this, new EventArgs());
-                                    if (OnTrackPower != null) OnTrackPower(this, new TrackPowerEventArgs(false));
+                                    TrackPowerChanged?.Invoke(this, new(TrackPower.OFF));
                                     break;
-                                case 0x01:           //  LAN X BC TRACK POWER ON  2.8 (12)
+                                case 0x01:
                                     Console.WriteLine("> LAN X BC TRACK POWER ON " + getByteString(received));
-                                    if (OnTrackPowerON != null) OnTrackPowerON(this, new EventArgs());
-                                    if (OnTrackPower != null) OnTrackPower(this, new TrackPowerEventArgs(true));
+                                    TrackPowerChanged?.Invoke(this, new(TrackPower.ON));
                                     break;
-                                case 0x02:           //  LAN X BC PROGRAMMING MODE  2.9 (12)
+                                case 0x02:
                                     Console.WriteLine("> LAN X BC PROGRAMMING MODE " + getByteString(received));
-                                    if (OnProgrammingMode != null) OnProgrammingMode(this, new EventArgs());
+                                    TrackPowerChanged?.Invoke(this, new(TrackPower.Programing));
                                     break;
-                                case 0x08:           //  LAN X BC TRACK SHORT CIRCUIT  2.10 (12)
+                                case 0x08:
                                     Console.WriteLine("> LAN X BC TRACK SHORT CIRCUIT " + getByteString(received));
-                                    if (OnTrackShortCircuit != null) OnTrackShortCircuit(this, new EventArgs());
+                                    TrackPowerChanged?.Invoke(this, new(TrackPower.Short));
                                     break;
                                 default:
                                     Console.WriteLine("> Unbekanntes X-Bus-Telegramm Header 61" + getByteString(received));
@@ -150,31 +147,21 @@ namespace Helper
                             break;
                         case 0x62:           //  LAN X STATUS CHANGED  2.12 (13)
                             Console.WriteLine("> LAN X STATUS CHANGED " + getByteString(received));
-                            CentralStateData centralStateData = GetCentralStateData(received);
-                            if (OnStatusChanged != null) OnStatusChanged(this, new StateEventArgs(centralStateData));
+                            OnStatusChanged?.Invoke(this, new StateEventArgs(GetCentralStateData(received)));
                             break;
                         case 0x63:
                             switch (received[5])
                             {
                                 case 0x21:           //  LAN X GET VERSION  2.3 (10)
                                     Console.WriteLine("> LAN X GET VERSION " + getByteString(received));
-                                    VersionTyp versionTyp;
-                                    switch (received[7])
+                                    var versionTyp = received[7] switch
                                     {
-                                        case 0x00:
-                                            versionTyp = VersionTyp.None;
-                                            break;
-                                        case 0x12:
-                                            versionTyp = VersionTyp.Z21;
-                                            break;
-                                        case 0x13:
-                                            versionTyp = VersionTyp.z21;  // 0x13 ist keine gesicherte Erkenntnis aus dem LAN-Protokoll, wird aber von meiner z21 so praktiziert
-                                            break;
-                                        default:
-                                            versionTyp = VersionTyp.Other;
-                                            break;
-                                    }
-                                    if (OnGetVersion != null) OnGetVersion(this, new VersionInfoEventArgs(new VersionInfo(received[6], versionTyp)));
+                                        0x00 => VersionTyp.None,
+                                        0x12 => VersionTyp.Z21,
+                                        0x13 => VersionTyp.z21,// 0x13 ist keine gesicherte Erkenntnis aus dem LAN-Protokoll, wird aber von meiner z21 so praktiziert
+                                        _ => VersionTyp.Other,
+                                    };
+                                    OnGetVersion?.Invoke(this, new VersionInfoEventArgs(new VersionInfo(received[6], versionTyp)));
                                     break;
                                 default:
                                     Console.WriteLine("> Unbekanntes X-Bus-Telegramm Header 63" + getByteString(received));
@@ -184,23 +171,23 @@ namespace Helper
 
                         case 0x81:           //  LAN X BC STOPPED  2.14 (14)
                             Console.WriteLine("> LAN X BC STOPPED " + getByteString(received));
-                            if (OnStopped != null) OnStopped(this, new EventArgs());
+                            OnStopped?.Invoke(this, new EventArgs());
                             break;
                         case 0xEF:           //  LAN X LOCO INFO  4.4 (22)
 
-                            ValueBytesStruct vbs = new ValueBytesStruct();
+                            ValueBytesStruct vbs = new();
                             vbs.Adr_MSB = received[5];
                             vbs.Adr_LSB = received[6];
-                            LokInfoData infodata = new LokInfoData();
+                            LokInfoData infodata = new();
                             infodata.Adresse = new LokAdresse(vbs);
-                            infodata.InUse = ((received[7] & 8) == 8);
+                            infodata.InUse = (received[7] & 8) == 8;
                             infodata.Speed = (byte)(received[8] & 0x7F);
-                            infodata.DrivingDirection = ((received[8] & 0x80) == 0x80);
+                            infodata.DrivingDirection = (received[8] & 0x80) == 0x80;
 
                             int functionIndexCount = 5;
                             for (int index = 9; index < received.Length && index <= 12; index++)
                             {
-                                var functionBits = new BitArray(new byte[] { received[index] });
+                                BitArray functionBits = new(new byte[] { received[index] });
                                 if (index == 9)
                                 {
                                     infodata.Functions.Add(new(0, Convert.ToBoolean(functionBits.Get(4))));
@@ -218,14 +205,14 @@ namespace Helper
                                     }
                                 }
                             }
-                            if (OnGetLocoInfo != null) OnGetLocoInfo(this, new GetLocoInfoEventArgs(infodata));
+                            OnGetLocoInfo?.Invoke(this, new GetLocoInfoEventArgs(infodata));
                             break;
                         case 0xF3:
                             switch (received[5])
                             {
                                 case 0x0A:           //  LAN X GET FIRMWARE VERSION 2.15 (xx)
                                     Console.WriteLine("> LAN X GET FIRMWARE VERSION " + getByteString(received));
-                                    if (OnGetFirmwareVersion != null) OnGetFirmwareVersion(this, new FirmwareVersionInfoEventArgs(new FirmwareVersionInfo(received[6], received[7])));
+                                    OnGetFirmwareVersion?.Invoke(this, new FirmwareVersionInfoEventArgs(new FirmwareVersionInfo(received[6], received[7])));
                                     // Achtung: die z21 bringt die Minor-Angabe hexadezimal !!!!!!!!    z.B. Firmware 1.23 = Minor 34
                                     break;
                                 default:
@@ -241,7 +228,7 @@ namespace Helper
                 case 0x84:            // LAN SYSTEMSTATE DATACHANGED    2.18 (16)
                     Console.WriteLine("> LAN SYSTEMSTATE DATACHANGED " + getByteString(received));
                     SystemStateData systemStateData = GetSystemStateData(received);
-                    if (OnSystemStateDataChanged != null) OnSystemStateDataChanged(this, new SystemStateEventArgs(systemStateData));
+                    OnSystemStateDataChanged?.Invoke(this, new SystemStateEventArgs(systemStateData));
 
                     break;
                 default:
@@ -250,33 +237,40 @@ namespace Helper
             }
         }
 
-        private CentralStateData GetCentralStateData(byte[] received)
+        private TrackPower GetCentralStateData(byte[] received)
         {
-            CentralStateData statedata = new CentralStateData();
-            statedata.EmergencyStop = ((received[6] & 0x01) == 0x01);
-            statedata.TrackVoltageOff = ((received[6] & 0x02) == 0x02);
-            statedata.ShortCircuit = ((received[6] & 0x04) == 0x04);
-            statedata.ProgrammingModeActive = ((received[6] & 0x20) == 0x20);
-            return statedata;
+            TrackPower state = TrackPower.ON;
+            bool isEmergencyStop = (received[6] & 0x01) == 0x01;
+            bool isTrackVoltageOff = (received[6] & 0x02) == 0x02;
+            bool isShortCircuit = (received[6] & 0x04) == 0x04;
+            bool isProgrammingModeActive = (received[6] & 0x20) == 0x20;
+            if (isEmergencyStop || isTrackVoltageOff)
+                state = TrackPower.OFF;
+            else if (isShortCircuit)
+                state = TrackPower.Short;
+            else if (isProgrammingModeActive)
+                state = TrackPower.Programing;
+            Console.WriteLine($"LAN_X_STATUS_CHANGED: {getByteString(received)}\n \t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}\n");
+            return state;
         }
 
         private SystemStateData GetSystemStateData(byte[] received)
         {
             SystemStateData statedata = new SystemStateData();
-            statedata.MainCurrent = (received[4] << 8) + (received[5]);
-            statedata.ProgCurrent = (received[6] << 8) + (received[7]);
-            statedata.FilteredMainCurrent = (received[8] << 8) + (received[9]);
-            statedata.Temperature = (received[10] << 8) + (received[11]);
-            statedata.SupplyVoltage = (received[12] << 8) + (received[13]);
-            statedata.VCCVoltage = (received[14] << 8) + (received[15]);
-            statedata.CentralState.EmergencyStop = ((received[16] & 0x01) == 0x01);
-            statedata.CentralState.TrackVoltageOff = ((received[16] & 0x02) == 0x02);
-            statedata.CentralState.ShortCircuit = ((received[16] & 0x04) == 0x04);
-            statedata.CentralState.ProgrammingModeActive = ((received[16] & 0x20) == 0x20);
-            statedata.CentralState.HighTemperature = ((received[17] & 0x01) == 0x01);
-            statedata.CentralState.PowerLost = ((received[17] & 0x02) == 0x02);
-            statedata.CentralState.ShortCircuitExternal = ((received[17] & 0x04) == 0x04);
-            statedata.CentralState.ShortCircuitInternal = ((received[17] & 0x08) == 0x08);
+            statedata.MainCurrent = (received[4] << 8) + received[5];
+            statedata.ProgCurrent = (received[6] << 8) + received[7];
+            statedata.FilteredMainCurrent = (received[8] << 8) + received[9];
+            statedata.Temperature = (received[10] << 8) + received[11];
+            statedata.SupplyVoltage = (received[12] << 8) + received[13];
+            statedata.VCCVoltage = (received[14] << 8) + received[15];
+            statedata.CentralState.EmergencyStop = (received[16] & 0x01) == 0x01;
+            statedata.CentralState.TrackVoltageOff = (received[16] & 0x02) == 0x02;
+            statedata.CentralState.ShortCircuit = (received[16] & 0x04) == 0x04;
+            statedata.CentralState.ProgrammingModeActive = (received[16] & 0x20) == 0x20;
+            statedata.CentralState.HighTemperature = (received[17] & 0x01) == 0x01;
+            statedata.CentralState.PowerLost = (received[17] & 0x02) == 0x02;
+            statedata.CentralState.ShortCircuitExternal = (received[17] & 0x04) == 0x04;
+            statedata.CentralState.ShortCircuitInternal = (received[17] & 0x08) == 0x08;
             return statedata;
         }
 
@@ -343,6 +337,7 @@ namespace Helper
             bytes[5] = 0x80;
             bytes[6] = 0xA1;   // = XOR-Byte
             Senden(bytes);
+            Console.WriteLine("LAN X SET TRACK POWER OFF " + getByteString(bytes));
         }
 
         /// <summary>
@@ -358,7 +353,7 @@ namespace Helper
             bytes[4] = 0x21;
             bytes[5] = 0x81;
             bytes[6] = 0xA0;   // = XOR-Byte
-            Console.WriteLine("LAN X SET TRACK POWER OFF " + getByteString(bytes));
+            Console.WriteLine("LAN X SET TRACK POWER ON " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -525,6 +520,7 @@ namespace Helper
             bitarray.CopyTo(bytes, 8);
 
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
+            Console.WriteLine($"LAN X SET LOCO FUNCTION { getByteString(bytes) }  ({adresse } - index: { function.FunctionIndex } - { toggelType })");
             Senden(bytes);
         }
 
@@ -599,5 +595,6 @@ namespace Helper
             //var x = /*u*/nchecked((int)0x00010000);
             //Senden(bytes);
         }
+
     }
 }

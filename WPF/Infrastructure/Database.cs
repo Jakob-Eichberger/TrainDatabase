@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Model;
 using System;
+using System.Linq;
+using WPF_Application.Extensions;
 
 #nullable disable
 
@@ -39,6 +42,10 @@ namespace WPF_Application.Infrastructure
             modelBuilder.Entity<Vehicle>().HasOne(e => e.Category);
             modelBuilder.Entity<Vehicle>().HasMany(e => e.Functions);
             modelBuilder.Entity<Category>().HasMany(e => e.Vehicles);
+
+            var converter = new ValueConverter<decimal?[], string>(v => string.Join(";", v), v => v.Split(";", StringSplitOptions.None).Select(val => val.IsDecimal() ? decimal.Parse(val) : (decimal?)null).ToArray());
+            modelBuilder.Entity<Vehicle>().Property(e => e.TractionForward).HasConversion(converter);
+            modelBuilder.Entity<Vehicle>().Property(e => e.TractionBackward).HasConversion(converter);
             OnModelCreatingPartial(modelBuilder);
         }
 

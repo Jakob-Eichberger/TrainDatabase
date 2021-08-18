@@ -91,7 +91,7 @@ namespace WPF_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", false, ex);
+                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", ex, Environment.StackTrace);
             }
         }
 
@@ -103,6 +103,7 @@ namespace WPF_Application
             if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
             this._db = _db;
             this.Title = "Neues Fahrzeug";
+            BtnDeleteVehicle.Visibility = Visibility.Visible;
             btnSaveVehicleAndClose.Click += AddVehicle_Click;
         }
 
@@ -212,6 +213,14 @@ namespace WPF_Application
         private void TypeRadioButton_Click(object sender, RoutedEventArgs e)
         {
             Vehicle.Type = (VehicleType)Enum.Parse(typeof(VehicleType), (sender as RadioButton)!.Tag!.ToString()!);
+        }
+
+        private void DeleteVehicle_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBoxResult.Yes == MessageBox.Show($"Möchten Sie das Fahrzeug '{Vehicle.Name}' wirklich löschen?", "Fahrzeug löschen", MessageBoxButton.YesNo))
+            {
+
+            }
         }
     }
 }

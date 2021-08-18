@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelTrainController;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -79,8 +80,9 @@ namespace Model
 
         public List<Function> Functions { get; set; } = new();
 
-        public decimal?[] TractionForward = new decimal?[128];
-        public decimal?[] TractionBackward = new decimal?[128];
+        public decimal?[] TractionForward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
+
+        public decimal?[] TractionBackward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
 
         /// <summary>
         /// Gets the real world speed for a given speed step and direction

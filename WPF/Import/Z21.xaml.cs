@@ -117,7 +117,7 @@ namespace Importer
             }
             catch (Exception ex)
             {
-                Logger.Log($"-", true, ex);
+                Logger.Log($"-", ex, Environment.StackTrace);
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex?.Message}");
             }
             finally
