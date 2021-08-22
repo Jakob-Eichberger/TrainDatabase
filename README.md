@@ -52,7 +52,7 @@ In the control window the speed, direction of travel and functions of a vehicle 
 
 TrainDatabase (with the help of a [raspberry pi](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/) and two [infrared sensors](https://amazon.de/gp/product/B07D924JHT)) allows you to measure the speed of your vehicle so that it can be used in trains with multiple locomotives.
 
-![image](https://user-images.githubusercontent.com/53713395/130352710-73c0cc13-ab67-46e2-94ec-f4809c4c2db6.png)
+![image](https://user-images.githubusercontent.com/53713395/130366046-f6c6b504-1d95-458e-a21c-57f4ed6ee224.png)
 
 
 ## Getting Started
