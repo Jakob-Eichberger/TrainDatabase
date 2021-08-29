@@ -58,9 +58,9 @@ namespace WPF_Application
             set => Settings.Set(nameof(DistanceBetweenSensorsInMM), value.ToString());
         }
 
-        private decimal?[] TractionForward { get; set; } = new decimal?[128];
+        private decimal?[] TractionForward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
 
-        private decimal?[] TractionBackward { get; set; } = new decimal?[128];
+        private decimal?[] TractionBackward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
 
         public int Start_Measurement { get => Settings.GetInt(nameof(Start_Measurement)) ?? 2; set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
 
@@ -99,12 +99,12 @@ namespace WPF_Application
             for (int i = 2; i <= CentralStationClient.maxDccStep; i++)
             {
                 if (TractionBackward[i] is not null)
-                    PointsBackward.Add(new(i, (double)(TractionBackward[i] ?? 0)));
+                    PointsBackward.Add(new(i, (double)Math.Round((TractionBackward[i] / 3.6m) ?? 0, 2)));
             }
             for (int i = 2; i <= CentralStationClient.maxDccStep; i++)
             {
                 if (TractionForward[i] is not null)
-                    PointsForward.Add(new(i, (double)(TractionForward[i] ?? 0)));
+                    PointsForward.Add(new(i, (double)Math.Round((TractionForward[i] / 3.6m) ?? 0, 2)));
             }
         });
 
@@ -117,11 +117,11 @@ namespace WPF_Application
             functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            CreatSpeedTableRow($"Step", $"M/S (V)", $"M/S (R)");
+            CreatSpeedTableRow($"Step", $"km/h (V)", $"km/h (R)");
             bool lastStep = false;
             for (int i = Start_Measurement; i <= CentralStationClient.maxDccStep; i += Step_Measurement)
             {
-                CreatSpeedTableRow($"Step {i}", $"{(TractionForward[i] is null ? "-" : TractionForward[i])} m/s", $"{(TractionBackward[i] is null ? "-" : TractionBackward[i])}  m/s");
+                CreatSpeedTableRow($"Step {i}", $"{(TractionForward[i] is null ? "-" : (double)Math.Round((TractionForward[i] / 3.6m) ?? 0, 2))} km/h", $"{(TractionBackward[i] is null ? "-" : (double)Math.Round((TractionBackward[i] / 3.6m) ?? 0, 2))}  km/h");
                 if (!lastStep && i + Step_Measurement > CentralStationClient.maxDccStep) { i = (CentralStationClient.maxDccStep - Step_Measurement); lastStep = true; }
             }
 
@@ -150,9 +150,8 @@ namespace WPF_Application
 
         private async Task GetSpeed(int speed, bool direction)
         {
-            lblStatus.Content = $"{speed} - {direction}";
             decimal result = await GetTimeBetweenSensors(speed, direction);
-            decimal mps = Math.Round(((DistanceBetweenSensorsInMM / 100.0m) / result) * 87);
+            decimal mps = Math.Round(((DistanceBetweenSensorsInMM / 1000.0m) / result) * 87.0m, 2);
             await SetTractionSpeed(speed, direction, mps);
             Log($"Result:\n\tStepStep:\t'{speed}'\n\tDirection:\t'{direction}'\n\tmeasured in seconds:\t'{result}'\n\tDistance:\t{DistanceBetweenSensorsInMM}\n\tSpeed in m/s:\t{mps}\n");
         }
@@ -176,10 +175,7 @@ namespace WPF_Application
                     if (!lastStep && speed + Step_Measurement > CentralStationClient.maxDccStep) { speed = (CentralStationClient.maxDccStep - Step_Measurement); lastStep = true; }
                 }
                 await ReturnHome();
-                Vehicle.TractionForward = TractionForward;
-                Vehicle.TractionBackward = TractionBackward;
                 await SaveChanges();
-                direction = false;
             }
             catch (OperationCanceledException)
             {
@@ -188,7 +184,6 @@ namespace WPF_Application
                 DrawSpeedMeasurementTable();
                 await DrawSpeedDataPlot();
             }
-            catch { throw; }
             finally
             {
                 await SetLocoDrive(0, true);
@@ -208,15 +203,20 @@ namespace WPF_Application
             await ExecutePythonScriptAndGetResult();
             await SetLocoDrive(40, false);
             await ExecutePythonScriptAndGetResult(1);
-            await SetLocoDrive(40, true);
+            await SetLocoDrive(0, true);
         }
 
         private async Task SaveChanges()
         {
-            var temp = Db.Vehicles.FirstOrDefault(e => e.Id == Vehicle.Id) ?? throw new KeyNotFoundException();
+            TractionBackward[0] = 0;
+            TractionBackward[1] = 0;
+            TractionForward[0] = 0;
+            TractionForward[1] = 0;
+            var temp = Db.Vehicles.FirstOrDefault(e => e.Id == Vehicle.Id) ?? throw new Exception($"Fahrzeug mit Adresse '{Vehicle.Address}' nicht gefunden!");
             temp.TractionBackward = TractionBackward;
             temp.TractionForward = TractionForward;
             await Db.SaveChangesAsync();
+            Vehicle = temp;
         }
 
         private async Task<decimal> GetTimeBetweenSensors(int speed, bool direction)
@@ -245,7 +245,7 @@ namespace WPF_Application
         {
             SshCommand result = default!;
             var task = Task.Run(() => { result = SshClient.RunCommand($"python /home/pi/Desktop/measure_speed.py {itterations}"); });
-            await Task.Run(() => task.Wait(new TimeSpan(0, 1, 0)));
+            await Task.Run(() => task.Wait(new TimeSpan(0, 2, 0)));
             return result;
         }
 
@@ -318,40 +318,42 @@ namespace WPF_Application
             // Add each point to the new series
             linePoints_Forward.Points.Clear();
             linePoints_Forward.Points.AddRange(PointsForward);
-            LineSeries linePoints_Backward = new()
+            LineSeries linePoints_Backwards = new()
             { StrokeThickness = 1, MarkerSize = 1, Title = "Rückwärts", Color = OxyPlot.OxyColors.Blue };
             // Add each point to the new series
-            linePoints_Backward.Points.Clear();
-            linePoints_Backward.Points.AddRange(PointsBackward);
-            // Add Chart Title
-            //model.Title = "Model Title";
+            linePoints_Backwards.Points.Clear();
+            linePoints_Backwards.Points.AddRange(PointsBackward);
 
-            // Define X-Axis
-            OxyPlot.Axes.LinearAxis Xaxis = new();
-            Xaxis.Maximum = CentralStationClient.maxDccStep;
-            Xaxis.Minimum = Start_Measurement;
-            Xaxis.Position = OxyPlot.Axes.AxisPosition.Bottom;
-            Xaxis.Title = "Dcc Speed Step";
-            model.Axes.Add(Xaxis);
+            model.Axes.Add(GetXAxis());
 
-            //Define Y-Axis
-            OxyPlot.Axes.LinearAxis Yaxis = new();
-            Yaxis.MajorStep = 15;
-            Yaxis.Maximum = 100;
-            Yaxis.MaximumPadding = 0;
-            Yaxis.Minimum = 0;
-            Yaxis.MinimumPadding = 0;
-            Yaxis.MinorStep = double.NaN;
-            Yaxis.Title = "m/s";
-            model.Axes.Add(Yaxis);
+            model.Axes.Add(GetYAxis());
 
-            model.Series.Add(linePoints_Backward);
+            model.Series.Add(linePoints_Backwards);
             model.Series.Add(linePoints_Forward);
 
             plot.Model = model;
             //plot.InvalidatePlot(true);
             sp_Plot.Children.Clear();
             sp_Plot.Children.Add(plot);
+        }
+
+        private LinearAxis GetXAxis()
+        {
+            OxyPlot.Axes.LinearAxis Xaxis = new();
+            Xaxis.Maximum = CentralStationClient.maxDccStep;
+            Xaxis.Minimum = Start_Measurement;
+            Xaxis.Position = OxyPlot.Axes.AxisPosition.Bottom;
+            Xaxis.Title = "Dcc Speed Step";
+            return Xaxis;
+        }
+
+        private static LinearAxis GetYAxis()
+        {
+            OxyPlot.Axes.LinearAxis Yaxis = new();
+            Yaxis.Minimum = 0;
+            Yaxis.MinorStep = double.NaN;
+            Yaxis.Title = "km/h";
+            return Yaxis;
         }
 
         private void Initialize()
@@ -415,13 +417,6 @@ namespace WPF_Application
             DrawSpeedMeasurementTable();
             await DrawSpeedDataPlot();
         }
-
-        //Vehicle = _db?.Vehicles?.FirstOrDefault(e => e.Address == IUVehicleAdress.Value && e.Type == VehicleType.Lokomotive) ?? throw new ApplicationException();
-        //TractionForward = Vehicle.TractionForward;
-        //TractionBackward = Vehicle.TractionBackward;
-        //Vehicle = null!;
-        //TractionForward = new decimal?[128];
-        //TractionBackward = new decimal?[128];
 
         private static void Log(string message) => Console.WriteLine(message);
 

@@ -51,7 +51,6 @@ namespace WPF_Application.Infrastructure
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-
         public override EntityEntry<TEntity> Add<TEntity>(TEntity obj) where TEntity : class
         {
             var result = Set<TEntity>().Add(obj);

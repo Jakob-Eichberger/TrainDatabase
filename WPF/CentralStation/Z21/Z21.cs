@@ -30,7 +30,7 @@ namespace WPF_Application.CentralStation.Z21
         public Z21(IPAddress address, int port) : base(address, port)
         {
             BeginReceive(new AsyncCallback(Empfang), null);
-            Console.WriteLine("Z21 initialisiert.");
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} Z21 initialisiert.");
         }
 
         public override event EventHandler<DataEventArgs> OnReceive = default!;                         //  Allgemeiner Empfang von Daten
@@ -56,13 +56,13 @@ namespace WPF_Application.CentralStation.Z21
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Fehler beim Empfang  " + ex.Message);
+                Console.WriteLine($"{DateTime.Now:hh-mm-ss} Fehler beim Empfang  " + ex.Message);
             }
         }
 
         internal override void EndConnect(IAsyncResult res)
         {
-            Console.WriteLine("Reconnection abgeschlossen");
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} Reconnection abgeschlossen");
             Client.EndConnect(res);
         }
 
@@ -85,7 +85,7 @@ namespace WPF_Application.CentralStation.Z21
                 else
                 {
                     z = max;  //Notausgang, falls ungültige Länge, Restliche Daten werden verworfen
-                    Console.WriteLine("> Fehlerhaftes Telegramm.");
+                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} > Fehlerhaftes Telegramm.");
                 }
             }
 
@@ -98,7 +98,7 @@ namespace WPF_Application.CentralStation.Z21
             switch (received[2])
             {
                 case 0x1A:           //  LAN GET HWINFO  2.2 (xx)
-                    Console.WriteLine("> LAN GET HWINFO " + getByteString(received));
+                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET HWINFO " + getByteString(received));
                     HardwareTyp hardwareTyp;
                     i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
                     j = (received[11] << 24) + (received[10] << 16) + (received[9] << 8) + received[8];
@@ -113,7 +113,7 @@ namespace WPF_Application.CentralStation.Z21
                     OnGetHardwareInfo?.Invoke(this, new HardwareInfoEventArgs(new HardwareInfo(hardwareTyp, j)));
                     break;
                 case 0x10:           //  LAN GET SERIAL NUMBER  2.1 (10)
-                    Console.WriteLine("> LAN GET SERIAL NUMBER " + getByteString(received));
+                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET SERIAL NUMBER " + getByteString(received));
                     i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
                     OnGetSerialNumber?.Invoke(this, new GetSerialNumberEventArgs(i));
 
@@ -125,35 +125,35 @@ namespace WPF_Application.CentralStation.Z21
                             switch (received[5])
                             {
                                 case 0x00:
-                                    Console.WriteLine("> LAN X BC TRACK POWER OFF " + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} TRACK POWER OFF " + getByteString(received));
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.OFF));
                                     break;
                                 case 0x01:
-                                    Console.WriteLine("> LAN X BC TRACK POWER ON " + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} TRACK POWER ON " + getByteString(received));
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.ON));
                                     break;
                                 case 0x02:
-                                    Console.WriteLine("> LAN X BC PROGRAMMING MODE " + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} PROGRAMMING MODE " + getByteString(received));
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.Programing));
                                     break;
                                 case 0x08:
-                                    Console.WriteLine("> LAN X BC TRACK SHORT CIRCUIT " + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} TRACK SHORT CIRCUIT " + getByteString(received));
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.Short));
                                     break;
                                 default:
-                                    Console.WriteLine("> Unbekanntes X-Bus-Telegramm Header 61" + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} Unbekanntes X-Bus-Telegramm Header 61" + getByteString(received));
                                     break;
                             }
                             break;
                         case 0x62:           //  LAN X STATUS CHANGED  2.12 (13)
-                            Console.WriteLine("> LAN X STATUS CHANGED " + getByteString(received));
+                            Console.WriteLine($"{DateTime.Now:hh-mm-ss} STATUS CHANGED " + getByteString(received));
                             OnStatusChanged?.Invoke(this, new StateEventArgs(GetCentralStateData(received)));
                             break;
                         case 0x63:
                             switch (received[5])
                             {
                                 case 0x21:           //  LAN X GET VERSION  2.3 (10)
-                                    Console.WriteLine("> LAN X GET VERSION " + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET VERSION " + getByteString(received));
                                     var versionTyp = received[7] switch
                                     {
                                         0x00 => VersionTyp.None,
@@ -164,13 +164,13 @@ namespace WPF_Application.CentralStation.Z21
                                     OnGetVersion?.Invoke(this, new VersionInfoEventArgs(new VersionInfo(received[6], versionTyp)));
                                     break;
                                 default:
-                                    Console.WriteLine("> Unbekanntes X-Bus-Telegramm Header 63" + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} Unbekanntes X-Bus-Telegramm Header 63" + getByteString(received));
                                     break;
                             }
                             break;
 
                         case 0x81:           //  LAN X BC STOPPED  2.14 (14)
-                            Console.WriteLine("> LAN X BC STOPPED " + getByteString(received));
+                            Console.WriteLine($"{DateTime.Now:hh-mm-ss} BC STOPPED " + getByteString(received));
                             OnStopped?.Invoke(this, new EventArgs());
                             break;
                         case 0xEF:           //  LAN X LOCO INFO  4.4 (22)
@@ -211,28 +211,28 @@ namespace WPF_Application.CentralStation.Z21
                             switch (received[5])
                             {
                                 case 0x0A:           //  LAN X GET FIRMWARE VERSION 2.15 (xx)
-                                    Console.WriteLine("> LAN X GET FIRMWARE VERSION " + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET FIRMWARE VERSION " + getByteString(received));
                                     OnGetFirmwareVersion?.Invoke(this, new FirmwareVersionInfoEventArgs(new FirmwareVersionInfo(received[6], received[7])));
                                     // Achtung: die z21 bringt die Minor-Angabe hexadezimal !!!!!!!!    z.B. Firmware 1.23 = Minor 34
                                     break;
                                 default:
-                                    Console.WriteLine("> Unbekanntes X-Bus-Telegramm Header F3" + getByteString(received));
+                                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} Unbekanntes X-Bus-Telegramm Header F3" + getByteString(received));
                                     break;
                             }
                             break;
                         default:
-                            Console.WriteLine("> Unbekanntes X-Bus-Telegramm " + getByteString(received));
+                            Console.WriteLine($"{DateTime.Now:hh-mm-ss} Unbekanntes X-Bus-Telegramm " + getByteString(received));
                             break;
                     }
                     break;
                 case 0x84:            // LAN SYSTEMSTATE DATACHANGED    2.18 (16)
-                    Console.WriteLine("> LAN SYSTEMSTATE DATACHANGED " + getByteString(received));
+                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} LAN SYSTEMSTATE DATACHANGED " + getByteString(received));
                     SystemStateData systemStateData = GetSystemStateData(received);
                     OnSystemStateDataChanged?.Invoke(this, new SystemStateEventArgs(systemStateData));
 
                     break;
                 default:
-                    Console.WriteLine("> Unbekanntes Telegramm " + getByteString(received));
+                    Console.WriteLine($"{DateTime.Now:hh-mm-ss} Unbekanntes Telegramm " + getByteString(received));
                     break;
             }
         }
@@ -250,7 +250,7 @@ namespace WPF_Application.CentralStation.Z21
                 state = TrackPower.Short;
             else if (isProgrammingModeActive)
                 state = TrackPower.Programing;
-            Console.WriteLine($"LAN_X_STATUS_CHANGED: {getByteString(received)}\n \t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}\n");
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} LAN_X_STATUS_CHANGED: {getByteString(received)}\n \t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}\n");
             return state;
         }
 
@@ -284,7 +284,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[1] = 0;
             bytes[2] = 0x10;
             bytes[3] = 0;
-            Console.WriteLine("LAN GET SERIAL NUMBER " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET SERIAL NUMBER " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -302,7 +302,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[5] = 0x21;
             //bytes[6] = 0x47;   // = XOR-Byte  selbst ausgerechnet, in der LAN-Doku steht 0 ?!
             bytes[6] = 0;
-            Console.WriteLine("LAN X GET VERSION " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET VERSION " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -319,7 +319,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[4] = 0x21;
             bytes[5] = 0x24;
             bytes[6] = 0x05;   // = XOR-Byte
-            Console.WriteLine("LAN X GET STATUS " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET STATUS " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -337,7 +337,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[5] = 0x80;
             bytes[6] = 0xA1;   // = XOR-Byte
             Senden(bytes);
-            Console.WriteLine("LAN X SET TRACK POWER OFF " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET TRACK POWER OFF " + getByteString(bytes));
         }
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[4] = 0x21;
             bytes[5] = 0x81;
             bytes[6] = 0xA0;   // = XOR-Byte
-            Console.WriteLine("LAN X SET TRACK POWER ON " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET TRACK POWER ON " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -369,7 +369,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[3] = 0;
             bytes[4] = 0x80;
             bytes[5] = 0x80;   // = XOR-Byte
-            Console.WriteLine("LAN X SET STOP " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET STOP " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -386,7 +386,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[4] = 0xF1;
             bytes[5] = 0x0A;
             bytes[6] = 0xFB;   // = XOR-Byte
-            Console.WriteLine("LAN X GET FIRMWARE VERSION " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET FIRMWARE VERSION " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -404,7 +404,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[5] = 0;         //  0x0000100   (Byte 4+5) 
             bytes[6] = 0;
             bytes[7] = 0;
-            Console.WriteLine("LAN SET BROADCASTFLAGS " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET BROADCASTFLAGS " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -418,7 +418,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[1] = 0;
             bytes[2] = 0x85;
             bytes[3] = 0;
-            Console.WriteLine("LAN SYSTEMSTATE GETDATA " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} SYSTEMSTATE GETDATA " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -432,7 +432,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[1] = 0;
             bytes[2] = 0x1A;
             bytes[3] = 0;      // kein XOR-Byte  ???
-            Console.WriteLine("LAN GET HWINFO " + getByteString(bytes));
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET HWINFO " + getByteString(bytes));
             Senden(bytes);
         }
 
@@ -476,7 +476,7 @@ namespace WPF_Application.CentralStation.Z21
             bytes[7] = data.Adresse.ValueBytes.Adr_LSB;
             bytes[8] = (byte)data.Speed;
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Console.WriteLine("LAN X SET LOCO DRIVE " + getByteString(bytes) + "  (" + data.Adresse + " - " + data.Speed.ToString() + ")");
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET LOCO DRIVE: Add:'{data.Adresse.Value:D3}' Direction: '{data.DrivingDirection}'\t Speed:'{data.Speed:D3}' ByteString: '{getByteString(bytes)}'");
             Senden(bytes);
         }
 
@@ -520,7 +520,7 @@ namespace WPF_Application.CentralStation.Z21
             bitarray.CopyTo(bytes, 8);
 
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Console.WriteLine($"LAN X SET LOCO FUNCTION { getByteString(bytes) }  ({adresse } - index: { function.FunctionIndex } - { toggelType })");
+            Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET LOCO FUNCTION { getByteString(bytes) }  ({adresse } - index: { function.FunctionIndex } - { toggelType })");
             Senden(bytes);
         }
 
@@ -574,7 +574,7 @@ namespace WPF_Application.CentralStation.Z21
             }
             catch
             {
-                Console.WriteLine("Fehler beim Reconnection.");
+                Console.WriteLine($"{DateTime.Now:hh-mm-ss} Fehler beim Reconnection.");
             }
         }
 

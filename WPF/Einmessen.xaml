@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         Title="Einmessen" Height="450" Width="800" MinWidth="500" MinHeight="400" Name="EinmessenWindow" Loaded="EinmessenWindow_Loaded" Closing="EinmessenWindow_Closing">
     <Grid>
@@ -113,7 +114,6 @@
                 </Grid.ColumnDefinitions>
                 <Label Grid.Row="0" Grid.Column="0" Content="Lok:" Margin="5" Padding="5"/>
                 <ComboBox Name="CmbAllVehicles" Grid.Row="0" Grid.Column="1" Padding="5" Margin="5 " Width="200" VerticalAlignment="Center" HorizontalAlignment="Left" Loaded="CmbAllVehicles_Loaded" SelectionChanged="CmbAllVehicles_SelectionChanged"/>
-                <Label Name="lblStatus" Grid.Row="0" Grid.Column="2"/>
             </Grid>
         </Grid>
     </Grid>

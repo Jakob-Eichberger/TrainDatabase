@@ -62,7 +62,6 @@ namespace WPF_Application
             Vehicle = _db.Vehicles.Include(i => i.Functions).FirstOrDefault(e => e.Id == _vehicle.Id) ?? throw new ApplicationException($"Fahrzeg mit der Id'{_vehicle.Id}' wurde nicht in der Datenbank gefunden!");
             this.Title = Vehicle.Full_Name.IsNullOrWhiteSpace() ? Vehicle.Name : Vehicle.Full_Name;
             btnSaveVehicleAndClose.Click += SaveChanges_Click;
-            DrawAllFunctions();
 
             switch (Vehicle.Type)
             {
@@ -107,36 +106,6 @@ namespace WPF_Application
             btnSaveVehicleAndClose.Click += AddVehicle_Click;
         }
 
-        private void DrawAllFunctions()
-        {
-            SPFunctions.Children.Clear();
-            Grid functionGrid = new();
-            functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            functionGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-
-            foreach (var item in Vehicle.Functions)
-            {
-                Label enumLabel = new() { Content = item.Name, Margin = new Thickness(0, 0, 20, 5) };
-                enumLabel.ContextMenu = new();
-                MenuItem miEditLoko = new();
-                miEditLoko.Header = "Funktion bearbeiten.";
-                miEditLoko.Tag = item;
-                miEditLoko.Click += EditFunction_Click;
-                enumLabel.ContextMenu.Items.Add(miEditLoko);
-
-                MenuItem miRemoveFunction = new();
-                miRemoveFunction.Header = "Funktion entfernen";
-                miRemoveFunction.Tag = item;
-                miRemoveFunction.Click += RemoveFunction_Click;
-                enumLabel.ContextMenu.Items.Add(miRemoveFunction);
-                Grid.SetColumn(enumLabel, 0);
-                Grid.SetRow(enumLabel, functionGrid.RowDefinitions.Count);
-                SPFunctions.Children.Add(enumLabel);
-            }
-        }
-
         protected void OnPropertyChanged()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
@@ -176,51 +145,49 @@ namespace WPF_Application
             this.Close();
         }
 
-        private void AddFunction_Click(object sender, RoutedEventArgs e)
-        {
-            if (new EditFunctionWindow(_db, Vehicle)?.ShowDialog() ?? false)
-            {
-                Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
-                DrawAllFunctions();
-            }
-        }
-
-        private void EditFunction_Click(object sender, RoutedEventArgs e)
-        {
-            var menu = ((MenuItem)e.Source);
-            Function? function = (menu.Tag as Function);
-            if (function is null) return;
-            if (new EditFunctionWindow(_db, function).ShowDialog() ?? false)
-            {
-                Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
-                DrawAllFunctions();
-            }
-        }
-
-        private void RemoveFunction_Click(object sender, RoutedEventArgs e)
-        {
-            var menu = ((MenuItem)e.Source);
-            Function? function = (menu.Tag as Function);
-            if (function is null) return;
-            if (MessageBoxResult.Yes == MessageBox.Show($"Sind Sie sicher, dass Sie die Funktion '{function.Name}' löschen möchten?", "Funktion löschen", MessageBoxButton.YesNo))
-            {
-                _db.Remove(function);
-                Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
-                DrawAllFunctions();
-            }
-        }
-
         private void TypeRadioButton_Click(object sender, RoutedEventArgs e)
         {
             Vehicle.Type = (VehicleType)Enum.Parse(typeof(VehicleType), (sender as RadioButton)!.Tag!.ToString()!);
         }
 
+        private void DgFunctions_Opening(object sender, ContextMenuEventArgs e)
+        {
+            MiAddFunction.Visibility = DgFunctions.SelectedCells.Any() ? Visibility.Visible : Visibility.Collapsed;
+            MiRemoveFunction.Visibility = DgFunctions.SelectedCells.Any() ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void MiAddFunction_Click(object sender, RoutedEventArgs e)
+        {
+            if (new EditFunctionWindow(_db, Vehicle)?.ShowDialog() ?? false)
+                Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
+        }
+
+        private void MiEditFunction_Click(object sender, RoutedEventArgs e)
+        {
+            if (DgFunctions.SelectedCells.FirstOrDefault().Item is Function function)
+            {
+                if (new EditFunctionWindow(_db, function).ShowDialog() ?? false)
+                {
+                    Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
+                }
+            }
+        }
+
+        private void MiRemoveFunction_Click(object sender, RoutedEventArgs e)
+        {
+            if (DgFunctions.SelectedCells.FirstOrDefault().Item is Function function)
+            {
+                if (MessageBoxResult.Yes == MessageBox.Show($"Sind Sie sicher, dass Sie die Funktion '{function.Name}' löschen möchten?", "Funktion löschen", MessageBoxButton.YesNo))
+                {
+                    _db.Remove(function);
+                    Vehicle = _db.Vehicles.Include(m => m.Functions).FirstOrDefault(m => m.Id == Vehicle.Id) ?? throw new ApplicationException($"Fahrzeug mit Adresse {Vehicle.Id} nicht gefunden!");
+                }
+            }
+        }
+
         private void DeleteVehicle_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBoxResult.Yes == MessageBox.Show($"Möchten Sie das Fahrzeug '{Vehicle.Name}' wirklich löschen?", "Fahrzeug löschen", MessageBoxButton.YesNo))
-            {
 
-            }
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Net;
 
 namespace Model
 {
-    public partial class Vehicle
+    public partial class Vehicle : IEquatable<Vehicle>, IComparable
     {
         public long Id { get; set; }
 
@@ -58,7 +58,7 @@ namespace Model
 
         public string Owning_Since { get; set; } = "";
 
-        public bool Traction_Direction { get; set; }
+        public bool InvertTraction { get; set; }
 
         public string Description { get; set; } = "";
 
@@ -83,6 +83,10 @@ namespace Model
         public decimal?[] TractionForward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
 
         public decimal?[] TractionBackward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
+
+        public int CompareTo(object obj) => Id.CompareTo(obj);
+
+        public bool Equals(Vehicle other) => Id == other?.Id;
 
         /// <summary>
         /// Gets the real world speed for a given speed step and direction

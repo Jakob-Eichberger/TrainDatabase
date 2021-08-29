@@ -7,6 +7,9 @@
         xmlns:local="clr-namespace:Model"
         mc:Ignorable="d"
         Title="EditVehicleWindow" Width="400" Height="480" MinWidth="400" MinHeight="480"  Name="ew" >
+    <Window.InputBindings>
+        <KeyBinding Key="K"/>
+    </Window.InputBindings>
     <Grid>
         <TabControl Margin="5">
             <TabItem Header="Allgemeines">
@@ -55,15 +58,11 @@
                             <RadioButton x:Name="RbSteuerwagen" GroupName="type" Content="Steuerwagen" Margin="0,0,5,0"  Click="TypeRadioButton_Click" Tag="{x:Static local:VehicleType.Steuerwagen}"/>
                             <RadioButton x:Name="RbWagen" GroupName="type" Content="Wagen"  Click="TypeRadioButton_Click" Tag="{x:Static local:VehicleType.Wagen}"/>
                         </StackPanel>
-
                         <Label Content="Address:  "  Grid.Column="0"  Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="5" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Address}" Margin="5" Padding="5" Minimum="0" Maximum="1000" />
-
                         <Label Content="Bahngesellschaft: "  Grid.Column="0"  Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1"  Grid.Row="6" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Railway}" Margin="5" Padding="5" />
-
-                        <CheckBox Content="Doppeltraktion Invertieren" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="7" VerticalAlignment="Center"  Margin="5" IsChecked="{Binding ElementName=ew,Path=Vehicle.Traction_Direction}" />
-
+                        <CheckBox Content="Doppeltraktion Invertieren" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="7" VerticalAlignment="Center"  Margin="5" IsChecked="{Binding ElementName=ew,Path=Vehicle.InvertTraction}" ToolTip="Wird nur verwendet wenn das Fahrzeug ein Kind ist! Einstellung wird ignoriert wenn das Fahrzeug gesteuert wird!" />
                         <DockPanel  Grid.Column="0"  Grid.Row="9" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                             <Button Name="btnSaveVehicleAndClose" Content="Änderungen speichern und schließen" Padding="5" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                             <Button x:Name="BtnDeleteVehicle" Content="Fahrzeug entfernen" VerticalAlignment="Bottom" HorizontalAlignment="Right"  Padding="5" Margin="5" Click="DeleteVehicle_Click" Visibility="Collapsed"  />
@@ -72,15 +71,20 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Funktionen" ToolTip="Dieses Fenster ist noch 'work in progress'.">
-                <TabItem.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Funktion hinzufügen" Click="AddFunction_Click"/>
-                    </ContextMenu>
-                </TabItem.ContextMenu>
-                <ScrollViewer x:Name="SCFunctions">
-                    <StackPanel x:Name="SPFunctions">
-                    </StackPanel>
-                </ScrollViewer>
+                <DataGrid Name="DgFunctions" ItemsSource="{Binding ElementName=ew,Path=Vehicle.Functions}" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow" ContextMenuOpening="DgFunctions_Opening" HorizontalAlignment="Left" GridLinesVisibility="All" Background="Transparent" BorderBrush="Transparent">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Adresse" Binding="{Binding FunctionIndex}"/>
+                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="ButtonType"  Binding="{Binding ButtonType}"/>
+                    </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Name="MiAddFunction" Header="Function hinzufügen" Click="MiAddFunction_Click"/>
+                            <MenuItem Name="MiEditFunction" Header="Function bearbeiten" Click="MiEditFunction_Click"/>
+                            <MenuItem Name="MiRemoveFunction" Header="Function löschen" Click="MiRemoveFunction_Click"/>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
             </TabItem>
         </TabControl>
     </Grid>

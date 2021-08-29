@@ -165,7 +165,7 @@ namespace Importer
                             Owner = reader.GetString(19),
                             Build_Year = reader.GetString(20),
                             Owning_Since = reader.GetString(21),
-                            Traction_Direction = reader.GetString(22).ToBoolean(),
+                            InvertTraction = reader.GetString(22).ToBoolean(),
                             Description = reader.GetString(23),
                             Dummy = reader.GetString(24).ToBoolean(),
                             Ip = IPAddress.Parse(reader.GetString(25)),
