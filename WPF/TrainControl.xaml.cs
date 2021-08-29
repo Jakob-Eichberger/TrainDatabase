@@ -45,7 +45,7 @@ namespace WPF_Application
                 if (Vehicle is null) throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
                 Adresse = new(Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
-                SlowestVehicleInTractionList = Vehicle.Address;
+                SlowestVehicleInTractionList = Vehicle;
                 controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
                 controller.TrackPowerChanged += Controller_TrackPowerChanged;
                 controller.OnStatusChanged += Controller_OnStatusChanged;
@@ -53,7 +53,7 @@ namespace WPF_Application
                 controller.GetStatus();
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.Where(m => m.Id != Vehicle.Id));
-                DoubleTractionVehicles.Add((Vehicle.Address, false, (GetLineSeries(Vehicle.TractionForward), GetLineSeries(Vehicle.TractionBackward))));
+                DoubleTractionVehicles.Add((Vehicle, (GetLineSeries(Vehicle.TractionForward), GetLineSeries(Vehicle.TractionBackward))));
 
                 if (Vehicle.Type.IsLokomotive() && Settings.UsingJoyStick)
                 {
@@ -78,6 +78,7 @@ namespace WPF_Application
         {
             if (e.Data.Adresse.Value == Vehicle.Address)
             {
+
                 LiveData = e.Data;
                 DrivingDirection = e.Data.DrivingDirection;
                 foreach (var (functionIndex, state) in e.Data.Functions)
@@ -108,10 +109,8 @@ namespace WPF_Application
             if (((sender as CheckBox)?.Tag ?? null) is null) return;
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
             if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[CentralStationClient.maxDccStep] is null || temp.TractionForward[CentralStationClient.maxDccStep] is null))
-            {
-                MessageBox.Show("Actung! Fahrzeug ist nicht eingemessen!");
-            }
-            DoubleTractionVehicles.Add((temp.Address, temp.Traction_Direction, (GetLineSeries(temp.TractionForward), GetLineSeries(temp.TractionBackward))));
+                MessageBox.Show("Achtung! Fahrzeug ist nicht eingemessen!");
+            DoubleTractionVehicles.Add((temp, (GetLineSeries(temp.TractionForward), GetLineSeries(temp.TractionBackward))));
             await DeterminSlowestVehicleInList();
             controller.GetLocoInfo(new(((Vehicle)(sender as CheckBox)!.Tag).Address));
         }
@@ -125,14 +124,11 @@ namespace WPF_Application
         {
             if (((sender as CheckBox)?.Tag ?? null) is null) return;
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
-            DoubleTractionVehicles.RemoveAll(e => e.Address == temp.Address);
+            DoubleTractionVehicles.RemoveAll(e => e.Vehicle.Id == temp.Id);
             await DeterminSlowestVehicleInList();
         }
 
-        protected void OnPropertyChanged()
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
-        }
+        protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 
         /// <summary>
         /// Functions draws every single Function of a vehicle for the user to click on. 
@@ -205,24 +201,60 @@ namespace WPF_Application
         /// </summary>
         /// <param name="locoAdress"></param>
         /// <param name="speedstep"></param>
-        /// <param name="direction"></param>
+        /// <param name="drivingDirection"></param>
         /// <param name="inUse"></param>
-        private async void SetLocoDrive(int? speedstep = null, bool? direction = null, bool inUse = true) => await Task.Run(() =>
+        private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
             if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(50)) { return; } else { lastSpeedchange = DateTime.Now; }
-            direction ??= DrivingDirection;
-            foreach (var (Adresse, InvertTraction, Traction) in DoubleTractionVehicles)
+            bool direction = drivingDirection ??= DrivingDirection;
+            int speed = speedstep ?? Speed;
+
+            var slowestVehicle = DoubleTractionVehicles.FirstOrDefault<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
+            var yValue = GetSlowestVehicleSpeed(speed, direction, slowestVehicle);
+            foreach (var item in DoubleTractionVehicles.Where<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
             {
-                var dat = new LokInfoData()
+                if (IsVehicleMeasured(item))
                 {
-                    Adresse = new(Adresse),
-                    DrivingDirection = Adresse == Vehicle.Address ? (bool)direction : (bool)(InvertTraction ? direction : !direction),
-                    InUse = inUse,
-                    Speed = (byte)(speedstep ?? Speed)
-                };
-                controller.SetLocoDrive(dat);
+                    int dccSpeed;
+                    if (!item.Vehicle.InvertTraction)
+                        dccSpeed = (direction ? item.Traction.Forwards.GetXValue(yValue) : item.Traction.Backwards.GetXValue(yValue));
+                    else
+                        dccSpeed = (direction ? item.Traction.Backwards.GetXValue(yValue) : item.Traction.Forwards.GetXValue(yValue));
+                    controller.SetLocoDrive(GetLocoInfoData(dccSpeed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
+                }
+                else
+                    controller.SetLocoDrive(GetLocoInfoData(speed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
             }
+            controller.SetLocoDrive(GetLocoInfoData(speed, GetDrivingDirection(slowestVehicle.Vehicle, direction), inUse, slowestVehicle.Vehicle));
         });
+
+        private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
+
+        private bool IsVehicleMeasured((Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction) item) => item.Traction.Forwards is not null && item.Traction.Backwards is not null;
+
+        private double GetSlowestVehicleSpeed(int speedstep, bool direction, (Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction) Vehicle)
+        {
+            if (Vehicle.Traction.Forwards is null || Vehicle.Traction.Backwards is null) return double.NaN;
+            if (!Vehicle.Vehicle.InvertTraction)
+                return (direction ? Vehicle.Traction.Forwards.GetYValue(speedstep) : Vehicle.Traction.Backwards.GetYValue(speedstep));
+            else
+                return (direction ? Vehicle.Traction.Backwards.GetYValue(speedstep) : Vehicle.Traction.Forwards.GetYValue(speedstep));
+        }
+
+
+        private LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, Vehicle Vehicle) => new LokInfoData()
+        {
+            Adresse = new(Vehicle.Address),
+            DrivingDirection = direction,
+            InUse = inUse,
+            Speed = (byte)(speedstep)
+        };
+
+        private double GetSlowestVehicleSpeed(bool direction, int xValue)
+        {
+            var (Id, Traction) = DoubleTractionVehicles.FirstOrDefault(e => e.Vehicle == SlowestVehicleInTractionList);
+            return direction ? Traction.Forwards.GetYValue(xValue) : Traction.Forwards.GetYValue(xValue);
+        }
 
         /// <summary>
         /// Function used to set a Function on/off or switch its state. 
@@ -240,37 +272,32 @@ namespace WPF_Application
         /// </summary>
         /// <param name="tractionArray"></param>
         /// <returns></returns>
-        private LineSeries GetLineSeries(decimal?[] tractionArray)
+        private SortedSet<FunctionPoint>? GetLineSeries(decimal?[] tractionArray)
         {
-            LineSeries series = new();
-            for (int i = 2; i <= CentralStationClient.maxDccStep; i++)
+            if (tractionArray[MaxDccSpeed] is null) return null!;
+            SortedSet<FunctionPoint>? function = new();
+            for (int i = 0; i <= CentralStationClient.maxDccStep; i++)
             {
                 if (tractionArray[i] is not null)
                 {
-                    series.Points.Add(new(i, (double)(tractionArray[i] ?? 0)));
+                    function.Add(new(i, (double)(tractionArray[i] ?? 0)));
                 }
             }
-            return series;
+            return function;
         }
 
         private async Task DeterminSlowestVehicleInList() => await Task.Run(() =>
         {
-            List<(long adress, decimal value)> list = new();
-            foreach (var (Adress, TractionDirection, Traction) in DoubleTractionVehicles)
-            {
-                var v = db.Vehicles.FirstOrDefault(e => e.Address == Adress);
-                if (v is null) continue;
-                if (v.TractionForward[CentralStationClient.maxDccStep] is not null)
-                {
-                    list.Add((v.Address, (decimal)v.TractionForward[CentralStationClient.maxDccStep]!));
-                }
-            }
-            SlowestVehicleInTractionList = list.Count > 1 ? list.First(e => e.value == list.Min(e => e.value)).adress : Vehicle.Address;
+            var list = DoubleTractionVehicles.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.Traction.Forwards is not null && e.Traction.Backwards is not null).ToList();
+            if (list.Any())
+                SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
+            else
+                SlowestVehicleInTractionList = Vehicle;
         });
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e)
         {
-            DrivingDirection = !DrivingDirection;
+            DrivingDirection = !LiveData.DrivingDirection;
         }
 
         #region Window Events
@@ -361,5 +388,6 @@ namespace WPF_Application
             Joystick?.Dispose();
         }
     }
+
 
 }

@@ -71,9 +71,8 @@ namespace WPF_Application
                 drivingDirection = value;
                 if (LiveData.DrivingDirection != drivingDirection)
                 {
-                    SetLocoDrive(direction: drivingDirection);
+                    SetLocoDrive(drivingDirection: drivingDirection);
                 }
-
             }
         }
 
@@ -130,7 +129,7 @@ namespace WPF_Application
             }
         }
 
-        public List<(long Address, bool TractionDirection, (LineSeries Forwards, LineSeries Backwards) Traction)> DoubleTractionVehicles { get; } = new();
+        public List<(Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction)> DoubleTractionVehicles { get; } = new();
 
         public static int MaxDccSpeed => CentralStationClient.maxDccStep;
 
@@ -177,7 +176,10 @@ namespace WPF_Application
         /// </summary>
         private List<ToggleButton> FunctionToggleButtons { get; set; } = new();
 
-        public long SlowestVehicleInTractionList { get; set; }
+        /// <summary>
+        /// Holds the <see cref="Vehicle.Id"/> of the slowest Vehicle in the traktion list.
+        /// </summary>
+        public Vehicle SlowestVehicleInTractionList { get; set; }
 
         public new bool IsActive { get; set; } = false;
 
