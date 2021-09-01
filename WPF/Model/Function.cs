@@ -27,5 +27,7 @@ namespace Model
         public bool IsConfigured { get; set; }
 
         public FunctionType EnumType { get; set; }
+
+        public override bool Equals(object obj) => obj is Function function && Id == (function?.Id ?? -1);
     }
 }

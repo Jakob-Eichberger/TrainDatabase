@@ -297,7 +297,7 @@ namespace WPF_Application
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e)
         {
-            DrivingDirection = !LiveData.DrivingDirection;
+            DrivingDirection = !DrivingDirection;
         }
 
         #region Window Events

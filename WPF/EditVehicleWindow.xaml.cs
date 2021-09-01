@@ -33,14 +33,13 @@ namespace WPF_Application
         private Vehicle _vehicle = default!;
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public int DistanceBetweenSensors_Measurement { get => Settings.GetInt(nameof(DistanceBetweenSensors_Measurement)) ?? 20; set { Settings.Set(nameof(DistanceBetweenSensors_Measurement), value.ToString()); } }
 
-        public int DistanceBetweenSensors_Measurement { get { return Settings.GetInt(nameof(DistanceBetweenSensors_Measurement)) ?? 20; } set { Settings.Set(nameof(DistanceBetweenSensors_Measurement), value.ToString()); } }
+        public int Start_Measurement { get => Settings.GetInt(nameof(Start_Measurement)) ?? 2; set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
 
-        public int Start_Measurement { get { return Settings.GetInt(nameof(Start_Measurement)) ?? 2; } set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
+        public int End_Measurement { get => Settings.GetInt(nameof(End_Measurement)) ?? 127; set { Settings.Set(nameof(End_Measurement), value.ToString()); } }
 
-        public int End_Measurement { get { return Settings.GetInt(nameof(End_Measurement)) ?? 127; } set { Settings.Set(nameof(End_Measurement), value.ToString()); } }
-
-        public int Step_Measurement { get { return Settings.GetInt(nameof(Step_Measurement)) ?? 1; } set { Settings.Set(nameof(Step_Measurement), value.ToString()); } }
+        public int Step_Measurement { get => Settings.GetInt(nameof(Step_Measurement)) ?? 1; set { Settings.Set(nameof(Step_Measurement), value.ToString()); } }
 
         public Vehicle Vehicle
         {
@@ -53,7 +52,6 @@ namespace WPF_Application
 
         public EditVehicleWindow(Database _db, Vehicle _vehicle)
         {
-
             this.DataContext = this;
             InitializeComponent();
             if (_vehicle is null) throw new ApplicationException($"Paramter '{nameof(_vehicle)}' darf nicht null sein!");
@@ -62,7 +60,8 @@ namespace WPF_Application
             Vehicle = _db.Vehicles.Include(i => i.Functions).FirstOrDefault(e => e.Id == _vehicle.Id) ?? throw new ApplicationException($"Fahrzeg mit der Id'{_vehicle.Id}' wurde nicht in der Datenbank gefunden!");
             this.Title = Vehicle.Full_Name.IsNullOrWhiteSpace() ? Vehicle.Name : Vehicle.Full_Name;
             btnSaveVehicleAndClose.Click += SaveChanges_Click;
-
+            DgFunctions.Items.SortDescriptions.Add(new SortDescription(nameof(Function.Position), ListSortDirection.Ascending));
+            BtnDeleteVehicle.Visibility = Visibility.Visible;
             switch (Vehicle.Type)
             {
                 case VehicleType.Lokomotive:
@@ -109,11 +108,6 @@ namespace WPF_Application
         protected void OnPropertyChanged()
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Hi :)");
         }
 
         private void ChangeImage_Click(object sender, RoutedEventArgs e)
@@ -187,7 +181,19 @@ namespace WPF_Application
 
         private void DeleteVehicle_Click(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                if (MessageBoxResult.OK == MessageBox.Show($"Sind Sie sicher, dass Sie das Fahrzeug '{Vehicle.Name ?? Vehicle.Full_Name}' löschen möchten.", "Fahrzeug löschen", MessageBoxButton.OKCancel))
+                {
+                    _db.Remove(Vehicle);
+                    this.DialogResult = true;
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Delete Vehicle failed", exception: ex);
+            }
         }
     }
 }

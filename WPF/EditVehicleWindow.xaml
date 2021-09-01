@@ -4,12 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:wpf="clr-namespace:WPF_Application"
         xmlns:local="clr-namespace:Model"
         mc:Ignorable="d"
         Title="EditVehicleWindow" Width="400" Height="480" MinWidth="400" MinHeight="480"  Name="ew" >
-    <Window.InputBindings>
-        <KeyBinding Key="K"/>
-    </Window.InputBindings>
     <Grid>
         <TabControl Margin="5">
             <TabItem Header="Allgemeines">
@@ -28,6 +26,7 @@
                             <RowDefinition Height="AUTO" />
                             <RowDefinition Height="AUTO" />
                             <RowDefinition Height="AUTO" />
+                            <RowDefinition Height="AUTO" />
                             <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
@@ -39,7 +38,7 @@
                                 </ContextMenu>
                             </Label.ContextMenu>
                         </Label>
-                        <Border BorderBrush="Black" BorderThickness="1" Padding="2"  Grid.Row="0" Grid.Column="1"  VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                        <Border BorderBrush="Black" BorderThickness="0" Padding="2"  Grid.Row="0" Grid.Column="1"  VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="5,0,0,0">
                             <Image    Name="ImageVehicle" VerticalAlignment="Stretch" HorizontalAlignment="Center" ></Image>
                         </Border>
 
@@ -58,20 +57,28 @@
                             <RadioButton x:Name="RbSteuerwagen" GroupName="type" Content="Steuerwagen" Margin="0,0,5,0"  Click="TypeRadioButton_Click" Tag="{x:Static local:VehicleType.Steuerwagen}"/>
                             <RadioButton x:Name="RbWagen" GroupName="type" Content="Wagen"  Click="TypeRadioButton_Click" Tag="{x:Static local:VehicleType.Wagen}"/>
                         </StackPanel>
+
                         <Label Content="Address:  "  Grid.Column="0"  Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="5" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Address}" Margin="5" Padding="5" Minimum="0" Maximum="1000" />
+
                         <Label Content="Bahngesellschaft: "  Grid.Column="0"  Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBox Grid.Column="1"  Grid.Row="6" VerticalAlignment="Center" Text="{Binding ElementName=ew,Path=Vehicle.Railway}" Margin="5" Padding="5" />
-                        <CheckBox Content="Doppeltraktion Invertieren" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="7" VerticalAlignment="Center"  Margin="5" IsChecked="{Binding ElementName=ew,Path=Vehicle.InvertTraction}" ToolTip="Wird nur verwendet wenn das Fahrzeug ein Kind ist! Einstellung wird ignoriert wenn das Fahrzeug gesteuert wird!" />
-                        <DockPanel  Grid.Column="0"  Grid.Row="9" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+
+                        <Label Content="Epoche:" Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <ComboBox  Grid.Row="7" Grid.Column="1" Margin="5" Padding="5" ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type local:Epoch} }}" SelectedItem="{Binding ElementName=ew,Path=Vehicle.Epoche,Mode=TwoWay}"/>
+
+                        <CheckBox Content="Doppeltraktion Invertieren" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="8" VerticalAlignment="Center"  Margin="5" IsChecked="{Binding ElementName=ew,Path=Vehicle.InvertTraction}" ToolTip="Wird nur verwendet wenn das Fahrzeug ein Kind ist! Einstellung wird ignoriert wenn das Fahrzeug gesteuert wird!" />
+
+                        <DockPanel  Grid.Column="0"  Grid.Row="10" Grid.ColumnSpan="2" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                             <Button Name="btnSaveVehicleAndClose" Content="Änderungen speichern und schließen" Padding="5" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                             <Button x:Name="BtnDeleteVehicle" Content="Fahrzeug entfernen" VerticalAlignment="Bottom" HorizontalAlignment="Right"  Padding="5" Margin="5" Click="DeleteVehicle_Click" Visibility="Collapsed"  />
                         </DockPanel>
+
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Funktionen" ToolTip="Dieses Fenster ist noch 'work in progress'.">
-                <DataGrid Name="DgFunctions" ItemsSource="{Binding ElementName=ew,Path=Vehicle.Functions}" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow" ContextMenuOpening="DgFunctions_Opening" HorizontalAlignment="Left" GridLinesVisibility="All" Background="Transparent" BorderBrush="Transparent">
+                <DataGrid Name="DgFunctions" ItemsSource="{Binding ElementName=ew,Path=Vehicle.Functions}" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow" ContextMenuOpening="DgFunctions_Opening" GridLinesVisibility="All" Background="Transparent" BorderBrush="Transparent">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Adresse" Binding="{Binding FunctionIndex}"/>
                         <DataGridTextColumn Header="Name"  Binding="{Binding Name}"/>
