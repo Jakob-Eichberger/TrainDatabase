@@ -50,12 +50,8 @@ namespace WPF_Application
             {
                 liveData = value;
                 if (!SliderInUser && (DateTime.Now - SliderLastused).TotalSeconds > 2)
-                {
                     Speed = value.Speed;
-                    DrivingDirection = value.DrivingDirection;
-                }
-
-                OnPropertyChanged();
+                DrivingDirection = value.DrivingDirection;
             }
         }
 
@@ -70,9 +66,8 @@ namespace WPF_Application
             {
                 drivingDirection = value;
                 if (LiveData.DrivingDirection != drivingDirection)
-                {
                     SetLocoDrive(drivingDirection: drivingDirection);
-                }
+                OnPropertyChanged(nameof(GetDirectionString));
             }
         }
 
@@ -86,7 +81,7 @@ namespace WPF_Application
                 {
                     SetLocoDrive(speedstep: speed);
                 }
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(Speed));
             }
         }
 
@@ -109,7 +104,7 @@ namespace WPF_Application
             set
             {
                 vehicle = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(Vehicle));
             }
         }
 
@@ -123,9 +118,11 @@ namespace WPF_Application
                 if (!lastTrackPowerUpdateWasShort)
                 {
                     trackPower = value;
-                    OnPropertyChanged();
                 }
                 lastTrackPowerUpdateWasShort = value == TrackPower.Short;
+                OnPropertyChanged(nameof(TrackPower));
+                OnPropertyChanged(nameof(TrackPowerBoolean));
+                OnPropertyChanged(nameof(TrackPowerMessage));
             }
         }
 
@@ -148,7 +145,7 @@ namespace WPF_Application
                     controller.SetTrackPowerON();
                 else
                     controller.SetTrackPowerOFF();
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(TrackPowerBoolean));
             }
             get => TrackPower.ToBoolean();
         }

@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="TrainControl" Name="mw" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Mw_Closing" PreviewMouseWheel="Mw_PreviewMouseWheel" Activated="Mw_Activated" Deactivated="Mw_Deactivated">
+        Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding ElementName=mw,Path=VehicleTypeGridLength}" />
+            <ColumnDefinition Width="{Binding ElementName=Tc,Path=VehicleTypeGridLength}" />
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -17,21 +17,21 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
-        <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Minimum="0" Maximum="{Binding ElementName=mw,Path=MaxDccSpeed}" Value="{Binding ElementName=mw,Path=Speed}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp" Margin="0,0,5,0"/>
-        <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=mw,Path=GetDirectionString}" Click="BtnDirection_Click" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
+        <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Minimum="0" Maximum="{Binding ElementName=Tc,Path=MaxDccSpeed}" Value="{Binding ElementName=Tc,Path=Speed}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp" Margin="0,0,5,0"/>
+        <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=Tc,Path=GetDirectionString}" Click="BtnDirection_Click" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
         <DockPanel Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" >
-            <Label  Content="{Binding ElementName=mw,Path=Speed}" HorizontalAlignment="Center"/>
+            <Label  Content="{Binding ElementName=Tc,Path=Speed}" HorizontalAlignment="Center"/>
             <Label Content="/"/>
-            <Label  Content="{Binding ElementName=mw,Path=MaxDccSpeed}" HorizontalAlignment="Center"/>
+            <Label  Content="{Binding ElementName=Tc,Path=MaxDccSpeed}" HorizontalAlignment="Center"/>
         </DockPanel>
-        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=mw,Path=TrackPowerBoolean}" Content="{Binding ElementName=mw,Path=TrackPowerMessage}" HorizontalAlignment="Right"/>
+        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPowerBoolean}" Content="{Binding ElementName=Tc,Path=TrackPowerMessage}" HorizontalAlignment="Right"/>
         <TabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" >
             <TabItem Header="Funktionen">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" >
                     <WrapPanel Name="FunctionGrid" />
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Doppeltraktion" Visibility="{Binding ElementName=mw,Path=VehicleTypeVisbility}">
+            <TabItem Header="Doppeltraktion" Visibility="{Binding ElementName=Tc,Path=VehicleTypeVisbility}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="AUTO"/>

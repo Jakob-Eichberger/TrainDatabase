@@ -74,16 +74,14 @@ namespace WPF_Application
 
         private void Controller_TrackPowerChanged(object? sender, CentralStation.TrackPowerEventArgs e) => TrackPower = e.TrackPower;
 
-        private void Controller_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
+        private async void Controller_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
         {
             if (e.Data.Adresse.Value == Vehicle.Address)
             {
-
                 LiveData = e.Data;
-                DrivingDirection = e.Data.DrivingDirection;
                 foreach (var (functionIndex, state) in e.Data.Functions)
                 {
-                    Dispatcher.BeginInvoke(new Action(() =>
+                    await Dispatcher.BeginInvoke(new Action(() =>
                     {
                         var x = FunctionToggleButtons.FirstOrDefault(e => (e?.Tag as Function)?.FunctionIndex == functionIndex);
                         if (x is not null)
@@ -129,6 +127,8 @@ namespace WPF_Application
         }
 
         protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
+
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Functions draws every single Function of a vehicle for the user to click on. 
@@ -241,7 +241,6 @@ namespace WPF_Application
                 return (direction ? Vehicle.Traction.Backwards.GetYValue(speedstep) : Vehicle.Traction.Forwards.GetYValue(speedstep));
         }
 
-
         private LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, Vehicle Vehicle) => new LokInfoData()
         {
             Adresse = new(Vehicle.Address),
@@ -295,24 +294,21 @@ namespace WPF_Application
                 SlowestVehicleInTractionList = Vehicle;
         });
 
-        private void BtnDirection_Click(object sender, RoutedEventArgs e)
-        {
-            DrivingDirection = !DrivingDirection;
-        }
-
         #region Window Events
-        private void Mw_Closing(object sender, CancelEventArgs e) => Dispose();
+        private void BtnDirection_Click(object sender, RoutedEventArgs e) => SetLocoDrive(drivingDirection: !DrivingDirection); /*DrivingDirection = !DrivingDirection;*/
 
-        private void Mw_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void Tc_Closing(object sender, CancelEventArgs e) => Dispose();
+
+        private void Tc_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             Speed = e.Delta < 0 ? Speed - 1 : Speed + 1;
             e.Handled = true;
             SliderLastused = DateTime.Now;
         }
 
-        private void Mw_Activated(object sender, EventArgs e) => IsActive = true;
+        private void Tc_Activated(object sender, EventArgs e) => IsActive = true;
 
-        private void Mw_Deactivated(object sender, EventArgs e) => IsActive = false;
+        private void Tc_Deactivated(object sender, EventArgs e) => IsActive = false;
         #endregion
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -320,6 +316,12 @@ namespace WPF_Application
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
+        }
+
+        private void Tc_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Space)
+                e.Handled = true;
         }
 
         #region Preview Events
@@ -388,6 +390,4 @@ namespace WPF_Application
             Joystick?.Dispose();
         }
     }
-
-
 }
