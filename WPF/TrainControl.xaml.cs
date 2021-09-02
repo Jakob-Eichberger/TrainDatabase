@@ -206,7 +206,7 @@ namespace WPF_Application
         private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
             if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(50)) { return; } else { lastSpeedchange = DateTime.Now; }
-            bool direction = drivingDirection ??= DrivingDirection;
+            bool direction = drivingDirection ??= LiveData.DrivingDirection;
             int speed = speedstep ?? Speed;
 
             var slowestVehicle = DoubleTractionVehicles.FirstOrDefault<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
@@ -295,7 +295,9 @@ namespace WPF_Application
         });
 
         #region Window Events
-        private void BtnDirection_Click(object sender, RoutedEventArgs e) => SetLocoDrive(drivingDirection: !DrivingDirection); /*DrivingDirection = !DrivingDirection;*/
+        private void BtnDirection_Click(object sender, RoutedEventArgs e) => SwitchDirection();
+
+        private void SwitchDirection() => SetLocoDrive(drivingDirection: !LiveData.DrivingDirection);
 
         private void Tc_Closing(object sender, CancelEventArgs e) => Dispose();
 
@@ -346,9 +348,7 @@ namespace WPF_Application
                             break;
                         case FunctionType.ChangeDirection:
                             if (e.currentValue == e.maxValue)
-                            {
-                                DrivingDirection = !DrivingDirection;
-                            }
+                                SwitchDirection();
                             break;
                         default:
                             if (Function.Key == FunctionType.None) return;
@@ -374,8 +374,6 @@ namespace WPF_Application
                             }
                             break;
                     }
-
-
                 }
             }
             catch

@@ -37,7 +37,6 @@ namespace WPF_Application
         private bool lastTrackPowerUpdateWasShort = false;
         readonly Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> functionToJoyStickDictionary = new();
         private int speed = 0;
-        private bool drivingDirection = true;
         public event PropertyChangedEventHandler? PropertyChanged;
         public DateTime lastSpeedchange = DateTime.MinValue;
 
@@ -51,25 +50,13 @@ namespace WPF_Application
                 liveData = value;
                 if (!SliderInUser && (DateTime.Now - SliderLastused).TotalSeconds > 2)
                     Speed = value.Speed;
-                DrivingDirection = value.DrivingDirection;
+                OnPropertyChanged();
             }
         }
 
         public LokAdresse Adresse { get; set; } = default!;
 
         public bool InUse { get; set; } = default!;
-
-        public bool DrivingDirection
-        {
-            get => drivingDirection;
-            set
-            {
-                drivingDirection = value;
-                if (LiveData.DrivingDirection != drivingDirection)
-                    SetLocoDrive(drivingDirection: drivingDirection);
-                OnPropertyChanged(nameof(GetDirectionString));
-            }
-        }
 
         public int Speed
         {
@@ -78,10 +65,8 @@ namespace WPF_Application
                 if (value < 0 || value > CentralStationClient.maxDccStep) return;
                 speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
                 if (LiveData.Speed != speed)
-                {
                     SetLocoDrive(speedstep: speed);
-                }
-                OnPropertyChanged(nameof(Speed));
+                OnPropertyChanged();
             }
         }
 
@@ -101,11 +86,7 @@ namespace WPF_Application
         public Vehicle Vehicle
         {
             get => vehicle;
-            set
-            {
-                vehicle = value;
-                OnPropertyChanged(nameof(Vehicle));
-            }
+            set => vehicle = value;
         }
 
         /// <summary>
@@ -120,9 +101,7 @@ namespace WPF_Application
                     trackPower = value;
                 }
                 lastTrackPowerUpdateWasShort = value == TrackPower.Short;
-                OnPropertyChanged(nameof(TrackPower));
-                OnPropertyChanged(nameof(TrackPowerBoolean));
-                OnPropertyChanged(nameof(TrackPowerMessage));
+                OnPropertyChanged();
             }
         }
 
@@ -145,7 +124,7 @@ namespace WPF_Application
                     controller.SetTrackPowerON();
                 else
                     controller.SetTrackPowerOFF();
-                OnPropertyChanged(nameof(TrackPowerBoolean));
+                OnPropertyChanged();
             }
             get => TrackPower.ToBoolean();
         }
@@ -153,15 +132,12 @@ namespace WPF_Application
         /// <summary>
         /// Gets a string describing the current track power mode. (Needed for UI)
         /// </summary>
-        public string TrackPowerMessage
-        {
-            get => Enum.GetName(TrackPower)!;
-        }
+        public string TrackPowerMessage => Enum.GetName(TrackPower)!;
 
         /// <summary>
         /// Returns a string that describes the current direction of travel. 
         /// </summary>
-        public string GetDirectionString { get => DrivingDirection ? "Vorwärts" : "Rückwärts"; }
+        public string GetDirectionString { get => LiveData.DrivingDirection ? "Vorwärts" : "Rückwärts"; }
 
         /// <summary>
         /// List of all buttons on a grid which controll vehicle <see cref="Function"/>s.
