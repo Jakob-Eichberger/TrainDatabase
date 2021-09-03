@@ -100,8 +100,6 @@ namespace ModelTrainController
 
         public abstract void LogOFF();
 
-        public abstract void Reconnect();
-
         public abstract new void Dispose();
 
     }

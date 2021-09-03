@@ -159,7 +159,7 @@ namespace WPF_Application
 
         private JoyStick.JoyStick? Joystick { get; }
 
-        public Timer RenewClientSubscription { get; set; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 5, 0).TotalMilliseconds, };
+
     }
 
 }

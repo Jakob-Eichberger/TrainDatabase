@@ -46,13 +46,12 @@ namespace WPF_Application
                 Adresse = new(Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
                 SlowestVehicleInTractionList = Vehicle;
-                controller.LogOn();
                 controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
                 controller.TrackPowerChanged += Controller_TrackPowerChanged;
                 controller.OnStatusChanged += Controller_OnStatusChanged;
                 controller.GetLocoInfo(new(Vehicle.Address));
                 controller.GetStatus();
-                RenewClientSubscription.Elapsed += RenewClientSubscription_Elapsed;
+                
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
                 DoubleTractionVehicles.Add((Vehicle, (GetLineSeries(Vehicle.TractionForward), GetLineSeries(Vehicle.TractionBackward))));
@@ -70,15 +69,6 @@ namespace WPF_Application
                 Logger.Log("Fehler beim öffnen des Controllers.", ex);
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        private async void RenewClientSubscription_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            controller.LogOFF();
-            await Task.Delay(1000);
-            controller.LogOn();
-            controller.GetLocoInfo(new(Vehicle.Address));
-            controller.GetStatus();
         }
 
         private void Controller_OnStatusChanged(object? sender, StateEventArgs e) => TrackPower = e.TrackPower;

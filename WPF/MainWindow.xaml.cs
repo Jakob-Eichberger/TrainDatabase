@@ -81,7 +81,7 @@ namespace Wpf_Application
 
         private void CreatController()
         {
-            Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
+            Controller = new Z21(Settings.ControllerIP);
             Controller.LogOn();
         }
 

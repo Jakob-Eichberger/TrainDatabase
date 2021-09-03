@@ -21,6 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Timers;
 using WPF_Application.Exceptions;
 using WPF_Application.Helper;
 
@@ -29,11 +30,17 @@ namespace WPF_Application.CentralStation.Z21
 
     public class Z21 : CentralStationClient
     {
-        public Z21(IPAddress address, int port) : base(address, port)
+        private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
+
+        public Z21(IPAddress address) : base(address, 21105)
         {
             BeginReceive(new AsyncCallback(Empfang), null);
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} Z21 initialisiert.");
+            RenewClientSubscription.Elapsed += RenewClientSubscription_Elapsed;
         }
+
+        private void RenewClientSubscription_Elapsed(object sender, System.Timers.ElapsedEventArgs e) => GetStatus();
+
 
         public override event EventHandler<DataEventArgs> OnReceive = default!;                         //  Allgemeiner Empfang von Daten
         public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
@@ -583,21 +590,9 @@ namespace WPF_Application.CentralStation.Z21
             }
         }
 
-        public override void Reconnect()
-        {
-            try
-            {
-                Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
-            }
-            catch
-            {
-                Console.WriteLine($"{DateTime.Now:HH-mm-ss} Fehler beim Reconnection.");
-            }
-        }
-
         public override void Dispose()
         {
-            //LogOFF();
+            LogOFF();
             Close();
         }
 
