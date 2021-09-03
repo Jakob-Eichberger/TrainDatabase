@@ -2,6 +2,7 @@
 using Model;
 using ModelTrainController.Z21;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using WPF_Application.CentralStation;
@@ -92,6 +93,8 @@ namespace ModelTrainController
         public abstract void GetLocoInfo(LokAdresse adresse);
         //  LAN_X_SET_LOCO_DRIVE  4.2  (21)
         public abstract void SetLocoDrive(LokInfoData data);
+
+        public abstract void SetLocoDrive(List<LokInfoData> data);
 
         public abstract void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType);
 

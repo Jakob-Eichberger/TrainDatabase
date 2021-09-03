@@ -254,7 +254,7 @@ namespace WPF_Application
         private async Task SetLocoDrive(int speed, bool direction)
         {
             Log($"Speed: {speed} - Direction: {direction}");
-            Controller.SetLocoDrive(new() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
+            Controller.SetLocoDrive(new LokInfoData() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
             await CheckSpeed(speed, direction);
         }
 
