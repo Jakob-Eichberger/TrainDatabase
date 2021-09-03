@@ -1,21 +1,136 @@
-﻿namespace Model
+﻿using System.ComponentModel;
+using WPF_Application;
+
+namespace Model
 {
+    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum FunctionType
     {
-        None = 0,
-        Drive = 1,
-        ChangeDirection = 2,
-        EmergencyStop = 3,
-        Sound = 4,
-        Highbeam = 5,
-        Lowbeam = 6,
-        HornHigh = 7,
-        HornLow = 8,
-        Humpgear = 9,
-        CurveSound = 10,
-        Compressor = 11,
-        Cabin = 12,
-        CabinLight = 13,
-        Mute = 14
+        [Description("None")]
+        None,
+        [Description("Drive")]
+        Drive,
+        [Description("EmergencyStop")]
+        EmergencyStop,
+        [Description("AirPump")]
+        AirPump,
+        [Description("AllAroundLight")]
+        AllAroundLight,
+        [Description("BackLight")]
+        BackLight,
+        [Description("BackwardTakePower")]
+        BackwardTakePower,
+        [Description("BreakingNoice")]
+        BreakingNoice,
+        [Description("Bugle")]
+        Bugle,
+        [Description("ChangeDirection")]
+        ChangeDirection,
+        [Description("CloseDoor")]
+        CloseDoor,
+        [Description("Compressor")]
+        Compressor,
+        [Description("Couple")]
+        Couple,
+        [Description("CurveNoise")]
+        CurveSound,
+        [Description("Custom1")]
+        Custom1,
+        [Description("Custom2")]
+        Custom2,
+        [Description("Custom3")]
+        Custom3,
+        [Description("CycleLight")]
+        CycleLight,
+        [Description("Decouple")]
+        Decouple,
+        [Description("DieselRegulationSteupDown")]
+        DieselRegulationSteupDown,
+        [Description("DieselRegulationSteupUp")]
+        DieselRegulationSteupUp,
+        [Description("Drainage")]
+        Drainage,
+        [Description("DrainMud")]
+        DrainMud,
+        [Description("DrainValve")]
+        DrainValve,
+        [Description("DriversCabinLight1")]
+        DriversCabinLight1,
+        [Description("DriversCabinLight2")]
+        DriversCabinLight2,
+        [Description("Fan")]
+        Fan,
+        [Description("FeedwaterPump")]
+        FeedwaterPump,
+        [Description("Firebox")]
+        Firebox,
+        [Description("ForwardTakePower")]
+        ForwardTakePower,
+        [Description("Generator")]
+        Generator,
+        [Description("Handbrake")]
+        Handbrake,
+        [Description("HeatingDiesel")]
+        HeatingDiesel,
+        [Description("HighBeam")]
+        HighBeam,
+        [Description("HornHigh")]
+        HornHigh,
+        [Description("HornLow")]
+        HornLow,
+        [Description("HumpFunk")]
+        HumpFunk,
+        [Description("HumpGear")]
+        HumpGear,
+        [Description("Injector")]
+        Injector,
+        [Description("InteriorLighting")]
+        InteriorLighting,
+        [Description("LetOffSteam")]
+        LetOffSteam,
+        [Description("LightingDynamo")]
+        LightingDynamo,
+        [Description("LightOffSide1")]
+        LightOffSide1,
+        [Description("LightOffSide2")]
+        LightOffSide2,
+        [Description("LowBeam")]
+        LowBeam,
+        [Description("MainSwitch")]
+        MainSwitch,
+        [Description("Mute")]
+        Mute,
+        [Description("OpenDoor")]
+        OpenDoor,
+        [Description("PassengerCompartmentLighting")]
+        PassengerCompartmentLighting,
+        [Description("PreHeater")]
+        PreHeater,
+        [Description("PufferKick")]
+        PufferKick,
+        [Description("RailJoint")]
+        RailJoint,
+        [Description("Sanding")]
+        Sanding,
+        [Description("ScoopCoal")]
+        ScoopCoal,
+        [Description("ScoopCoalSound")]
+        ScoopCoalSound,
+        [Description("ShakingGrates")]
+        ShakingGrates,
+        [Description("SideLight")]
+        SideLight,
+        [Description("Sound")]
+        Sound,
+        [Description("Steam")]
+        Steam,
+        [Description("StrongFan")]
+        StrongFan,
+        [Description("Tyfon")]
+        Tyfon,
+        [Description("WhistleLong")]
+        WhistleLong,
+        [Description("WhistleShort")]
+        WhistleShort
     }
 }

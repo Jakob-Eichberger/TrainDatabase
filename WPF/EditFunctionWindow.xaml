@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:wpf="clr-namespace:WPF_Application"
         xmlns:local="clr-namespace:Model"
         mc:Ignorable="d"
         Title="EditFunctionWindow" SizeToContent="WidthAndHeight" MinWidth="250" MinHeight="180" Height="180" Name="ew">
@@ -35,7 +36,7 @@
             </StackPanel>
 
             <Label Content="Function" Grid.Row="3" Grid.Column="0"/>
-            <ComboBox Grid.Row="3" Grid.Column="1"  SelectedItem="{Binding Function.EnumType}" ItemsSource="{Binding EnumList}" Padding="5" Margin="5"/>
+            <ComboBox Grid.Row="3" Grid.Column="1"  SelectedItem="{Binding Function.EnumType}" ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type local:FunctionType} }}" Padding="5" Margin="5" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False"/>
 
             <Button Name="BtnSaveAndClose" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Padding="5" Margin="5"/>
         </Grid>
