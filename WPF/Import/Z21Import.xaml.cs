@@ -22,26 +22,16 @@ namespace Importer
     /// <summary>
     /// Interaction logic for Z21.xaml
     /// </summary>
-    public partial class Z21 : Window, INotifyPropertyChanged
+    public partial class Z21Import : Window, INotifyPropertyChanged
     {
 
         private readonly Database db;
-        private bool currentlyLoading = true;
 
         public string Path { get; set; } = "";
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public bool CurrentlyLoading
-        {
-            get => currentlyLoading; set
-            {
-                currentlyLoading = value;
-                OnPropertyChanged(null!);
-            }
-        }
-
-        public Z21(Database _db)
+        public Z21Import(Database _db)
         {
             DataContext = this;
             InitializeComponent();
@@ -53,13 +43,10 @@ namespace Importer
             OpenFileDialog ofp = new();
             ofp.DefaultExt = ".z21";
             ofp.Filter = "Z21 DB FIle (*.z21)|*.z21";
-            if (ofp.ShowDialog() ?? false)
-            {
-                if (string.IsNullOrWhiteSpace(ofp.FileName)) return;
-                TbFileSelector.Text = ofp.FileName;
-                Path = ofp.FileName;
-                Log($"Pfad '{Path}' selected.");
-            }
+            ofp.ShowDialog();
+            BtnImportNow.IsEnabled = !string.IsNullOrWhiteSpace(ofp.FileName);
+            TbFileSelector.Text = ofp.FileName;
+            Path = ofp.FileName;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!)
@@ -69,12 +56,9 @@ namespace Importer
 
         private async void BtnGo_Click(object sender, RoutedEventArgs e)
         {
-            CurrentlyLoading = false;
             await ImportAsync();
             this.Close();
         }
-
-        private void Log(string message) => Dispatcher.BeginInvoke(new Action(() => { TbLog.Text += message + "\n"; SvLog.ScrollToBottom(); }));
 
         private async Task ImportAsync()
         {
@@ -82,6 +66,8 @@ namespace Importer
             await db.Database.EnsureCreatedAsync();
             try
             {
+                Pb.Visibility = Visibility.Visible;
+                IsEnabled = false;
                 string vehicleDirectory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
                 string tempDirectory = $"{Directory.GetCurrentDirectory()}\\Temp";
                 string zipFileLocation = new StringBuilder(Path).Replace(".z21", ".zip").ToString();
@@ -113,16 +99,16 @@ namespace Importer
                     }
                 });
                 await FillDbFromDB(sqlLiteDB);
-                MessageBox.Show("Die ROCO DB wurde erfolgreich import! Sie können die Applikation nun wieder start!", "ERFOLG!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                Logger.Log($"-", ex);
+                Logger.Log($"Es ist ein import Fehler aufgetreten", ex);
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex?.Message}");
             }
             finally
             {
-                CurrentlyLoading = true;
+                Pb.Visibility = Visibility.Collapsed;
+                IsEnabled = true;
             }
         }
 
@@ -132,8 +118,6 @@ namespace Importer
             await Task.Run(() =>
             {
                 using SqliteConnection connection = new($"Data Source={sqlLiteLocation}");
-                Log("Importing Table: Functions");
-
                 connection.Open();
                 var command = connection.CreateCommand();
                 command.CommandText = @"SELECT id, name, image_name, type, max_speed, address, active, position, drivers_cab ,full_name, speed_display, railway,buffer_lenght,model_buffer_lenght,service_weight,model_weight,rmin,article_number,decoder_type,owner,build_year,owning_since,traction_direction,description,dummy,ip,video,crane,direct_steering FROM vehicles";
@@ -176,7 +160,6 @@ namespace Importer
                     }
                     db.SaveChanges();
                 }
-
                 command.CommandText = @"SELECT id, vehicle_id, button_type, shortcut, time, position, image_name, function, show_function_number, is_configured  FROM functions;";
                 using (var reader = command.ExecuteReader())
                 {
@@ -207,16 +190,16 @@ namespace Importer
             Dictionary<string, FunctionType> dic = new();
             dic.Add("sound", FunctionType.Sound);
             dic.Add("sound2", FunctionType.Sound);
-            dic.Add("main_beam", FunctionType.Highbeam);
-            dic.Add("light", FunctionType.Lowbeam);
-            dic.Add("main_beam2", FunctionType.Lowbeam);
+            dic.Add("main_beam", FunctionType.HighBeam);
+            dic.Add("light", FunctionType.LowBeam);
+            dic.Add("main_beam2", FunctionType.LowBeam);
             dic.Add("horn_high", FunctionType.HornHigh);
             dic.Add("horn_low", FunctionType.HornLow);
-            dic.Add("hump_gear", FunctionType.Humpgear);
+            dic.Add("hump_gear", FunctionType.HumpGear);
             dic.Add("curve_sound", FunctionType.CurveSound);
             dic.Add("compressor", FunctionType.Compressor);
-            dic.Add("cabin", FunctionType.Cabin);
-            dic.Add("cabin_light", FunctionType.CabinLight);
+            dic.Add("cabin", FunctionType.DriversCabinLight1);
+            dic.Add("cabin_light", FunctionType.DriversCabinLight2);
             dic.Add("mute", FunctionType.Mute);
             if (dic.TryGetValue(name, out FunctionType func))
                 return func;
