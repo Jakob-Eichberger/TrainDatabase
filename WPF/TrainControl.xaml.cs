@@ -116,6 +116,11 @@ namespace WPF_Application
         private async void VehicleCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             if (((sender as CheckBox)?.Tag ?? null) is null) return;
+            if (DoubleTractionVehicles.Count >= 140)
+            {
+                MessageBox.Show("Mehr als 140 Traktionsfahrzeuge sind nicht möglich!", "Max Limit reached.", MessageBoxButton.OK);
+                return;
+            }
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
             if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[CentralStationClient.maxDccStep] is null || temp.TractionForward[CentralStationClient.maxDccStep] is null))
                 MessageBox.Show("Achtung! Fahrzeug ist nicht eingemessen!");
@@ -215,10 +220,10 @@ namespace WPF_Application
         /// <param name="inUse"></param>
         private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
-            if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(50)) { return; } else { lastSpeedchange = DateTime.Now; }
+            if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100)) { return; } else { lastSpeedchange = DateTime.Now; }
             bool direction = drivingDirection ??= LiveData.DrivingDirection;
             int speed = speedstep ?? Speed;
-
+            List<LokInfoData> data = new();
             var slowestVehicle = DoubleTractionVehicles.FirstOrDefault(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
             var yValue = GetSlowestVehicleSpeed(speed, direction, slowestVehicle);
             foreach (var item in DoubleTractionVehicles.Where(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
@@ -230,12 +235,14 @@ namespace WPF_Application
                         dccSpeed = (direction ? item.Traction.Forwards.GetXValue(yValue) : item.Traction.Backwards.GetXValue(yValue));
                     else
                         dccSpeed = (direction ? item.Traction.Backwards.GetXValue(yValue) : item.Traction.Forwards.GetXValue(yValue));
-                    controller.SetLocoDrive(GetLocoInfoData(dccSpeed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
+
+                    data.Add(GetLocoInfoData(dccSpeed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
                 }
                 else
-                    controller.SetLocoDrive(GetLocoInfoData(speed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
+                    data.Add(GetLocoInfoData(speed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
             }
-            controller.SetLocoDrive(GetLocoInfoData(speed, GetDrivingDirection(slowestVehicle.Vehicle, direction), inUse, slowestVehicle.Vehicle));
+            data.Add(GetLocoInfoData(speed, GetDrivingDirection(slowestVehicle.Vehicle, direction), inUse, slowestVehicle.Vehicle));
+            controller.SetLocoDrive(data);
         });
 
         private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
