@@ -98,6 +98,8 @@ namespace ModelTrainController
 
         public abstract void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType);
 
+        public abstract void SetLocoFunction(List<(ToggleType toggle, Function Func)> list);
+
         public abstract void LogOFF();
 
         public abstract new void Dispose();

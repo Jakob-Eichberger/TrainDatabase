@@ -510,6 +510,25 @@ namespace WPF_Application.CentralStation.Z21
         /// <param name="toggelType"></param>
         public override void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
         {
+            byte[] bytes = GetLocoFunctionByteArray(adresse, function, toggelType);
+            Senden(bytes);
+        }
+
+
+        public override void SetLocoFunction(List<(ToggleType toggle, Function Func)> data)
+        {
+            var array = new byte[10 * data.Count];
+            for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
+            {
+                (ToggleType toggleType, Function function) = data[i];
+                Array.Copy(GetLocoFunctionByteArray(new(function.Vehicle.Address), function, toggleType), 0, array, currentIndex, 10);
+            }
+            Senden(array);
+        }
+
+
+        private byte[] GetLocoFunctionByteArray(LokAdresse adresse, Function function, ToggleType toggelType)
+        {
             byte[] bytes = new byte[10];
             bytes[0] = 0x0A;
             bytes[1] = 0;
@@ -538,8 +557,9 @@ namespace WPF_Application.CentralStation.Z21
 
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET LOCO FUNCTION { getByteString(bytes) }  ({adresse } - index: { function.FunctionIndex } - { toggelType })");
-            Senden(bytes);
+            return bytes;
         }
+
 
         /// <summary>
         /// LAN_LOGOFF
@@ -595,6 +615,7 @@ namespace WPF_Application.CentralStation.Z21
             LogOFF();
             Close();
         }
+
 
     }
 }

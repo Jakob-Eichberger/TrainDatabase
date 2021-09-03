@@ -25,6 +25,7 @@
 		<PackageReference Include="SharpDX" Version="4.2.0" />
 		<PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
 		<PackageReference Include="SSH.NET" Version="2020.0.1" />
+		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -33,7 +34,7 @@
 			<AutoGen>True</AutoGen>
 			<DependentUpon>Settings.settings</DependentUpon>
 		</Compile>
-		<Compile Update="Import\Z21.xaml.cs">
+		<Compile Update="Import\Z21Import.xaml.cs">
 			<SubType>Code</SubType>
 		</Compile>
 	</ItemGroup>
@@ -46,7 +47,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Page Update="Import\Z21.xaml">
+		<Page Update="Import\Z21Import.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 			<SubType>Designer</SubType>
 		</Page>

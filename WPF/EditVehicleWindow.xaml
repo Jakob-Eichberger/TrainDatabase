@@ -31,7 +31,7 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <Label Grid.Row="0" Grid.Column="0" Content="Bild:" VerticalAlignment="Center" >
+                        <Label Grid.Row="0" Grid.Column="0" Content="Bild:" VerticalAlignment="Center" ToolTip="Das Foto sollte 500 x 200 pixel groß sein.">
                             <Label.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Bild ändern" Click="ChangeImage_Click" />
@@ -39,7 +39,7 @@
                             </Label.ContextMenu>
                         </Label>
                         <Border BorderBrush="Black" BorderThickness="0" Padding="2"  Grid.Row="0" Grid.Column="1"  VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="5,0,0,0">
-                            <Image    Name="ImageVehicle" VerticalAlignment="Stretch" HorizontalAlignment="Center" ></Image>
+                            <Image    Name="ImageVehicle" VerticalAlignment="Stretch" HorizontalAlignment="Center" Stretch="Uniform" ></Image>
                         </Border>
 
                         <Label Content="Full Name: "  Grid.Column="0"  Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>

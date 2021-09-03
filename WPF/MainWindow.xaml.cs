@@ -59,7 +59,8 @@ namespace Wpf_Application
 #if RELEASE
                 if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
                 {
-                    Close();
+                    Application.Current.Shutdown();
+                    return;
                 }
 #endif
                 Theme = new();
@@ -96,7 +97,9 @@ namespace Wpf_Application
             {
                 if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
                 {
-                    new Importer.Z21(db).Show();
+                    var importer = new Importer.Z21Import(db);
+                    importer.ShowDialog();
+                    Search();
                 }
             }
         }
@@ -114,7 +117,7 @@ namespace Wpf_Application
             {
                 VehicleGrid.Children.Clear();
                 db.Database.EnsureDeleted();
-                var importer = new Importer.Z21(db);
+                var importer = new Importer.Z21Import(db);
                 this.Close();
                 importer.Show();
             }
@@ -180,7 +183,9 @@ namespace Wpf_Application
                 try
                 {
                     List<string> images = db.Vehicles.Select(e => e.Image_Name).ToList();
-                    foreach (var item in Directory.GetFiles($"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\"))
+                    string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                    Directory.CreateDirectory(directory);
+                    foreach (var item in Directory.GetFiles($"{directory}\\"))
                     {
                         if (!images.Where(e => e == Path.GetFileName(item)).Any())
                             File.Delete(item);
@@ -224,7 +229,6 @@ namespace Wpf_Application
                     if (evw.ShowDialog() ?? false)
                     {
                         Search();
-                        RemoveUnneededImages();
                     }
                 }
                 else
@@ -270,7 +274,6 @@ namespace Wpf_Application
             if (w.ShowDialog() ?? false)
             {
                 Search();
-                RemoveUnneededImages();
             }
         }
 

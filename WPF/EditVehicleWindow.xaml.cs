@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -75,10 +76,15 @@ namespace WPF_Application
                     break;
             }
 
+            LoadVehicleImage();
+        }
+
+        private void LoadVehicleImage()
+        {
             try
             {
                 string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\";
-                path += string.IsNullOrWhiteSpace(_vehicle?.Image_Name) ? "default.png" : _vehicle?.Image_Name;
+                path += string.IsNullOrWhiteSpace(Vehicle?.Image_Name) ? "default.png" : Vehicle?.Image_Name;
                 BitmapImage bitmap = new();
                 bitmap.BeginInit();
                 bitmap.UriSource = new(path);
@@ -89,7 +95,7 @@ namespace WPF_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", ex);
+                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{Vehicle?.Address}' not found.", ex);
             }
         }
 
@@ -101,7 +107,6 @@ namespace WPF_Application
             if (_db is null) throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
             this._db = _db;
             this.Title = "Neues Fahrzeug";
-            BtnDeleteVehicle.Visibility = Visibility.Visible;
             btnSaveVehicleAndClose.Click += AddVehicle_Click;
         }
 
@@ -113,15 +118,28 @@ namespace WPF_Application
         private void ChangeImage_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new();
+            ofd.Filter = "";
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+            string sep = string.Empty;
+            foreach (var c in codecs)
+            {
+                string codecName = c.CodecName.Substring(8).Replace("Codec", "Files").Trim();
+                ofd.Filter = String.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, codecName, c.FilenameExtension);
+                sep = "|";
+            }
+            ofd.Filter = String.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, "All Files", "*.*");
+            ofd.DefaultExt = ".png"; 
             ofd.CheckPathExists = true;
-            ofd.Filter = "png (*.png)|*.png";
             if (ofd.ShowDialog() ?? false)
             {
                 string oldFileNameAndPath = ofd.FileName;
                 string imageName = Guid.NewGuid() + ".png";
-                string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{imageName}";
+                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                Directory.CreateDirectory(directory);
+                string path = $"{directory}\\{imageName}";
                 File.Copy(oldFileNameAndPath, path);
                 Vehicle.Image_Name = imageName;
+                LoadVehicleImage();
             }
         }
 

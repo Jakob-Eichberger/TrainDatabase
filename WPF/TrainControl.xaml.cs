@@ -46,12 +46,13 @@ namespace WPF_Application
                 Adresse = new(Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
                 SlowestVehicleInTractionList = Vehicle;
+                controller.LogOn();
                 controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
                 controller.TrackPowerChanged += Controller_TrackPowerChanged;
                 controller.OnStatusChanged += Controller_OnStatusChanged;
                 controller.GetLocoInfo(new(Vehicle.Address));
                 controller.GetStatus();
-                
+
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
                 DoubleTractionVehicles.Add((Vehicle, (GetLineSeries(Vehicle.TractionForward), GetLineSeries(Vehicle.TractionBackward))));
@@ -268,9 +269,19 @@ namespace WPF_Application
         /// <param name="type"></param>
         /// <param name="function"></param>
         /// <param name="locoAdress"></param>
-        private void SetLocoFunction(ToggleType type, Function function, int? locoAdress = null)
+        private void SetLocoFunction(ToggleType type, Function function)
         {
-            controller.SetLocoFunction(new LokAdresse((int)(locoAdress is null ? (int)vehicle.Address : locoAdress)), function, type);
+
+            if (function.EnumType != FunctionType.None)
+            {
+                var functions = DoubleTractionVehicles.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == function.EnumType && e.ButtonType == function.ButtonType).ToList();
+                List<(ToggleType toggle, Function Func)> list = new();
+                foreach (var item in functions)
+                    list.Add((type, item));
+                controller.SetLocoFunction(list);
+            }
+            else
+                controller.SetLocoFunction(new((int)vehicle.Address), function, type);
         }
 
         /// <summary>
@@ -359,26 +370,28 @@ namespace WPF_Application
                             break;
                         default:
                             if (Function.Key == FunctionType.None) return;
-                            var function = Vehicle.Functions.Where(e => e.EnumType == Function.Key).ToList();
+                            var function = DoubleTractionVehicles.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == Function.Key).ToList();
                             if (function is null) return;
+                            List<(ToggleType toggle, Function Func)> list = new();
                             foreach (var item in function)
                             {
                                 switch (item.ButtonType)
                                 {
                                     case ButtonType.Switch:
                                         if (e.currentValue == Function.Value.maxValue)
-                                            SetLocoFunction(ToggleType.@switch, item);
+                                            list.Add((ToggleType.@switch, item));
                                         break;
                                     case ButtonType.PushButton:
                                         if (e.currentValue == Function.Value.maxValue)
-                                            SetLocoFunction(ToggleType.on, item);
+                                            list.Add((ToggleType.on, item));
                                         if (e.currentValue == 0)
-                                            SetLocoFunction(ToggleType.off, item);
+                                            list.Add((ToggleType.off, item));
                                         break;
                                     case ButtonType.Timer:
                                         break;
                                 }
                             }
+                            controller.SetLocoFunction(list);
                             break;
                     }
                 }
