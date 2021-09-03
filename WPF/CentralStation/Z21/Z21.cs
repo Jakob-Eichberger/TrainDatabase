@@ -21,6 +21,7 @@ using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using WPF_Application.Exceptions;
+using WPF_Application.Helper;
 
 namespace WPF_Application.CentralStation.Z21
 {
@@ -206,6 +207,8 @@ namespace WPF_Application.CentralStation.Z21
                                 }
                             }
                             OnGetLocoInfo?.Invoke(this, new GetLocoInfoEventArgs(infodata));
+                            Console.WriteLine($"{DateTime.Now:hh-mm-ss} GET LOCO DRIVE: Add:'{infodata.Adresse.Value:D3}' Direction: '{infodata.DrivingDirection}'\t Speed:'{infodata.Speed:D3}' ByteString: '{getByteString(received)}'");
+
                             break;
                         case 0xF3:
                             switch (received[5])
@@ -395,15 +398,16 @@ namespace WPF_Application.CentralStation.Z21
         /// </summary>
         public override void LogOn()
         {
+            var flags = BitConverter.GetBytes(0x00000001 | 0x00010000);
             byte[] bytes = new byte[8];
             bytes[0] = 0x08;
             bytes[1] = 0;
             bytes[2] = 0x50;
             bytes[3] = 0;
-            bytes[4] = 1;         //  0x0000001   (Byte 4+5) 
-            bytes[5] = 0;         //  0x0000100   (Byte 4+5) 
-            bytes[6] = 0;
-            bytes[7] = 0;
+            bytes[4] = flags[0];
+            bytes[5] = flags[1];
+            bytes[6] = flags[2];
+            bytes[7] = flags[3];
             Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET BROADCASTFLAGS " + getByteString(bytes));
             Senden(bytes);
         }
@@ -457,11 +461,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        /// <summary>
-        /// LAN_X_SET_LOCO_DRIVE
-        /// </summary>
-        /// <param name="data"></param>
-        private void SetDrive(LokInfoData data)
+        public override void SetLocoDrive(LokInfoData data)
         {
             if (data.DrivingDirection) data.Speed |= 0x080;
 
@@ -478,11 +478,6 @@ namespace WPF_Application.CentralStation.Z21
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
             Console.WriteLine($"{DateTime.Now:hh-mm-ss} SET LOCO DRIVE: Add:'{data.Adresse.Value:D3}' Direction: '{data.DrivingDirection}'\t Speed:'{data.Speed:D3}' ByteString: '{getByteString(bytes)}'");
             Senden(bytes);
-        }
-
-        public override void SetLocoDrive(LokInfoData data)
-        {
-            SetDrive(data);
         }
 
         /// <summary>
@@ -531,9 +526,9 @@ namespace WPF_Application.CentralStation.Z21
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
-            bytes[1] = 0;
+            bytes[1] = 0x00;
             bytes[2] = 0x30;
-            bytes[3] = 0;
+            bytes[3] = 0x00;
             Senden(bytes);
         }
 
@@ -547,22 +542,29 @@ namespace WPF_Application.CentralStation.Z21
             return s;
         }
 
-        private void Senden(byte[] bytes)
+        private async void Senden(byte[] bytes)
         {
             try
             {
-                Send(bytes, bytes.GetLength(0));
+                await SendAsync(bytes, bytes.GetLength(0));
             }
-            catch (ArgumentNullException e) { throw new ControllerException(this, "Fehler beim Senden. Zu sendende Bytes waren null.", e); }
-            catch (ObjectDisposedException e) { throw new ControllerException(this, "Fehler beim Senden. Der UdpClient ist geschlossen.", e); }
-            catch (InvalidOperationException e) { throw new ControllerException(this, "Fehler beim Senden. Der UdpClient hat bereits einen Standardremotehost eingerichtet.", e); }
-            catch (SocketException e)
+            catch (ArgumentNullException ex)
             {
-                Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
+                Logger.Log("Fehler beim Senden. Zu sendende Bytes waren null.", ex);
             }
-            catch (ControllerException e)
+            catch (ObjectDisposedException ex)
             {
-                throw new ControllerException(this, $"Fehler: {e.Message}", e);
+                Logger.Log("Fehler beim Senden. Der UdpClient ist geschlossen.", ex);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Logger.Log("Fehler beim Senden. Der UdpClient hat bereits einen Standardremotehost eingerichtet.", ex);
+            }
+            catch (Exception ex)
+            {
+                if (ex is SocketException)
+                    Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
+                Logger.Log("Fehler beim Senden", ex);
             }
         }
 
@@ -582,18 +584,6 @@ namespace WPF_Application.CentralStation.Z21
         {
             //LogOFF();
             Close();
-        }
-
-        public override void SetBroadcastFlag()
-        {
-            //byte[] bytes = new byte[8];
-            //bytes[0] = 0x08;
-            //bytes[1] = 0;
-            //bytes[2] = 0x50;
-            //bytes[3] = 0;
-            //bytes[4] = 0x00010000;
-            //var x = /*u*/nchecked((int)0x00010000);
-            //Senden(bytes);
         }
 
     }

@@ -396,7 +396,7 @@ namespace WPF_Application
             catch (SshAuthenticationException) { MessageBox.Show($"Authentifizierung hat fehlgeschlagen."); }
             catch (Exception ex)
             {
-                Logger.Log($"", ex, Environment.StackTrace);
+                Logger.Log($"", ex);
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex.Message}");
             }
             finally

@@ -14,6 +14,7 @@ namespace ModelTrainController
 
         public CentralStationClient(IPAddress address, int port) : base(port)
         {
+            DontFragment = false;
             lanAdresse = address;
             lanAdresseS = address.ToString();
             lanPort = port;
@@ -100,6 +101,5 @@ namespace ModelTrainController
 
         public abstract new void Dispose();
 
-        public abstract void SetBroadcastFlag();
     }
 }

@@ -89,7 +89,7 @@ namespace WPF_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", ex, Environment.StackTrace);
+                Logger.Log($"{DateTime.UtcNow}: Image for Lok with adress '{_vehicle?.Address}' not found. Message: {ex.Message}", ex);
             }
         }
 
@@ -146,7 +146,7 @@ namespace WPF_Application
 
         private void DgFunctions_Opening(object sender, ContextMenuEventArgs e)
         {
-            MiAddFunction.Visibility = DgFunctions.SelectedCells.Any() ? Visibility.Visible : Visibility.Collapsed;
+            MiEditFunction.Visibility = DgFunctions.SelectedCells.Any() ? Visibility.Visible : Visibility.Collapsed;
             MiRemoveFunction.Visibility = DgFunctions.SelectedCells.Any() ? Visibility.Visible : Visibility.Collapsed;
         }
 

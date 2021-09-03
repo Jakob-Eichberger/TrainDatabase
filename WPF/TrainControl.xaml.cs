@@ -41,18 +41,20 @@ namespace WPF_Application
                 this.DataContext = this;
                 InitializeComponent();
                 controller = _controller;
-                Vehicle = db.Vehicles.Include(e => e.Functions).FirstOrDefault(e => e.Id == _vehicle.Id)!;
+                Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
                 if (Vehicle is null) throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
                 Adresse = new(Vehicle.Address);
                 this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
                 SlowestVehicleInTractionList = Vehicle;
+                controller.LogOn();
                 controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
                 controller.TrackPowerChanged += Controller_TrackPowerChanged;
                 controller.OnStatusChanged += Controller_OnStatusChanged;
-                controller.GetLocoInfo(Adresse);
+                controller.GetLocoInfo(new(Vehicle.Address));
                 controller.GetStatus();
+                RenewClientSubscription.Elapsed += RenewClientSubscription_Elapsed;
                 DrawAllFunctions();
-                DrawAllVehicles(db.Vehicles.Where(m => m.Id != Vehicle.Id));
+                DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
                 DoubleTractionVehicles.Add((Vehicle, (GetLineSeries(Vehicle.TractionForward), GetLineSeries(Vehicle.TractionBackward))));
 
                 if (Vehicle.Type.IsLokomotive() && Settings.UsingJoyStick)
@@ -65,9 +67,18 @@ namespace WPF_Application
             catch (Exception ex)
             {
                 Close();
-                Logger.Log("", ex, Environment.StackTrace);
+                Logger.Log("Fehler beim öffnen des Controllers.", ex);
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private async void RenewClientSubscription_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            controller.LogOFF();
+            await Task.Delay(1000);
+            controller.LogOn();
+            controller.GetLocoInfo(new(Vehicle.Address));
+            controller.GetStatus();
         }
 
         private void Controller_OnStatusChanged(object? sender, StateEventArgs e) => TrackPower = e.TrackPower;
@@ -110,7 +121,6 @@ namespace WPF_Application
                 MessageBox.Show("Achtung! Fahrzeug ist nicht eingemessen!");
             DoubleTractionVehicles.Add((temp, (GetLineSeries(temp.TractionForward), GetLineSeries(temp.TractionBackward))));
             await DeterminSlowestVehicleInList();
-            controller.GetLocoInfo(new(((Vehicle)(sender as CheckBox)!.Tag).Address));
         }
 
         /// <summary>
@@ -209,9 +219,9 @@ namespace WPF_Application
             bool direction = drivingDirection ??= LiveData.DrivingDirection;
             int speed = speedstep ?? Speed;
 
-            var slowestVehicle = DoubleTractionVehicles.FirstOrDefault<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
+            var slowestVehicle = DoubleTractionVehicles.FirstOrDefault(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
             var yValue = GetSlowestVehicleSpeed(speed, direction, slowestVehicle);
-            foreach (var item in DoubleTractionVehicles.Where<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
+            foreach (var item in DoubleTractionVehicles.Where(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
             {
                 if (IsVehicleMeasured(item))
                 {

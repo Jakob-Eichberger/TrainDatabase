@@ -66,8 +66,7 @@ namespace Wpf_Application
                 this.DataContext = this;
                 InitializeComponent();
 
-                if (Debugger.IsAttached)
-                    ShowConsoleWindow();
+                ShowConsoleWindow();
                 CheckIfDbHasItemsDrawVehicle();
                 CreatController();
                 RemoveUnneededImages();
@@ -75,7 +74,7 @@ namespace Wpf_Application
             catch (Exception e)
             {
                 Close();
-                Logger.Log($"Fehler beim start", e, Environment.StackTrace);
+                Logger.Log($"Fehler beim start", e);
                 MessageBox.Show($"Fehler beim Start!.\n Error: '{e?.Message ?? ""}' \nIm Ordner ...\\Log\\ finden Sie ein Logfile. Bitte an contact@jakob-eichberger.at schicken.");
             }
         }
@@ -104,7 +103,7 @@ namespace Wpf_Application
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            Logger.Log("", e.Exception, Environment.StackTrace);
+            Logger.Log("", e.Exception);
             e.Handled = true;
             MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
@@ -189,7 +188,7 @@ namespace Wpf_Application
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log($"Deleting file failed", ex, Environment.StackTrace);
+                    Logger.Log($"Deleting file failed", ex);
                 }
 
             });
@@ -208,7 +207,7 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"-", ex, Environment.StackTrace);
+                Logger.Log($"Beim öffnen ist ein unerwarteter Fehler aufgetreten", ex);
                 MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
@@ -233,7 +232,7 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Logger.Log($"-", ex, Environment.StackTrace);
+                Logger.Log($"-", ex);
                 MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
@@ -243,7 +242,7 @@ namespace Wpf_Application
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => (i.Address + i.Article_Number + i.Category?.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().OrderBy(e => e.Position));
         }
 
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();

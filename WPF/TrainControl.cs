@@ -12,6 +12,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -157,6 +158,8 @@ namespace WPF_Application
         public new bool IsActive { get; set; } = false;
 
         private JoyStick.JoyStick? Joystick { get; }
+
+        public Timer RenewClientSubscription { get; set; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 5, 0).TotalMilliseconds, };
     }
 
 }
