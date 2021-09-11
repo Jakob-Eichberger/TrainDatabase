@@ -1,29 +1,38 @@
 # TrainDatabase
-TrainDatabase is a software where you can control your entire model train layout comfortably from your windows computer!
+TrainDatabase is software for managing and controlling your model trains. The software was created because no pc software currently exists that provides a modern, simple and intuitive interface for controlling your trains. 
+TrainDatabase fully supports multi traction. 
 
-## Tables of Contents
-- [General Information](#general-information)
-- [Features](#features)
-- [Examples of use](#examples-of-use)
-- [Getting Started](#getting-started)
-- [Project Status](#project-status)
-- [Sources](#sources)
-- [FAQ](#faq)
-- [Technologies](#technologies)
-
-## General Information
-TrainDatabase was created to give the user a simple interface from where his/her model trains can be controlled. The program offers the ability to not only control trains and their functions but also to control switches and signals, it even supports multi traction. For people that want a bit more feedback when controlling their trains, this software allows the user to control their trains with a Joystick/Trottel. 
+The features of this software are as followed: 
+- Controlling your trains with either a mouse, hotkeys, or throttle.
+- Fully supports double traction for control cars, unmeasured and measured locomotives. 
+- Measuring the vehicle's speed using a raspberry pi. 
+- Database can be imported from the new Roco Z21 app. 
 
 *Note: TrainDatabase itself is in German. An English language package is planned.*
 
-## Features
-- Manage and control vehicles and functions.
-- Manage and control your layout. (Switches, signals, etc)
-- Usage of Joystick to control vehicle speed, direction, and functions.
-- Multitraction support
-- Support to measure the vehicle speed with a raspberry pi.
-- Import a layout from the (new) Z21 smartphone app.
+## Getting Started
 
+### Installing the software
+
+1. Make sure that you have a z21/Z21 from Roco/Fleischmann. (No other digital control center is currently supported)
+2. Go to this [link](https://github.com/Jakob-Eichberger/TrainDatabase/releases) to download the software.
+3. Unpack the .zip file, copy the folder to its final directory and start the TrainDB.exe.
+4. When it's your first time starting the app you get the option to import your Z21 Layout (from the new Z21 Android/IOS App).
+5. Done!
+
+### Import existing z21 Layout. 
+1. Open the Roco/Fleischmann Z21 App.
+2. Go to "Layouts"
+3. Select the layout you want to export. 
+4. Scroll down and click "Export". 
+5. Select the "Share" option. 
+6. Save the file to your device or send it to yourself via Email.
+7. In the TrainDatabase go to "Database".
+8. Click "Neue Datenbank importieren".
+9. Select the file.
+10. Click Go!
+
+For more detailed information please visit the [wiki](https://github.com/Jakob-Eichberger/TrainDatabase/wiki) for this repository! 
 
 ## Examples of use
 
@@ -36,7 +45,7 @@ In the main window you can manage your vehicles and search for them:
 
 ### Vehicle edit window
 
-In the edit window the vehicle and its functions can be changed.
+In the edit window, the vehicle and its functions can be changed.
 
 **Note:** The shown fields are not yet final. 
 
@@ -44,7 +53,7 @@ In the edit window the vehicle and its functions can be changed.
 
 ### Vehicle control window
 
-In the control window the speed, direction of travel and functions of a vehicle can be controlled.
+In the control window the speed, direction of travel, and functions of a vehicle can be controlled.
 
 ![image](https://user-images.githubusercontent.com/53713395/130352398-85260549-59de-4edd-8550-6c56cf23b666.png)
 
@@ -54,27 +63,17 @@ TrainDatabase (with the help of a [raspberry pi](https://www.raspberrypi.org/pro
 
 ![image](https://user-images.githubusercontent.com/53713395/130366046-f6c6b504-1d95-458e-a21c-57f4ed6ee224.png)
 
-
-## Getting Started
-Getting started is simple. Just follow these steps:
-
-1. Make sure that you have a z21/Z21 from Roco/Fleischmann. (No other digital control center is currently supported)
-2. Go to this [link](https://github.com/Jakob-Eichberger/TrainDatabase/releases) to download the software.
-3. Unpack the .zip file, copy the folder to its final directory and start the TrainDB.exe.
-4. When it's your first time starting the app you get the option to import your Z21 Layout (from the new Z21 Android/IOS App).
-5. Done!
-
 ## Project Status
 
 Feature Name | Status
 ------------ | -------------
+Import database from Roco Z21 App|Complete
 Manage vehicles|Complete
-Joystick support|Complete
 Control vehicle speed|Complete
-Control vehicle functions | Complete
-Multi traction support | In development
-CV Programming | Not done
-Controlling Switches/Signals|Not done
+Control vehicle functions|Complete
+Multi traction support|In development
+Joystick support|Complete
+Hotykey support|Not done
 
 ## Sources
 TBD
