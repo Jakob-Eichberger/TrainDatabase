@@ -31,8 +31,7 @@ The features of this software are as followed:
 8. Click "Neue Datenbank importieren".
 9. Select the file.
 10. Click Go!
-
-For more detailed information please visit the [wiki](https://github.com/Jakob-Eichberger/TrainDatabase/wiki) for this repository! 
+11. Done!
 
 ## Examples of use
 
