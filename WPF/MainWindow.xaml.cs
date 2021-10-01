@@ -130,8 +130,10 @@ namespace Wpf_Application
                     Padding = new(2),
                     Margin = new(10),
                     BorderThickness = new(1),
-                    BorderBrush = Brushes.Black
+                    BorderBrush = Brushes.Black,
+                    Tag = item
                 };
+                border.MouseDown += Border_MouseDown;
 
                 StackPanel sp = new()
                 {
@@ -140,7 +142,8 @@ namespace Wpf_Application
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
                     Background = Brushes.White,
-                    ContextMenu = new()
+                    ContextMenu = new(),
+                    Tag = item
                 };
 
                 try
@@ -149,7 +152,8 @@ namespace Wpf_Application
                     {
                         Source = LoadPhoto($"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.ImageName}"),
                         Width = 250,
-                        Height = 100
+                        Height = 100,
+                        Tag = item
                     });
                 }
                 catch (Exception ex)
@@ -157,34 +161,32 @@ namespace Wpf_Application
                     Console.WriteLine($"Loading image '{item?.ImageName}' failed!:\n{ex}");
                 }
 
-                TextBlock tb = new();
+                TextBlock tb = new() { Tag = item };
                 tb.Text = !string.IsNullOrWhiteSpace(item?.FullName) ? item?.FullName : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
-
                 sp.Children.Add(tb);
                 sp.ContextMenu.Items.Add(GetControlVehicleMenuItem(item));
                 border.Child = sp;
+
                 VehicleGrid.Children.Add(border);
             }
+        }
+
+        private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2 && sender.GetType()?.GetProperty("Tag")?.GetValue(sender, null) is Vehicle vehicle)
+                new TrainControl(Controller, vehicle, db).Show();
         }
 
         private MenuItem GetControlVehicleMenuItem(Vehicle item)
         {
             MenuItem miControlLoko = new();
-            switch (item.Type)
+            miControlLoko.Header = item.Type switch
             {
-                case VehicleType.Lokomotive:
-                    miControlLoko.Header = "Lok steuern";
-                    break;
-                case VehicleType.Steuerwagen:
-                    miControlLoko.Header = "Steuerwagen steuern";
-                    break;
-                case VehicleType.Wagen:
-                    miControlLoko.Header = "Wagen steuern";
-                    break;
-                default:
-                    miControlLoko.Header = "Fahrzeug steuern";
-                    break;
-            }
+                VehicleType.Lokomotive => "Lok steuern",
+                VehicleType.Steuerwagen => "Steuerwagen steuern",
+                VehicleType.Wagen => "Wagen steuern",
+                _ => "Fahrzeug steuern",
+            };
             miControlLoko.Click += ControlLoko_Click;
             miControlLoko.Tag = item;
             return miControlLoko;
