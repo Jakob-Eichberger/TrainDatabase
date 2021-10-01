@@ -12,6 +12,8 @@ namespace Model
 
         public ButtonType ButtonType { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         public string Name { get; set; }
 
         public decimal Time { get; set; }
@@ -28,6 +30,6 @@ namespace Model
 
         public FunctionType EnumType { get; set; }
 
-        public override bool Equals(object obj) => obj is Function function && Id == (function?.Id ?? -1);
+        public override bool Equals(object obj) => obj is Function function && Id == function?.Id;
     }
 }

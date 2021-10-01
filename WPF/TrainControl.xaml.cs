@@ -44,7 +44,7 @@ namespace WPF_Application
                 Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
                 if (Vehicle is null) throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
                 Adresse = new(Vehicle.Address);
-                this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.Full_Name : Vehicle.Name)}";
+                this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
                 SlowestVehicleInTractionList = Vehicle;
                 controller.LogOn();
                 controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
@@ -132,9 +132,7 @@ namespace WPF_Application
             await DeterminSlowestVehicleInList();
         }
 
-        protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
-
-        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
         /// Functions draws every single Function of a vehicle for the user to click on. 
@@ -333,7 +331,7 @@ namespace WPF_Application
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.Article_Number + i.Category.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
                 DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
         }
@@ -396,10 +394,7 @@ namespace WPF_Application
                     }
                 }
             }
-            catch
-            {
-                //Do nothing. 
-            }
+            catch { }
         }
 
         public void Dispose()

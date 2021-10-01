@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Wpf_Application"
+        xmlns:local="clr-namespace:Wpf_Application" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Datenbank" MinHeight="550" Height="550" MinWidth="870" Width="870" Name="mw" Closing="Mw_Closing" >
     <Grid x:Name="MwGrid">
@@ -20,7 +20,7 @@
                 <MenuItem Header="Neue Datenbank importieren" Click="DB_Import_new"/>
             </MenuItem>
             <MenuItem Header="Fahrzeuge">
-                <MenuItem Header="Hinzufügen" Click="NewVehicle_Click" IsEnabled="True"/>
+                <MenuItem Header="Fahrzeuge verwalten" Click="OpenVehicleManagement_Click"/>
                 <MenuItem Header="Lok einmessen" Click="MeasureLoko_Click"  IsEnabled="False"/>
             </MenuItem>
             <MenuItem Header="Optionen" Click="Settings_Click">

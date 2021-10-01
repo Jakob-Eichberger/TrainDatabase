@@ -6,6 +6,7 @@ namespace WPF_Application
     public class EnumBindingSourceExtension : MarkupExtension
     {
         private Type _enumType;
+
         public Type EnumType
         {
             get { return this._enumType; }

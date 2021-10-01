@@ -192,7 +192,6 @@ namespace WPF_Application.CentralStation.Z21
                             infodata.InUse = (received[7] & 8) == 8;
                             infodata.Speed = (byte)(received[8] & 0x7F);
                             infodata.DrivingDirection = (received[8] & 0x80) == 0x80;
-
                             int functionIndexCount = 5;
                             for (int index = 9; index < received.Length && index <= 12; index++)
                             {
@@ -216,7 +215,6 @@ namespace WPF_Application.CentralStation.Z21
                             }
                             OnGetLocoInfo?.Invoke(this, new GetLocoInfoEventArgs(infodata));
                             Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET LOCO DRIVE: Add:'{infodata.Adresse.Value:D3}' Direction: '{infodata.DrivingDirection}'\t Speed:'{infodata.Speed:D3}' ByteString: '{getByteString(received)}'");
-
                             break;
                         case 0xF3:
                             switch (received[5])
@@ -240,7 +238,6 @@ namespace WPF_Application.CentralStation.Z21
                     Console.WriteLine($"{DateTime.Now:HH-mm-ss} LAN SYSTEMSTATE DATACHANGED " + getByteString(received));
                     SystemStateData systemStateData = GetSystemStateData(received);
                     OnSystemStateDataChanged?.Invoke(this, new SystemStateEventArgs(systemStateData));
-
                     break;
                 default:
                     Console.WriteLine($"{DateTime.Now:HH-mm-ss} Unbekanntes Telegramm " + getByteString(received));
@@ -478,11 +475,7 @@ namespace WPF_Application.CentralStation.Z21
         }
 
 
-        public override void SetLocoDrive(LokInfoData data)
-        {
-            byte[] bytes = GetLocoDriveByteArray(data);
-            Senden(bytes);
-        }
+        public override void SetLocoDrive(LokInfoData data) => Senden(GetLocoDriveByteArray(data));
 
         private byte[] GetLocoDriveByteArray(LokInfoData data)
         {
@@ -551,10 +544,8 @@ namespace WPF_Application.CentralStation.Z21
                 case ToggleType.@switch:
                     bitarray.Set(7, true);
                     break;
-
             }
             bitarray.CopyTo(bytes, 8);
-
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET LOCO FUNCTION { getByteString(bytes) }  ({adresse } - index: { function.FunctionIndex } - { toggelType })");
             return bytes;
@@ -615,7 +606,5 @@ namespace WPF_Application.CentralStation.Z21
             LogOFF();
             Close();
         }
-
-
     }
 }

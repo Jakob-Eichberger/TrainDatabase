@@ -20,7 +20,7 @@ namespace WPF_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private Function? function = new();
+        private Function function = new();
         private Vehicle? Vehicle { get; set; } = null;
 
         public Function Function
@@ -32,7 +32,6 @@ namespace WPF_Application
             }
         }
 
-        public static IEnumerable<FunctionType> EnumList => Enum.GetValues(typeof(FunctionType)).Cast<FunctionType>().Where(e => (int)e > 3 || (int)e == 0);
 
         public EditFunctionWindow(Database _db, Function function)
         {
@@ -43,7 +42,7 @@ namespace WPF_Application
             Function = db.Functions.Include(m => m.Vehicle).ThenInclude(m => m.Functions).FirstOrDefault(e => e.Id == function.Id) ?? throw new ApplicationException($"Funktion  mit der ID '{function.Id} konnte nicht geöffnet werden!");
             this.Title = Function.Name;
             BtnSaveAndClose.Click += SaveChanges_Click;
-            BtnSaveAndClose.Content = "Speicher und schließen";
+            BtnSaveAndClose.Content = "Änderungen speichern und schließen";
 
             switch (Function.ButtonType)
             {
@@ -101,7 +100,7 @@ namespace WPF_Application
             }
         }
 
-        public bool IsValid() => !string.IsNullOrWhiteSpace(Function?.Name ?? null);
+        public bool IsValid() => !string.IsNullOrWhiteSpace(Function.Name);
 
         private void TypeRadioButton_Click(object sender, RoutedEventArgs e)
         {

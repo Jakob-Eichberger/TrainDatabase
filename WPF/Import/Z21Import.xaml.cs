@@ -62,8 +62,10 @@ namespace Importer
 
         private async Task ImportAsync()
         {
-            await db.Database.EnsureDeletedAsync();
-            await db.Database.EnsureCreatedAsync();
+            db.Database.EnsureCreated();
+            db.Vehicles.RemoveRange(db.Vehicles);
+            db.Functions.RemoveRange(db.Functions);
+            db.SaveChanges();
             try
             {
                 Pb.Visibility = Visibility.Visible;
@@ -71,19 +73,20 @@ namespace Importer
                 string vehicleDirectory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
                 string tempDirectory = $"{Directory.GetCurrentDirectory()}\\Temp";
                 string zipFileLocation = new StringBuilder(Path).Replace(".z21", ".zip").ToString();
-
+             
                 if (Directory.Exists(tempDirectory))
                     Directory.Delete(tempDirectory, true);
                 if (Directory.Exists(vehicleDirectory))
                     Directory.Delete(vehicleDirectory, true);
+
                 Directory.CreateDirectory(vehicleDirectory);
                 File.Move(Path, zipFileLocation);
                 ZipFile.ExtractToDirectory(zipFileLocation, tempDirectory);
                 File.Delete(zipFileLocation);
                 var firstLayer = Directory.GetDirectories(tempDirectory).FirstOrDefault();
-                if (string.IsNullOrWhiteSpace(firstLayer)) throw new ApplicationException($"Kein Subdirectory in {tempDirectory} gefunden!");
+                if (string.IsNullOrWhiteSpace(firstLayer)) throw new ApplicationException($"Kein Subdirectory in '{tempDirectory}' gefunden!");
                 var secondLayer = Directory.GetDirectories(firstLayer).FirstOrDefault();
-                if (string.IsNullOrWhiteSpace(secondLayer)) throw new ApplicationException($"Kein Subdirectory in {firstLayer} gefunden!");
+                if (string.IsNullOrWhiteSpace(secondLayer)) throw new ApplicationException($"Kein Subdirectory in '{firstLayer}' gefunden!");
                 var files = Directory.GetFiles(secondLayer).ToList();
 
                 var sqlLiteDB = files.FirstOrDefault(e => System.IO.Path.GetExtension(e) == ".sqlite");
@@ -91,14 +94,12 @@ namespace Importer
                 var images = files.Where(e => System.IO.Path.GetExtension(e) != ".sqlite").ToList();
                 await Task.Run(() =>
                 {
-                    for (int i = 0; i <= (images.Count - 1); i++)
-                    {
-                        var image = images[i];
-                        var destination = $"{vehicleDirectory}\\{System.IO.Path.GetFileName(image)}";
-                        File.Move(image, destination);
-                    }
+                    foreach (var image in images ?? new List<string>())
+                        File.Move(image, $"{vehicleDirectory}\\{System.IO.Path.GetFileName(image)}");
                 });
                 await FillDbFromDB(sqlLiteDB);
+                this.Close();
+                MessageBox.Show("Import erfolgreich!", "Erfolg", MessageBoxButton.OK);
             }
             catch (Exception ex)
             {
@@ -114,7 +115,7 @@ namespace Importer
 
         private async Task FillDbFromDB(string sqlLiteLocation)
         {
-            if (string.IsNullOrWhiteSpace(sqlLiteLocation)) throw new ApplicationException($"Paramter {nameof(sqlLiteLocation)} darf nicht leer sein!");
+            if (string.IsNullOrWhiteSpace(sqlLiteLocation)) throw new ApplicationException($"Paramter {nameof(sqlLiteLocation)} is null!");
             await Task.Run(() =>
             {
                 using SqliteConnection connection = new($"Data Source={sqlLiteLocation}");
@@ -125,42 +126,43 @@ namespace Importer
                 {
                     while (reader.Read())
                     {
-                        db.Vehicles.Add(new()
+                        db.Add(new Vehicle()
                         {
                             Id = reader.GetString(0).ToInt32(),
                             Name = reader.GetString(1),
-                            Image_Name = reader.GetString(2),
+                            ImageName = reader.GetString(2),
                             Type = (VehicleType)reader.GetString(3).ToInt32(),
-                            Max_Speed = reader.GetString(4).ToInt64(),
+                            MaxSpeed = reader.GetString(4).ToInt64(),
                             Address = reader.GetString(5).ToInt64(),
-                            Active = reader.GetString(6).ToBoolean(),
+                            IsActive = reader.GetString(6).ToBoolean(),
                             Position = reader.GetString(7).ToInt64(),
-                            Drivers_Cab = reader.GetString(8),
-                            Full_Name = reader.GetString(9),
-                            Speed_Display = reader.GetString(10).ToInt64(),
+                            DriversCab = reader.GetString(8),
+                            FullName = reader.GetString(9),
+                            SpeedDisplay = reader.GetString(10).ToInt64(),
                             Railway = reader.GetString(11),
-                            Buffer_Lenght = reader.GetString(12).ToInt64(),
-                            Model_Buffer_Lenght = reader.GetString(13).ToInt64(),
-                            Service_Weight = reader.GetString(14).ToInt64(),
-                            Model_Weight = reader.GetString(15).ToInt64(),
+                            BufferLenght = reader.GetString(12).ToInt64(),
+                            ModelBufferLenght = reader.GetString(13).ToInt64(),
+                            ServiceWeight = reader.GetString(14).ToInt64(),
+                            ModelWeight = reader.GetString(15).ToInt64(),
                             Rmin = reader.GetString(16).ToInt64(),
-                            Article_Number = reader.GetString(17),
-                            Decoder_Type = reader.GetString(18),
+                            ArticleNumber = reader.GetString(17),
+                            DecoderType = reader.GetString(18),
                             Owner = reader.GetString(19),
-                            Build_Year = reader.GetString(20),
-                            Owning_Since = reader.GetString(21),
+                            BuildYear = reader.GetString(20),
+                            OwningSince = reader.GetString(21),
                             InvertTraction = reader.GetString(22).ToBoolean(),
                             Description = reader.GetString(23),
                             Dummy = reader.GetString(24).ToBoolean(),
                             Ip = IPAddress.Parse(reader.GetString(25)),
                             Video = reader.GetString(26).ToInt64(),
                             Crane = reader.GetString(27).ToBoolean(),
-                            Direct_Steering = reader.GetString(28).ToInt64(),
+                            DirectSteering = reader.GetString(28).ToInt64(),
                         });
                     }
                     db.SaveChanges();
                 }
                 command.CommandText = @"SELECT id, vehicle_id, button_type, shortcut, time, position, image_name, function, show_function_number, is_configured  FROM functions;";
+
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())

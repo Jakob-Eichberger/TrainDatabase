@@ -431,7 +431,7 @@ namespace WPF_Application
             CmbAllVehicles.Items.Clear();
             foreach (var vehicle in await Db.Vehicles.Where(e => e.Type == VehicleType.Lokomotive).OrderBy(e => e.Address).ToListAsync())
             {
-                CmbAllVehicles.Items.Add(new ComboBoxItem() { Tag = vehicle, Content = $"({vehicle.Address:D3})  {(string.IsNullOrWhiteSpace(vehicle.Name) ? vehicle.Full_Name : vehicle.Name)}" });
+                CmbAllVehicles.Items.Add(new ComboBoxItem() { Tag = vehicle, Content = $"({vehicle.Address:D3})  {(string.IsNullOrWhiteSpace(vehicle.Name) ? vehicle.FullName : vehicle.Name)}" });
             }
         }
 

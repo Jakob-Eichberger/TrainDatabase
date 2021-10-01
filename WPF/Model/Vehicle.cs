@@ -10,53 +10,55 @@ namespace Model
 {
     public partial class Vehicle : IEquatable<Vehicle>, IComparable
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; } = "";
 
-        public string Image_Name { get; set; } = "";
+        public string ImageName { get; set; } = "";
 
         public VehicleType Type { get; set; } = VehicleType.Lokomotive;
 
-        public long? Max_Speed { get; set; } = 0;
+        public long? MaxSpeed { get; set; } = 0;
 
         public long Speed​​step { get; set; } = 128;
 
         [Required]
-        public long Address { get; set; } = 0;
+        public long Address { get; set; } = 3;
 
-        public bool Active { get; set; } = true;
+        public bool IsActive { get; set; } = true;
 
         public long Position { get; set; } = 0;
 
-        public string Drivers_Cab { get; set; } = "";
+        public string DriversCab { get; set; } = "";
 
-        public string Full_Name { get; set; } = "";
+        public string FullName { get; set; } = "";
 
-        public long? Speed_Display { get; set; } = 0;
+        public long? SpeedDisplay { get; set; } = 0;
 
         public string Railway { get; set; } = "";
 
-        public long Buffer_Lenght { get; set; }
+        public long BufferLenght { get; set; }
 
-        public long Model_Buffer_Lenght { get; set; }
+        public long ModelBufferLenght { get; set; }
 
-        public long Service_Weight { get; set; }
+        public long ServiceWeight { get; set; }
 
-        public long Model_Weight { get; set; }
+        public long ModelWeight { get; set; }
 
         public long Rmin { get; set; }
 
-        public string Article_Number { get; set; } = "";
+        public string Manufacturer { get; set; } = "";
 
-        public string Decoder_Type { get; set; } = "";
+        public string ArticleNumber { get; set; } = "";
+
+        public string DecoderType { get; set; } = "";
 
         public string Owner { get; set; } = "";
 
-        public string Build_Year { get; set; } = "";
+        public string BuildYear { get; set; } = "";
 
-        public string Owning_Since { get; set; } = "";
+        public string OwningSince { get; set; } = "";
 
         public bool InvertTraction { get; set; }
 
@@ -68,7 +70,7 @@ namespace Model
 
         public long? Video { get; set; } = 0;
 
-        public long? Direct_Steering { get; set; } = 0;
+        public long? DirectSteering { get; set; } = 0;
 
         public bool? Crane { get; set; } = false;
 
@@ -95,6 +97,6 @@ namespace Model
         /// <param name="direction"></param>
         /// <returns></returns>
         public decimal? GetTractionSpeed(int speed, bool direction) => (speed <= 127 && speed >= 2) ? (direction ? TractionForward[speed] : TractionBackward[speed]) : throw new ArgumentOutOfRangeException();
-
+        public override string ToString() => FullName;
     }
 }

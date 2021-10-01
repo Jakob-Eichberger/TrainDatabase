@@ -24,14 +24,14 @@ namespace ModelTrainController
             EnableBroadcast = false;
         }
 
-
         internal abstract void Empfang(IAsyncResult res);
+        
         internal abstract void EndConnect(IAsyncResult res);
 
-
         internal IPAddress lanAdresse;
+        
         internal string lanAdresseS;
-
+        
         internal string LanAdresse
         {
             get
@@ -62,36 +62,26 @@ namespace ModelTrainController
 
         public abstract void GetSerialNumber();
 
-        //  LAN_X_GET_VERSION     // 2.3 (10)
         public abstract void GetVersion();
 
-        //  LAN_X_GET_STATUS     // 2.4 (11)
         public abstract void GetStatus();
 
-        //  LAN_X_SET_TRACK_POWER_OFF   // 2.5 (11)
         public abstract void SetTrackPowerOFF();
 
-        //  LAN_X_SET_TRACK_POWER_ON   // 2.6 (11)
         public abstract void SetTrackPowerON();
 
-        //  LAN_X_SET_STOP   // 2.13 (14)
         public abstract void SetStop();
 
-        //  LAN_X_GET_FIRMWARE_VERSION   // 2.15 (xx)
         public abstract void GetFirmwareVersion();
 
-        //  LAN_SET_BROADCASTFLAGS()    // 2.16 (15)
         public abstract void LogOn();
 
-        //  LAN_SYSTEMSTATE_GETDATA()     // 2.19 (17)
         public abstract void SystemStateGetData();
 
-        //  LAN_GET_HWINFO   // 2.20 (xx)
         public abstract void GetHardwareInfo();
 
-        //  LAN X GET LOCO INFO         // 4.1 (20)
         public abstract void GetLocoInfo(LokAdresse adresse);
-        //  LAN_X_SET_LOCO_DRIVE  4.2  (21)
+      
         public abstract void SetLocoDrive(LokInfoData data);
 
         public abstract void SetLocoDrive(List<LokInfoData> data);

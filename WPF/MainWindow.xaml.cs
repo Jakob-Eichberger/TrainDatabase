@@ -68,9 +68,10 @@ namespace Wpf_Application
                 InitializeComponent();
 
                 ShowConsoleWindow();
-                CheckIfDbHasItemsDrawVehicle();
+                DrawVehiclesIfAnyExist();
                 CreatController();
                 RemoveUnneededImages();
+                db.CollectionChanged += Db_CollectionChanged;
             }
             catch (Exception e)
             {
@@ -80,19 +81,19 @@ namespace Wpf_Application
             }
         }
 
+        private void Db_CollectionChanged(object? sender, EventArgs e) => Dispatcher.Invoke(() => Search());
+
         private void CreatController()
         {
             Controller = new Z21(Settings.ControllerIP);
             Controller.LogOn();
         }
 
-        private void CheckIfDbHasItemsDrawVehicle()
+        private void DrawVehiclesIfAnyExist()
         {
             db.Database.EnsureCreated();
             if (db.Vehicles.Any())
-            {
-                DrawAllVehicles(db.Vehicles.OrderBy(e => e.Position).ToList());
-            }
+                Search();
             else
             {
                 if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
@@ -113,14 +114,7 @@ namespace Wpf_Application
 
         private void DB_Import_new(object sender, RoutedEventArgs e)
         {
-            if (MessageBoxResult.Yes == MessageBox.Show("Sind Sie sicher dass Sie eine neue Datenbank importieren wollen? Wenn Sie Ja drücken kann die aktuelle Datenbank nicht mehr verwendet werden.", "Frage", MessageBoxButton.YesNo, MessageBoxImage.Question))
-            {
-                VehicleGrid.Children.Clear();
-                db.Database.EnsureDeleted();
-                var importer = new Importer.Z21Import(db);
-                this.Close();
-                importer.Show();
-            }
+            new Importer.Z21Import(db).ShowDialog();
         }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
@@ -129,51 +123,104 @@ namespace Wpf_Application
             foreach (var item in list)
             {
                 if (item is null) continue;
-                Border border = new();
-                border.Padding = new(2);
-                border.Margin = new(10);
-                border.BorderThickness = new(1);
-                border.BorderBrush = Brushes.Black;
+                Border border = new()
+                {
+                    Padding = new(2),
+                    Margin = new(10),
+                    BorderThickness = new(1),
+                    BorderBrush = Brushes.Black
+                };
 
-                StackPanel sp = new();
+                StackPanel sp = new()
+                {
+                    Height = 120,
+                    Width = 250,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Background = Brushes.White,
+                    ContextMenu = new()
+                };
+
                 try
                 {
-                    string path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.Image_Name}";
-                    Image image = new();
-                    BitmapImage bitmap = new();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new(path);
-                    bitmap.EndInit();
-                    image.Source = bitmap;
-                    image.Width = 250;
-                    image.Height = 100;
-                    sp.Children.Add(image);
+                    sp.Children.Add(new Image()
+                    {
+                        Source = LoadPhoto($"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.ImageName}"),
+                        Width = 250,
+                        Height = 100
+                    });
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Loading image '{item?.ImageName}' failed!:\n{ex}");
+                }
 
                 TextBlock tb = new();
-                tb.Text = !string.IsNullOrWhiteSpace(item?.Full_Name) ? item?.Full_Name : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
-                sp.Height = 120;
-                sp.Width = 250;
-                sp.Children.Add(tb);
-                sp.HorizontalAlignment = HorizontalAlignment.Left;
-                sp.VerticalAlignment = VerticalAlignment.Top;
-                sp.Background = Brushes.White;
+                tb.Text = !string.IsNullOrWhiteSpace(item?.FullName) ? item?.FullName : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
 
-                sp.ContextMenu = new();
-                MenuItem miControlLoko = new();
-                miControlLoko.Header = item?.Type == VehicleType.Lokomotive ? "Lok steuern" : (item?.Type == VehicleType.Steuerwagen ? "Steuerwagen steuern" : "Wagen steuern");
-                miControlLoko.Click += ControlLoko_Click;
-                miControlLoko.Tag = item;
-                sp.ContextMenu.Items.Add(miControlLoko);
-                MenuItem miEditLoko = new();
-                miEditLoko.Header = item?.Type == VehicleType.Lokomotive ? "Lok bearbeiten" : (item?.Type == VehicleType.Steuerwagen ? "Steuerwagen bearbeiten" : "Wagen bearbeiten");
-                miEditLoko.Tag = item;
-                miEditLoko.Click += EditLoko_Click;
-                sp.ContextMenu.Items.Add(miEditLoko);
+                sp.Children.Add(tb);
+                sp.ContextMenu.Items.Add(GetControlVehicleMenuItem(item));
+                //sp.ContextMenu.Items.Add(GetEditVehicleMenuItem(item));
                 border.Child = sp;
                 VehicleGrid.Children.Add(border);
             }
+        }
+
+        private MenuItem GetControlVehicleMenuItem(Vehicle item)
+        {
+            MenuItem miControlLoko = new();
+            switch (item.Type)
+            {
+                case VehicleType.Lokomotive:
+                    miControlLoko.Header = "Lok steuern";
+                    break;
+                case VehicleType.Steuerwagen:
+                    miControlLoko.Header = "Steuerwagen steuern";
+                    break;
+                case VehicleType.Wagen:
+                    miControlLoko.Header = "Wagen steuern";
+                    break;
+                default:
+                    miControlLoko.Header = "Fahrzeug steuern";
+                    break;
+            }
+            miControlLoko.Click += ControlLoko_Click;
+            miControlLoko.Tag = item;
+            return miControlLoko;
+        }
+
+        private MenuItem GetEditVehicleMenuItem(Vehicle item)
+        {
+            MenuItem miEditLoko = new();
+            switch (item.Type)
+            {
+                case VehicleType.Lokomotive:
+                    miEditLoko.Header = "Lok bearbeiten";
+                    break;
+                case VehicleType.Steuerwagen:
+                    miEditLoko.Header = "Steuerwagen bearbeiten";
+                    break;
+                case VehicleType.Wagen:
+                    miEditLoko.Header = "Wagen bearbeiten";
+                    break;
+                default:
+                    miEditLoko.Header = "Fahrzeug steuern";
+                    break;
+            }
+            miEditLoko.Tag = item;
+            miEditLoko.Click += EditLoko_Click;
+            return miEditLoko;
+        }
+
+        private static BitmapImage LoadPhoto(string path)
+        {
+            BitmapImage bmi = new();
+            bmi.BeginInit();
+            bmi.CacheOption = BitmapCacheOption.OnLoad;
+            bmi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bmi.UriSource = new(path);
+            bmi.EndInit();
+            return bmi;
         }
 
         public void RemoveUnneededImages()
@@ -182,7 +229,7 @@ namespace Wpf_Application
             {
                 try
                 {
-                    List<string> images = db.Vehicles.Select(e => e.Image_Name).ToList();
+                    List<string> images = db.Vehicles.Select(e => e.ImageName).ToList();
                     string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
                     Directory.CreateDirectory(directory);
                     foreach (var item in Directory.GetFiles($"{directory}\\"))
@@ -241,13 +288,7 @@ namespace Wpf_Application
             }
         }
 
-        private void Search()
-        {
-            if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => (i.Address + i.Article_Number + i.Category?.Name + i.Owner + i.Railway + i.Description + i.Full_Name + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
-            else
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().OrderBy(e => e.Position));
-        }
+        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Address} {i.ArticleNumber} {i.Category?.Name} {i.Owner} {i.Railway} {i.FullName} {i.Name} {i.Type}").ToLower().Contains(tbSearch.Text.ToLower().Trim())).OrderBy(e => e.Position));
 
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
 
@@ -267,15 +308,6 @@ namespace Wpf_Application
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
-
-        private void NewVehicle_Click(object sender, RoutedEventArgs e)
-        {
-            EditVehicleWindow w = new(db);
-            if (w.ShowDialog() ?? false)
-            {
-                Search();
-            }
-        }
 
         private void MeasureLoko_Click(object sender, RoutedEventArgs e)
         {
@@ -309,5 +341,10 @@ namespace Wpf_Application
             }
         }
         #endregion
+
+        private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e)
+        {
+            new VehicleManagement(db).Show();
+        }
     }
 }
