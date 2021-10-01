@@ -67,7 +67,9 @@ namespace Wpf_Application
                 this.DataContext = this;
                 InitializeComponent();
 
-                ShowConsoleWindow();
+                if (Settings.OpenDebugConsoleOnStart)
+                    ShowConsoleWindow();
+
                 DrawVehiclesIfAnyExist();
                 CreatController();
                 RemoveUnneededImages();
@@ -85,7 +87,7 @@ namespace Wpf_Application
 
         private void CreatController()
         {
-            Controller = new Z21(Settings.ControllerIP);
+            Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
             Controller.LogOn();
         }
 
@@ -120,7 +122,7 @@ namespace Wpf_Application
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
             VehicleGrid.Children.Clear();
-            foreach (var item in list)
+            foreach (var item in list.OrderBy(e => e.Type).ThenBy(e => e.Address))
             {
                 if (item is null) continue;
                 Border border = new()

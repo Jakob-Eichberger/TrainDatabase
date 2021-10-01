@@ -141,7 +141,7 @@ namespace WPF_Application
         {
             FunctionGrid.Children.Clear();
             int i = 0;
-            foreach (var item in Vehicle.Functions)
+            foreach (var item in Vehicle.Functions.OrderBy(e => e.FunctionIndex))
             {
                 i++;
                 Border border = new();
@@ -154,7 +154,7 @@ namespace WPF_Application
 
                 if (item.ButtonType == 0)
                 {
-                    ToggleButton tb = new() { Height = 50, Width = 90, Content = $"({item.FunctionIndex}) {item.Name}" };
+                    ToggleButton tb = new() { Height = 50, Width = 90, Content = $"{(item.ShowFunctionNumber ? $"({item.FunctionIndex}) " : "")}{item.Name}" };
                     tb.Click += FunctionToggle_Click;
                     tb.Tag = item;
                     tb.Name = $"btn_Function_{item.Id}";
@@ -163,7 +163,7 @@ namespace WPF_Application
                 }
                 else
                 {
-                    Button btn = new() { Height = 50, Width = 90, Content = $"({item.FunctionIndex}) {item.Name}" };
+                    Button btn = new() { Height = 50, Width = 90, Content = $"{(item.ShowFunctionNumber ? $"({item.FunctionIndex}) " : "")}{item.Name}" };
                     btn.PreviewMouseDown += FunctionButtonDown_Click;
                     btn.PreviewMouseUp += FunctionButtonUp_Click;
                     btn.Tag = item;

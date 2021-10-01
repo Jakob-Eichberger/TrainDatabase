@@ -79,6 +79,12 @@ namespace WPF_Application
             }
         }
 
+        public static bool OpenDebugConsoleOnStart
+        {
+            get => GetBool(nameof(OpenDebugConsoleOnStart)) ?? false;
+            set => Set(nameof(OpenDebugConsoleOnStart), value.ToString());
+        }
+
         /// <summary>
         /// Sets a value for a key.
         /// </summary>

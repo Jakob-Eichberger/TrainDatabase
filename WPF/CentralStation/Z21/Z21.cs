@@ -32,7 +32,7 @@ namespace WPF_Application.CentralStation.Z21
     {
         private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
 
-        public Z21(IPAddress address) : base(address, 21105)
+        public Z21(IPAddress address, Int32 port = 21105) : base(address, port)
         {
             BeginReceive(new AsyncCallback(Empfang), null);
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} Z21 initialisiert.");

@@ -37,6 +37,7 @@ namespace WPF_Application
                 }
             }
         }
+
         public string ControllerPort
         {
             get => Settings.ControllerPort.ToString();
@@ -67,6 +68,12 @@ namespace WPF_Application
                 Settings.UsingJoyStick = value;
                 OnPropertyChanged();
             }
+        }
+
+        public bool OpenDebugConsoleOnStart
+        {
+            get => Settings.OpenDebugConsoleOnStart;
+            set => Settings.OpenDebugConsoleOnStart = value;
         }
 
         public SettingsWindow()
@@ -153,7 +160,6 @@ namespace WPF_Application
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
 
         private void UseJoyStick_Click(object sender, RoutedEventArgs e)
         {
