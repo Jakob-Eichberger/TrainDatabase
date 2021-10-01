@@ -160,7 +160,6 @@ namespace Wpf_Application
 
                 sp.Children.Add(tb);
                 sp.ContextMenu.Items.Add(GetControlVehicleMenuItem(item));
-                //sp.ContextMenu.Items.Add(GetEditVehicleMenuItem(item));
                 border.Child = sp;
                 VehicleGrid.Children.Add(border);
             }
@@ -187,29 +186,6 @@ namespace Wpf_Application
             miControlLoko.Click += ControlLoko_Click;
             miControlLoko.Tag = item;
             return miControlLoko;
-        }
-
-        private MenuItem GetEditVehicleMenuItem(Vehicle item)
-        {
-            MenuItem miEditLoko = new();
-            switch (item.Type)
-            {
-                case VehicleType.Lokomotive:
-                    miEditLoko.Header = "Lok bearbeiten";
-                    break;
-                case VehicleType.Steuerwagen:
-                    miEditLoko.Header = "Steuerwagen bearbeiten";
-                    break;
-                case VehicleType.Wagen:
-                    miEditLoko.Header = "Wagen bearbeiten";
-                    break;
-                default:
-                    miEditLoko.Header = "Fahrzeug steuern";
-                    break;
-            }
-            miEditLoko.Tag = item;
-            miEditLoko.Click += EditLoko_Click;
-            return miEditLoko;
         }
 
         private static BitmapImage LoadPhoto(string path)
@@ -260,30 +236,6 @@ namespace Wpf_Application
             catch (Exception ex)
             {
                 Logger.Log($"Beim öffnen ist ein unerwarteter Fehler aufgetreten", ex);
-                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
-            }
-        }
-
-        void EditLoko_Click(Object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var menu = ((MenuItem)e.Source);
-                Vehicle? vehicle = (menu.Tag as Vehicle);
-                if (vehicle is not null)
-                {
-                    EditVehicleWindow evw = new(db, vehicle);
-                    if (evw.ShowDialog() ?? false)
-                    {
-                        Search();
-                    }
-                }
-                else
-                    MessageBox.Show("Öffnen nicht möglich da Vehicle null ist!", "Error");
-            }
-            catch (Exception ex)
-            {
-                Logger.Log($"-", ex);
                 MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
             }
         }
