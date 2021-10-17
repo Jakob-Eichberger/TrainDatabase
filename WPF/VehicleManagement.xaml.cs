@@ -130,11 +130,16 @@ namespace WPF_Application
         private async Task ReloadVehicles()
         {
             await Db.SaveChangesAsync();
+
             var vehicleTempId = SelectedVehicle?.Id ?? -1;
+
             Vehicles.Clear();
-            foreach (var item in await Db.Vehicles.Include(e => e.Functions).ToListAsync())
+
+            foreach (var item in Db.Vehicles.Include(e => e.Functions).OrderBy(e => e.Position))
                 Vehicles.Add(item);
+
             SelectedVehicle = Vehicles.FirstOrDefault(e => e.Id == vehicleTempId);
+
             ReloadSelectedVehicleFunctions();
         }
 
@@ -147,6 +152,7 @@ namespace WPF_Application
             foreach (var function in SelectedVehicle?.Functions ?? new List<Function>())
                 SelectedVehicleFunctions.Add(function);
             OnPropertyChanged();
+            Db.InvokeCollectionChanged();
         }
 
         private async void Vm_Closing(object sender, CancelEventArgs e)
@@ -193,6 +199,20 @@ namespace WPF_Application
                 Db.SaveChanges();
                 Db.InvokeCollectionChanged();
             }
+        }
+
+        private async void BtnMoveVehiclePositionDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedVehicle is not null)
+                Db.Vehicles.Swap(SelectedVehicle, true);
+            await ReloadVehicles();
+        }
+
+        private async void BtnMoveVehiclePositionUp_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedVehicle is not null)
+                Db.Vehicles.Swap(SelectedVehicle, false);
+            await ReloadVehicles();
         }
     }
 }

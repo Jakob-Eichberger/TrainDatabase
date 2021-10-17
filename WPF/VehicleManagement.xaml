@@ -20,8 +20,9 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="AUTO"/>
                     </Grid.RowDefinitions>
-                    <DataGrid Name="DgVehicles" ItemsSource="{Binding ElementName=Vm,Path=Vehicles}" SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle,Mode=TwoWay}" AutoGenerateColumns="False" GridLinesVisibility="Horizontal"  SelectionMode="Single" Background="Transparent" VerticalAlignment="Stretch" SelectedCellsChanged="DgVehicles_SelectedCellsChanged" Grid.Row="0" IsReadOnly="True">
+                    <DataGrid Name="DgVehicles" ItemsSource="{Binding ElementName=Vm,Path=Vehicles}" SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle,Mode=TwoWay}" AutoGenerateColumns="False" GridLinesVisibility="Horizontal"  SelectionMode="Single" Background="Transparent" VerticalAlignment="Stretch" SelectedCellsChanged="DgVehicles_SelectedCellsChanged" Grid.Row="0" IsReadOnly="True" CanUserSortColumns="False" >
                         <DataGrid.Columns>
+                            <DataGridTextColumn Header="Position" Binding="{Binding Position}"/>
                             <DataGridTextColumn Header="Kurzer Name" Binding="{Binding Name}"/>
                             <DataGridTextColumn Header="Langer Name" Binding="{Binding FullName}"/>
                             <DataGridTextColumn Header="Type" Binding="{Binding Type}"/>
@@ -39,6 +40,8 @@
                     <DockPanel Grid.Row="1">
                         <Button Content="Neu" Name="BtnNew" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnNewVehicle_Click"/>
                         <Button Content="Löschen" Name="BtnDeleteVehicle" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnDeleteVehicle_Click" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
+                        <Button Content="↑" Name="BtnMoveItemUp" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnMoveVehiclePositionUp_Click" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
+                        <Button Content="↓" Name="BtnMoveItemDown" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnMoveVehiclePositionDown_Click" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
                     </DockPanel>
                 </Grid>
             </TabItem>

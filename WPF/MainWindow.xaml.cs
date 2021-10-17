@@ -122,7 +122,7 @@ namespace Wpf_Application
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
             VehicleGrid.Children.Clear();
-            foreach (var item in list.OrderBy(e => e.Type).ThenBy(e => e.Address))
+            foreach (var item in list.OrderBy(e => e.Position))
             {
                 if (item is null) continue;
                 Border border = new()

@@ -97,6 +97,7 @@ namespace Model
         /// <param name="direction"></param>
         /// <returns></returns>
         public decimal? GetTractionSpeed(int speed, bool direction) => (speed <= 127 && speed >= 2) ? (direction ? TractionForward[speed] : TractionBackward[speed]) : throw new ArgumentOutOfRangeException();
-        public override string ToString() => FullName;
+
+        public override string ToString() => $"Add: {Address} - Name: \"{(Name ?? FullName)}\" - Pos: {Position} - {(IsActive ? "Aktiv" : "Deaktiviert")}";
     }
 }
