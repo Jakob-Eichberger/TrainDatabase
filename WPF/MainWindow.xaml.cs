@@ -30,20 +30,9 @@ namespace Wpf_Application
     {
         private readonly Database db = new();
         public event PropertyChangedEventHandler? PropertyChanged;
-        static readonly Mutex mutex = new(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
-        private Theme theme = default!;
+        private static readonly Mutex mutex = new(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
 
         ModelTrainController.CentralStationClient? Controller { get; set; }
-
-        public Theme Theme
-        {
-            get => theme;
-            set
-            {
-                theme = value;
-                OnPropertyChanged();
-            }
-        }
 
         public MainWindow()
         {
@@ -63,7 +52,6 @@ namespace Wpf_Application
                     return;
                 }
 #endif
-                Theme = new();
                 this.DataContext = this;
                 InitializeComponent();
 
@@ -114,10 +102,7 @@ namespace Wpf_Application
             MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
 
-        private void DB_Import_new(object sender, RoutedEventArgs e)
-        {
-            new Importer.Z21Import(db).ShowDialog();
-        }
+        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(db).ShowDialog();
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
@@ -203,28 +188,19 @@ namespace Wpf_Application
             return bmi;
         }
 
-        public void RemoveUnneededImages()
+        public void RemoveUnneededImages() => Task.Run(() =>
         {
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    List<string> images = db.Vehicles.Select(e => e.ImageName).ToList();
-                    string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
-                    Directory.CreateDirectory(directory);
-                    foreach (var item in Directory.GetFiles($"{directory}\\"))
-                    {
-                        if (!images.Where(e => e == Path.GetFileName(item)).Any())
-                            File.Delete(item);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log($"Deleting file failed", ex);
-                }
-
-            });
-        }
+                var images = db.Vehicles.Select(e => e.ImageName).ToList();
+                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                Directory.CreateDirectory(directory);
+                foreach (var item in Directory.GetFiles($"{directory}\\"))
+                    if (!images.Any(e => e == Path.GetFileName(item)))
+                        File.Delete(item);
+            }
+            catch { }
+        });
 
         void ControlLoko_Click(Object sender, RoutedEventArgs e)
         {
@@ -248,27 +224,18 @@ namespace Wpf_Application
 
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null!)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
+        protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
             if (Controller is not null)
-            {
                 Controller.LogOFF();
-                Controller = null;
-            }
             Application.Current.Shutdown();
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
 
-        private void MeasureLoko_Click(object sender, RoutedEventArgs e)
-        {
-            new Einmessen(db, Controller).Show();
-        }
+        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Controller).Show();
 
         #region Console
         [DllImport(@"kernel32.dll", SetLastError = true)]
@@ -288,19 +255,12 @@ namespace Wpf_Application
             var handle = GetConsoleWindow();
 
             if (handle == IntPtr.Zero)
-            {
                 AllocConsole();
-            }
             else
-            {
                 ShowWindow(handle, SwShow);
-            }
         }
         #endregion
 
-        private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e)
-        {
-            new VehicleManagement(db).Show();
-        }
+        private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e) => new VehicleManagement(db).Show();
     }
 }

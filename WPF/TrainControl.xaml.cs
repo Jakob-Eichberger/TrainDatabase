@@ -30,7 +30,7 @@ namespace WPF_Application
     public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
 
-        public TrainControl(ModelTrainController.CentralStationClient _controller, Vehicle _vehicle, Database _db)
+        public TrainControl(CentralStationClient _controller, Vehicle _vehicle, Database _db)
         {
             try
             {
@@ -135,9 +135,13 @@ namespace WPF_Application
         /// <param name="e"></param>
         private async void VehicleCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (((sender as CheckBox)?.Tag ?? null) is null) return;
+            if (((sender as CheckBox)?.Tag ?? null) is null)
+                return;
+
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
+
             DoubleTractionVehicles.RemoveAll(e => e.Vehicle.Id == temp.Id);
+
             await DeterminSlowestVehicleInList();
         }
 
@@ -218,7 +222,11 @@ namespace WPF_Application
         /// <param name="inUse"></param>
         private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
-            if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100)) { return; } else { lastSpeedchange = DateTime.Now; }
+            if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100))
+                return;
+            else
+                lastSpeedchange = DateTime.Now;
+
             bool direction = drivingDirection ??= LiveData.DrivingDirection;
             int speed = speedstep ?? Speed;
             List<LokInfoData> data = new();
@@ -249,7 +257,9 @@ namespace WPF_Application
 
         private double GetSlowestVehicleSpeed(int speedstep, bool direction, (Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction) Vehicle)
         {
-            if (Vehicle.Traction.Forwards is null || Vehicle.Traction.Backwards is null) return double.NaN;
+            if (Vehicle.Traction.Forwards is null || Vehicle.Traction.Backwards is null)
+                return double.NaN;
+
             if (!Vehicle.Vehicle.InvertTraction)
                 return (direction ? Vehicle.Traction.Forwards.GetYValue(speedstep) : Vehicle.Traction.Backwards.GetYValue(speedstep));
             else
@@ -301,12 +311,8 @@ namespace WPF_Application
             if (tractionArray[MaxDccSpeed] is null) return null!;
             SortedSet<FunctionPoint>? function = new();
             for (int i = 0; i <= CentralStationClient.maxDccStep; i++)
-            {
                 if (tractionArray[i] is not null)
-                {
                     function.Add(new(i, (double)(tractionArray[i] ?? 0)));
-                }
-            }
             return function;
         }
 
@@ -336,6 +342,7 @@ namespace WPF_Application
         private void Tc_Activated(object sender, EventArgs e) => IsActive = true;
 
         private void Tc_Deactivated(object sender, EventArgs e) => IsActive = false;
+
         #endregion
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {

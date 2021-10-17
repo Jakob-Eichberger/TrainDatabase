@@ -140,17 +140,19 @@ namespace WPF_Application
 
             SelectedVehicle = Vehicles.FirstOrDefault(e => e.Id == vehicleTempId);
 
-            ReloadSelectedVehicleFunctions();
+            await ReloadSelectedVehicleFunctions();
         }
 
-        private void DgVehicles_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) => ReloadSelectedVehicleFunctions();
+        private async void DgVehicles_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) => await ReloadSelectedVehicleFunctions();
 
-        private async void ReloadSelectedVehicleFunctions()
+        private async Task ReloadSelectedVehicleFunctions()
         {
             await Db.SaveChangesAsync();
             SelectedVehicleFunctions.Clear();
-            foreach (var function in SelectedVehicle?.Functions ?? new List<Function>())
+
+            foreach (var function in SelectedVehicle?.Functions.OrderBy(e => e.Position).ToList() ?? new List<Function>())
                 SelectedVehicleFunctions.Add(function);
+
             OnPropertyChanged();
             Db.InvokeCollectionChanged();
         }
@@ -201,18 +203,18 @@ namespace WPF_Application
             }
         }
 
-        private async void BtnMoveVehiclePositionDown_Click(object sender, RoutedEventArgs e)
+        private void BtnMoveVehiclePositionDown_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedVehicle is not null)
                 Db.Vehicles.Swap(SelectedVehicle, true);
-            await ReloadVehicles();
+            _ = ReloadVehicles();
         }
 
-        private async void BtnMoveVehiclePositionUp_Click(object sender, RoutedEventArgs e)
+        private void BtnMoveVehiclePositionUp_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedVehicle is not null)
                 Db.Vehicles.Swap(SelectedVehicle, false);
-            await ReloadVehicles();
+            _ = ReloadVehicles();
         }
     }
 }
