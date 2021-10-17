@@ -174,7 +174,7 @@ namespace Wpf_Application
         private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2 && sender.GetType()?.GetProperty("Tag")?.GetValue(sender, null) is Vehicle vehicle)
-                new TrainControl(Controller, vehicle, db).Show();
+                new TrainControl(Controller!, vehicle, db).Show();
         }
 
         private MenuItem GetControlVehicleMenuItem(Vehicle item)

@@ -34,18 +34,26 @@ namespace WPF_Application
         {
             try
             {
-                if (_controller is null) throw new NullReferenceException($"Parameter {nameof(_controller)} ist null!");
-                if (_vehicle is null) throw new NullReferenceException($"Paramter{nameof(_vehicle)} ist null!");
-                if (_db is null) throw new NullReferenceException($"Paramter{nameof(_db)} ist null!");
+                if (_controller is null || _vehicle is null || _db is null)
+                    throw new NullReferenceException($"Parameter {nameof(_controller)} ist null!");
+
                 db = _db;
-                this.DataContext = this;
-                InitializeComponent();
                 controller = _controller;
+
+                DataContext = this;
+                InitializeComponent();
+
                 Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
-                if (Vehicle is null) throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
+
+                if (Vehicle is null)
+                    throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
+
+
                 Adresse = new(Vehicle.Address);
-                this.Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+                Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+
                 SlowestVehicleInTractionList = Vehicle;
+
                 controller.LogOn();
                 controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
                 controller.TrackPowerChanged += Controller_TrackPowerChanged;
@@ -55,6 +63,7 @@ namespace WPF_Application
 
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
+
                 DoubleTractionVehicles.Add((Vehicle, (GetLineSeries(Vehicle.TractionForward), GetLineSeries(Vehicle.TractionBackward))));
 
                 if (Vehicle.Type.IsLokomotive() && Settings.UsingJoyStick)
