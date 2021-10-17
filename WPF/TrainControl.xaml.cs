@@ -29,7 +29,6 @@ namespace WPF_Application
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
-
         public TrainControl(CentralStationClient _controller, Vehicle _vehicle, Database _db)
         {
             try
@@ -238,9 +237,9 @@ namespace WPF_Application
                 {
                     int dccSpeed;
                     if (!item.Vehicle.InvertTraction)
-                        dccSpeed = (direction ? item.Traction.Forwards.GetXValue(yValue) : item.Traction.Backwards.GetXValue(yValue));
+                        dccSpeed = direction ? item.Traction.Forwards.GetXValue(yValue) : item.Traction.Backwards.GetXValue(yValue);
                     else
-                        dccSpeed = (direction ? item.Traction.Backwards.GetXValue(yValue) : item.Traction.Forwards.GetXValue(yValue));
+                        dccSpeed = direction ? item.Traction.Backwards.GetXValue(yValue) : item.Traction.Forwards.GetXValue(yValue);
 
                     data.Add(GetLocoInfoData(dccSpeed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
                 }
@@ -261,9 +260,9 @@ namespace WPF_Application
                 return double.NaN;
 
             if (!Vehicle.Vehicle.InvertTraction)
-                return (direction ? Vehicle.Traction.Forwards.GetYValue(speedstep) : Vehicle.Traction.Backwards.GetYValue(speedstep));
+                return direction ? Vehicle.Traction.Forwards.GetYValue(speedstep) : Vehicle.Traction.Backwards.GetYValue(speedstep);
             else
-                return (direction ? Vehicle.Traction.Backwards.GetYValue(speedstep) : Vehicle.Traction.Forwards.GetYValue(speedstep));
+                return direction ? Vehicle.Traction.Backwards.GetYValue(speedstep) : Vehicle.Traction.Forwards.GetYValue(speedstep);
         }
 
         private LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, Vehicle Vehicle) => new LokInfoData()
@@ -271,7 +270,7 @@ namespace WPF_Application
             Adresse = new(Vehicle.Address),
             DrivingDirection = direction,
             InUse = inUse,
-            Speed = (byte)(speedstep)
+            Speed = (byte)speedstep
         };
 
         private double GetSlowestVehicleSpeed(bool direction, int xValue)
@@ -292,9 +291,12 @@ namespace WPF_Application
             if (function.EnumType != FunctionType.None)
             {
                 var functions = DoubleTractionVehicles.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == function.EnumType && e.ButtonType == function.ButtonType).ToList();
+
                 List<(ToggleType toggle, Function Func)> list = new();
+
                 foreach (var item in functions)
                     list.Add((type, item));
+
                 controller.SetLocoFunction(list);
             }
             else
@@ -308,8 +310,11 @@ namespace WPF_Application
         /// <returns></returns>
         private SortedSet<FunctionPoint>? GetLineSeries(decimal?[] tractionArray)
         {
-            if (tractionArray[MaxDccSpeed] is null) return null!;
+            if (tractionArray[MaxDccSpeed] is null)
+                return null!;
+
             SortedSet<FunctionPoint>? function = new();
+
             for (int i = 0; i <= CentralStationClient.maxDccStep; i++)
                 if (tractionArray[i] is not null)
                     function.Add(new(i, (double)(tractionArray[i] ?? 0)));
@@ -319,6 +324,7 @@ namespace WPF_Application
         private async Task DeterminSlowestVehicleInList() => await Task.Run(() =>
         {
             var list = DoubleTractionVehicles.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.Traction.Forwards is not null && e.Traction.Backwards is not null).ToList();
+
             if (list.Any())
                 SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
             else
