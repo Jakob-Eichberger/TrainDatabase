@@ -252,9 +252,9 @@ namespace WPF_Application
 
         private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
 
-        private bool IsVehicleMeasured((Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction) item) => item.Traction.Forwards is not null && item.Traction.Backwards is not null;
+        private static bool IsVehicleMeasured((Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction) item) => item.Traction.Forwards is not null && item.Traction.Backwards is not null;
 
-        private double GetSlowestVehicleSpeed(int speedstep, bool direction, (Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction) Vehicle)
+        private static double GetSlowestVehicleSpeed(int speedstep, bool direction, (Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction) Vehicle)
         {
             if (Vehicle.Traction.Forwards is null || Vehicle.Traction.Backwards is null)
                 return double.NaN;
@@ -265,7 +265,7 @@ namespace WPF_Application
                 return direction ? Vehicle.Traction.Backwards.GetYValue(speedstep) : Vehicle.Traction.Forwards.GetYValue(speedstep);
         }
 
-        private LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, Vehicle Vehicle) => new LokInfoData()
+        private static LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, Vehicle Vehicle) => new()
         {
             Adresse = new(Vehicle.Address),
             DrivingDirection = direction,
@@ -308,7 +308,7 @@ namespace WPF_Application
         /// </summary>
         /// <param name="tractionArray"></param>
         /// <returns></returns>
-        private SortedSet<FunctionPoint>? GetLineSeries(decimal?[] tractionArray)
+        private static SortedSet<FunctionPoint>? GetLineSeries(decimal?[] tractionArray)
         {
             if (tractionArray[MaxDccSpeed] is null)
                 return null!;
@@ -369,7 +369,7 @@ namespace WPF_Application
 
         private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
         #endregion
-        public void OnJoyStickValueUpdate(Object? sender, JoyStickUpdateEventArgs e)
+        public void OnJoyStickValueUpdate(object? sender, JoyStickUpdateEventArgs e)
         {
             try
             {
@@ -382,7 +382,7 @@ namespace WPF_Application
                     {
                         case FunctionType.Drive:
                             SliderLastused = DateTime.Now;
-                            Speed = CentralStationClient.maxDccStep - ((e.currentValue * CentralStationClient.maxDccStep) / Function.Value.maxValue);
+                            Speed = CentralStationClient.maxDccStep - (e.currentValue * CentralStationClient.maxDccStep / Function.Value.maxValue);
                             break;
                         case FunctionType.ChangeDirection:
                             if (e.currentValue == e.maxValue)
