@@ -43,7 +43,7 @@
             <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding ElementName=ew,Path=Function.IsActive}" Content="Active"/>
             <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding ElementName=ew,Path=Function.ShowFunctionNumber}" Content="Funktionsnummer anzeigen"/>
 
-            <Button Name="BtnSaveAndClose" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Padding="6" Margin="5" VerticalAlignment="Bottom"/>
+            <Button Name="BtnSaveAndClose" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Padding="6" Margin="5" VerticalAlignment="Bottom" Content="Änderungen speichern und schließen" Click="SaveChanges_Click"/>
         </Grid>
     </ScrollViewer>
 
