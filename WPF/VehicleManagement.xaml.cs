@@ -177,33 +177,37 @@ namespace WPF_Application
             await ReloadVehicles();
         }
 
-        private void BtnEditVehicleFunction_Click(object sender, RoutedEventArgs e)
+        private async void BtnEditVehicleFunction_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedVehicle is null) return;
-            OpenFileDialog ofd = new();
-            ofd.Filter = "";
-            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+            if (SelectedVehicle is null)
+                return;
+
+            OpenFileDialog ofd = new OpenFileDialog() { Filter = "" };
+
             string sep = string.Empty;
-            foreach (var c in codecs)
+
+            foreach (var c in ImageCodecInfo.GetImageEncoders())
             {
                 string codecName = c.CodecName.Substring(8).Replace("Codec", "Files").Trim();
-                ofd.Filter = String.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, codecName, c.FilenameExtension);
+                ofd.Filter = string.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, codecName, c.FilenameExtension);
                 sep = "|";
             }
-            ofd.Filter = String.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, "All Files", "*.*");
+
+            ofd.Filter = string.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, "All Files", "*.*");
             ofd.DefaultExt = ".png";
             ofd.CheckPathExists = true;
+
             if (ofd.ShowDialog() ?? false)
             {
-                string oldFileNameAndPath = ofd.FileName;
-                string imageName = Guid.NewGuid() + ".png";
-                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                var oldFileNameAndPath = ofd.FileName;
+                var imageName = Guid.NewGuid() + Path.GetExtension(ofd.FileName);
+                var directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
                 Directory.CreateDirectory(directory);
-                string path = $"{directory}\\{imageName}";
-                File.Copy(oldFileNameAndPath, path);
+                File.Copy(oldFileNameAndPath, $"{directory}\\{imageName}");
                 SelectedVehicle.ImageName = imageName;
                 Db.SaveChanges();
                 Db.InvokeCollectionChanged();
+                await ReloadVehicles();
             }
         }
 
