@@ -218,8 +218,13 @@ namespace Wpf_Application
 
         private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Address} {i.ArticleNumber} {i.Category?.Name} {i.Owner} {i.Railway} {i.FullName} {i.Name} {i.Type}").ToLower().Contains(tbSearch.Text.ToLower().Trim())));
 
-        private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
-
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            if (Application.Current.Windows.OfType<SettingsWindow>().FirstOrDefault() is SettingsWindow settings)
+                settings.Activate();
+            else
+                new SettingsWindow().Show();
+        }
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
 
         #region Console
