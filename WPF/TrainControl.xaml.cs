@@ -423,7 +423,10 @@ namespace WPF_Application
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{nameof(OnJoyStickValueUpdate)} failed! {ex}");
+            }
         }
 
         public void Dispose()
