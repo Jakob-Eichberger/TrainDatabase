@@ -48,7 +48,9 @@ In the edit window, the vehicle and its functions can be changed.
 
 **Note:** The shown fields are not yet final. 
 
-![image](https://user-images.githubusercontent.com/53713395/130353666-2aa8d178-da2f-47da-a955-128ddf3118be.png)
+![image](https://user-images.githubusercontent.com/53713395/140195384-340776e6-c6cd-4751-8758-25be618d2857.png)
+![image](https://user-images.githubusercontent.com/53713395/140195396-eb63fe55-c37e-4c44-8e26-66c33d44cbee.png)
+![image](https://user-images.githubusercontent.com/53713395/140195414-d8126d7a-c65a-4daf-add4-bfd68c114662.png)
 
 ### Vehicle control window
 
