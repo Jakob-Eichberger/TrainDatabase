@@ -100,19 +100,16 @@ namespace Wpf_Application
                     Tag = item
                 };
 
-                try
+                var path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.ImageName}";
+                if (File.Exists(path))
                 {
                     sp.Children.Add(new Image()
                     {
-                        Source = LoadPhoto($"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.ImageName}"),
+                        Source = LoadPhoto(path),
                         Width = 250,
                         Height = 100,
                         Tag = item
                     });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Loading image '{item?.ImageName}' failed!:\n{ex}");
                 }
 
                 TextBlock tb = new() { Tag = item };
