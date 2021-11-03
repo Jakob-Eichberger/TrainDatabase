@@ -78,17 +78,6 @@ namespace Wpf_Application
             VehicleGrid.Children.Clear();
             foreach (var item in list.OrderBy(e => e.Position))
             {
-                if (item is null) continue;
-                Border border = new()
-                {
-                    Padding = new(2),
-                    Margin = new(10),
-                    BorderThickness = new(1),
-                    BorderBrush = Brushes.Black,
-                    Tag = item
-                };
-                border.MouseDown += Border_MouseDown;
-
                 StackPanel sp = new()
                 {
                     Height = 120,
@@ -96,8 +85,6 @@ namespace Wpf_Application
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
                     Background = Brushes.White,
-                    ContextMenu = new(),
-                    Tag = item
                 };
 
                 var path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.ImageName}";
@@ -112,11 +99,21 @@ namespace Wpf_Application
                     });
                 }
 
-                TextBlock tb = new() { Tag = item };
-                tb.Text = !string.IsNullOrWhiteSpace(item?.FullName) ? item?.FullName : (!string.IsNullOrWhiteSpace(item?.Name) ? item?.Name : $"Adresse: {item?.Address}");
-                sp.Children.Add(tb);
-                sp.ContextMenu.Items.Add(GetControlVehicleMenuItem(item));
-                border.Child = sp;
+                sp.Children.Add(new TextBlock()
+                {
+                    Text = !string.IsNullOrWhiteSpace(item?.Name) ? item.Name : (!string.IsNullOrWhiteSpace(item.FullName) ? item.FullName : $"Adresse: {item.Address}")
+                });
+
+                Border border = new()
+                {
+                    Padding = new(2),
+                    Margin = new(10),
+                    BorderThickness = new(1),
+                    BorderBrush = Brushes.Black,
+                    Tag = item,
+                    Child = sp
+                };
+                border.MouseDown += Border_MouseDown;
 
                 VehicleGrid.Children.Add(border);
             }
@@ -158,24 +155,6 @@ namespace Wpf_Application
             }
         }
 
-        void ControlLoko_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var menu = e.Source as MenuItem;
-                var vehicle = menu?.Tag as Vehicle;
-                if (vehicle is not null && Controller is not null)
-                    OpenNewTrainControlWindow(vehicle);
-                else
-                    MessageBox.Show("Öffnen nicht möglich da Vehicle null ist!", "Error");
-            }
-            catch (Exception ex)
-            {
-                Logger.Log($"Beim öffnen ist ein unerwarteter Fehler aufgetreten", ex);
-                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
-            }
-        }
-
         private void CreatController()
         {
             Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
@@ -207,21 +186,6 @@ namespace Wpf_Application
                     Search();
                 }
             }
-        }
-
-        private MenuItem GetControlVehicleMenuItem(Vehicle item)
-        {
-            MenuItem miControlLoko = new();
-            miControlLoko.Header = item.Type switch
-            {
-                VehicleType.Lokomotive => "Lok steuern",
-                VehicleType.Steuerwagen => "Steuerwagen steuern",
-                VehicleType.Wagen => "Wagen steuern",
-                _ => "Fahrzeug steuern",
-            };
-            miControlLoko.Click += ControlLoko_Click;
-            miControlLoko.Tag = item;
-            return miControlLoko;
         }
 
         private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Controller).Show();
