@@ -122,9 +122,7 @@
                     </DockPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Mehrfachtraktion" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}">
-
-            </TabItem>
+            <TabItem Header="Mehrfachtraktion" IsEnabled="False"/>
         </TabControl>
 
     </Grid>
