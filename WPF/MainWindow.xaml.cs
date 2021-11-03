@@ -208,9 +208,15 @@ namespace Wpf_Application
                 new TrainControl(Controller, vehicle, db).Show();
         }
 
-        private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e) => new VehicleManagement(db).Show();
+        private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e)
+        {
+            if (Application.Current.Windows.OfType<VehicleManagement>().FirstOrDefault() is VehicleManagement vehicleManagement)
+                vehicleManagement.Activate();
+            else
+                new VehicleManagement(db).Show();
+        }
 
-        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Address} {i.ArticleNumber} {i.Category?.Name} {i.Owner} {i.Railway} {i.FullName} {i.Name} {i.Type}").ToLower().Contains(tbSearch.Text.ToLower().Trim())).OrderBy(e => e.Position));
+        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Address} {i.ArticleNumber} {i.Category?.Name} {i.Owner} {i.Railway} {i.FullName} {i.Name} {i.Type}").ToLower().Contains(tbSearch.Text.ToLower().Trim())));
 
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
 
