@@ -152,10 +152,13 @@ namespace Wpf_Application
             return bmi;
         }
 
-        private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private async void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2 && sender.GetType()?.GetProperty("Tag")?.GetValue(sender, null) is Vehicle vehicle)
+            {
+                await Task.Delay(100);
                 OpenNewTrainControlWindow(vehicle);
+            }
         }
 
         void ControlLoko_Click(object sender, RoutedEventArgs e)
