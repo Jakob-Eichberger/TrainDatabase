@@ -60,13 +60,6 @@ namespace WPF_Application
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-        private void SaveChanges_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            db.Update(Function);
-            Close();
-        }
-
         private void TypeRadioButton_Click(object sender, RoutedEventArgs e)
         {
             Function.ButtonType = (ButtonType)Enum.Parse(typeof(ButtonType), (sender as RadioButton)!.Tag!.ToString()!);

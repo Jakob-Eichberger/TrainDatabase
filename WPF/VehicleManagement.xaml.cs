@@ -75,7 +75,7 @@ namespace WPF_Application
             try
             {
                 BtnNew.IsEnabled = false;
-                await Db.AddAsync(new Vehicle());
+                await Db.AddAsync(new Vehicle() { Position = Db.Vehicles.Any() ? Db.Vehicles.Max(e => e.Position) + 1 : 1 });
                 await ReloadVehicles();
             }
             finally
@@ -109,14 +109,18 @@ namespace WPF_Application
 
         private async void BtnNewFunction_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedVehicle is null) return;
-            await Db.AddAsync(new Function() { Vehicle = SelectedVehicle, IsActive = false });
+            if (SelectedVehicle is null)
+                return;
+
+            await Db.AddAsync(new Function() { Vehicle = SelectedVehicle, IsActive = true, ShowFunctionNumber = true, Position = SelectedVehicle.Functions.Any() ? SelectedVehicle.Functions.Max(e => e.Position) : 1 + 1 });
             await ReloadVehicles();
         }
 
         private async void BtnDeleteFunction_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedVehicle is null) return;
+            if (SelectedVehicle is null)
+                return;
+
             await Db.RemoveAsync(SelectedFunction);
             await ReloadVehicles();
         }
