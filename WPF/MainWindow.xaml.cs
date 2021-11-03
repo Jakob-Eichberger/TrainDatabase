@@ -216,7 +216,7 @@ namespace Wpf_Application
                 new VehicleManagement(db).Show();
         }
 
-        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Address} {i.ArticleNumber} {i.Category?.Name} {i.Owner} {i.Railway} {i.FullName} {i.Name} {i.Type}").ToLower().Contains(tbSearch.Text.ToLower().Trim())));
+        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}").ToLower().Contains(tbSearch.Text.ToLower().Trim())));
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
