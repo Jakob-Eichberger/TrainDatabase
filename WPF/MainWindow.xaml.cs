@@ -28,11 +28,9 @@ namespace Wpf_Application
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private readonly Database db = new();
-        public event PropertyChangedEventHandler? PropertyChanged;
         private static readonly Mutex mutex = new(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
 
-        ModelTrainController.CentralStationClient? Controller { get; set; }
+        private readonly Database db = new();
 
         public MainWindow()
         {
@@ -71,38 +69,9 @@ namespace Wpf_Application
             }
         }
 
-        private void Db_CollectionChanged(object? sender, EventArgs e) => Dispatcher.Invoke(() => Search());
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        private void CreatController()
-        {
-            Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
-            Controller.LogOn();
-        }
-
-        private void DrawVehiclesIfAnyExist()
-        {
-            db.Database.EnsureCreated();
-            if (db.Vehicles.Any())
-                Search();
-            else
-            {
-                if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                {
-                    var importer = new Importer.Z21Import(db);
-                    importer.ShowDialog();
-                    Search();
-                }
-            }
-        }
-
-        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            Logger.Log("", e.Exception);
-            e.Handled = true;
-            MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
-        }
-
-        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(db).ShowDialog();
+        ModelTrainController.CentralStationClient? Controller { get; set; }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
@@ -156,10 +125,88 @@ namespace Wpf_Application
             }
         }
 
+        public void RemoveUnneededImages() => Task.Run(() =>
+        {
+            try
+            {
+                var images = db.Vehicles.Select(e => e.ImageName).ToList();
+                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                Directory.CreateDirectory(directory);
+                foreach (var item in Directory.GetFiles($"{directory}\\"))
+                    if (!images.Any(e => e == Path.GetFileName(item)))
+                        File.Delete(item);
+            }
+            catch { }
+        });
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        private static BitmapImage LoadPhoto(string path)
+        {
+            BitmapImage bmi = new();
+            bmi.BeginInit();
+            bmi.CacheOption = BitmapCacheOption.OnLoad;
+            bmi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bmi.UriSource = new(path);
+            bmi.EndInit();
+            return bmi;
+        }
+
         private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2 && sender.GetType()?.GetProperty("Tag")?.GetValue(sender, null) is Vehicle vehicle)
-                new TrainControl(Controller!, vehicle, db).Show();
+                OpenNewTrainControlWindow(vehicle);
+        }
+
+        void ControlLoko_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var menu = e.Source as MenuItem;
+                var vehicle = menu?.Tag as Vehicle;
+                if (vehicle is not null && Controller is not null)
+                    OpenNewTrainControlWindow(vehicle);
+                else
+                    MessageBox.Show("Öffnen nicht möglich da Vehicle null ist!", "Error");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"Beim öffnen ist ein unerwarteter Fehler aufgetreten", ex);
+                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
+            }
+        }
+
+        private void CreatController()
+        {
+            Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
+            Controller.LogOn();
+        }
+
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Logger.Log("", e.Exception);
+            e.Handled = true;
+            MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
+        }
+
+        private void Db_CollectionChanged(object? sender, EventArgs e) => Dispatcher.Invoke(() => Search());
+
+        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(db).ShowDialog();
+
+        private void DrawVehiclesIfAnyExist()
+        {
+            db.Database.EnsureCreated();
+            if (db.Vehicles.Any())
+                Search();
+            else
+            {
+                if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                {
+                    var importer = new Importer.Z21Import(db);
+                    importer.ShowDialog();
+                    Search();
+                }
+            }
         }
 
         private MenuItem GetControlVehicleMenuItem(Vehicle item)
@@ -177,54 +224,7 @@ namespace Wpf_Application
             return miControlLoko;
         }
 
-        private static BitmapImage LoadPhoto(string path)
-        {
-            BitmapImage bmi = new();
-            bmi.BeginInit();
-            bmi.CacheOption = BitmapCacheOption.OnLoad;
-            bmi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            bmi.UriSource = new(path);
-            bmi.EndInit();
-            return bmi;
-        }
-
-        public void RemoveUnneededImages() => Task.Run(() =>
-        {
-            try
-            {
-                var images = db.Vehicles.Select(e => e.ImageName).ToList();
-                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
-                Directory.CreateDirectory(directory);
-                foreach (var item in Directory.GetFiles($"{directory}\\"))
-                    if (!images.Any(e => e == Path.GetFileName(item)))
-                        File.Delete(item);
-            }
-            catch { }
-        });
-
-        void ControlLoko_Click(Object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var menu = ((MenuItem)e.Source);
-                Vehicle? vehicle = (menu.Tag as Vehicle);
-                if (vehicle is not null && Controller is not null)
-                    new TrainControl(Controller, vehicle, db).Show();
-                else
-                    MessageBox.Show("Öffnen nicht möglich da Vehicle null ist!", "Error");
-            }
-            catch (Exception ex)
-            {
-                Logger.Log($"Beim öffnen ist ein unerwarteter Fehler aufgetreten", ex);
-                MessageBox.Show($"Beim öffnen ist ein unerwarteter Fehler aufgetreten! Fehlermeldung: {ex?.Message}", "Error beim öffnen");
-            }
-        }
-
-        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Address} {i.ArticleNumber} {i.Category?.Name} {i.Owner} {i.Railway} {i.FullName} {i.Name} {i.Type}").ToLower().Contains(tbSearch.Text.ToLower().Trim())).OrderBy(e => e.Position));
-
-        private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Controller).Show();
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
@@ -233,21 +233,28 @@ namespace Wpf_Application
             Application.Current.Shutdown();
         }
 
+        private void OpenNewTrainControlWindow(Vehicle? vehicle)
+        {
+            if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
+            {
+                trainControl.Activate();
+                trainControl.RefreshSource();
+            }
+            else
+                new TrainControl(Controller, vehicle, db).Show();
+        }
+
+        private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e) => new VehicleManagement(db).Show();
+
+        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Address} {i.ArticleNumber} {i.Category?.Name} {i.Owner} {i.Railway} {i.FullName} {i.Name} {i.Type}").ToLower().Contains(tbSearch.Text.ToLower().Trim())).OrderBy(e => e.Position));
+
         private void Settings_Click(object sender, RoutedEventArgs e) => new SettingsWindow().Show();
 
-        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Controller).Show();
+        private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
 
         #region Console
-        [DllImport(@"kernel32.dll", SetLastError = true)]
-        static extern bool AllocConsole();
-
-        [DllImport(@"kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
-
-        [DllImport(@"user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
         const int SwHide = 0;
+
         const int SwShow = 5;
 
         public static void ShowConsoleWindow()
@@ -259,8 +266,15 @@ namespace Wpf_Application
             else
                 ShowWindow(handle, SwShow);
         }
-        #endregion
 
-        private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e) => new VehicleManagement(db).Show();
+        [DllImport(@"kernel32.dll", SetLastError = true)]
+        static extern bool AllocConsole();
+
+        [DllImport(@"kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport(@"user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        #endregion
     }
 }
