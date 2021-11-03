@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF_Application"
         mc:Ignorable="d"
-        Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown">
+        Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ElementName=Tc,Path=VehicleTypeGridLength}" />

@@ -41,12 +41,12 @@ namespace WPF_Application
 
                 DataContext = this;
                 InitializeComponent();
+                Activate();
 
                 Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
 
                 if (Vehicle is null)
                     throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
-
 
                 Adresse = new(Vehicle.Address);
                 Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
@@ -78,6 +78,13 @@ namespace WPF_Application
                 Logger.Log("Fehler beim öffnen des Controllers.", ex);
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        public void RefreshSource()
+        {
+            Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == Vehicle.Id)!;
+            DrawAllFunctions();
+            DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
         }
 
         private void Controller_OnStatusChanged(object? sender, StateEventArgs e) => TrackPower = e.TrackPower;
