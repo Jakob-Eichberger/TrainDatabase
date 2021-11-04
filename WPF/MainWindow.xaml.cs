@@ -150,7 +150,7 @@ namespace Wpf_Application
         {
             if (e.ClickCount == 2 && sender.GetType()?.GetProperty("Tag")?.GetValue(sender, null) is Vehicle vehicle)
             {
-                await Task.Delay(100);
+                await Task.Delay(150);
                 OpenNewTrainControlWindow(vehicle);
             }
         }
@@ -201,6 +201,7 @@ namespace Wpf_Application
         {
             if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
             {
+                trainControl.WindowState = WindowState.Normal;
                 trainControl.Activate();
                 trainControl.RefreshSource();
             }
@@ -211,7 +212,10 @@ namespace Wpf_Application
         private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e)
         {
             if (Application.Current.Windows.OfType<VehicleManagement>().FirstOrDefault() is VehicleManagement vehicleManagement)
+            {
+                vehicleManagement.WindowState = WindowState.Normal;
                 vehicleManagement.Activate();
+            }
             else
                 new VehicleManagement(db).Show();
         }
@@ -221,7 +225,10 @@ namespace Wpf_Application
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
             if (Application.Current.Windows.OfType<SettingsWindow>().FirstOrDefault() is SettingsWindow settings)
+            {
+                settings.WindowState = WindowState.Normal;
                 settings.Activate();
+            }
             else
                 new SettingsWindow().Show();
         }
