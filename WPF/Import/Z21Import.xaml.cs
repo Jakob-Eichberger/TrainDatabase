@@ -24,7 +24,6 @@ namespace Importer
     /// </summary>
     public partial class Z21Import : Window, INotifyPropertyChanged
     {
-
         private readonly Database db;
 
         public Z21Import(Database _db)
@@ -72,9 +71,9 @@ namespace Importer
                 Directory.Delete(vehicleDirectory, true);
             Directory.CreateDirectory(vehicleDirectory);
 
-            File.Move(Path, zipFileLocation);
-
+            File.Copy(Path, zipFileLocation);
             ZipFile.ExtractToDirectory(zipFileLocation, tempDirectory);
+            File.Delete(zipFileLocation);
 
             var firstLayer = Directory.GetDirectories(tempDirectory).FirstOrDefault() ?? throw new ApplicationException($"Kein Subdirectory in '{tempDirectory}' gefunden!");
 
@@ -118,20 +117,12 @@ namespace Importer
         private FunctionType GetFunctionType(string name)
         {
             Dictionary<string, FunctionType> dic = new();
-            dic.Add("sound", FunctionType.Sound);
-            dic.Add("sound2", FunctionType.Sound);
-            dic.Add("main_beam", FunctionType.HighBeam);
-            dic.Add("light", FunctionType.LowBeam);
-            dic.Add("main_beam2", FunctionType.LowBeam);
-            dic.Add("horn_high", FunctionType.HornHigh);
-            dic.Add("horn_low", FunctionType.HornLow);
-            dic.Add("hump_gear", FunctionType.HumpGear);
-            dic.Add("curve_sound", FunctionType.CurveSound);
-            dic.Add("compressor", FunctionType.Compressor);
-            dic.Add("cabin", FunctionType.DriversCabinLight1);
-            dic.Add("cabin_light", FunctionType.DriversCabinLight2);
-            dic.Add("mute", FunctionType.Mute);
-            if (dic.TryGetValue(name, out FunctionType func))
+            dic.Add("sound", FunctionType.Sound1);
+            dic.Add("light", FunctionType.Light1);
+
+            if (Enum.TryParse<FunctionType>(name.Replace("_", ""), true, out var result))
+                return result;
+            else if (dic.TryGetValue(name, out FunctionType func))
                 return func;
             else
                 return FunctionType.None;
