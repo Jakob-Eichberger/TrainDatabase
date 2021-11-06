@@ -10,6 +10,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Datenbank.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
@@ -55,6 +59,10 @@
 
 	<ItemGroup>
 		<Folder Include="Data\VehicleImage\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <SplashScreen Include="Datenbank.ico" />
 	</ItemGroup>
 
 </Project>
