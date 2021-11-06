@@ -6,12 +6,12 @@ namespace Model
     [TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum FunctionType
     {
-        [Description("None")]
         None,
-        [Description("Drive")]
         Drive,
-        [Description("EmergencyStop")]
+        ChangeDirection,
         EmergencyStop,
+        Light1,
+        Light2,
         MainSwitch,
         HornHigh,
         HornLow,
@@ -21,8 +21,8 @@ namespace Model
         WhistleLong,
         HumpGear,
         HumpFunk,
-        LowBeamLight,
-        FullBeamLight,
+        LowBeam,
+        FullBeam,
         BackLight,
         AllRoundLight,
         CycleLight,
