@@ -14,7 +14,7 @@
 
 namespace WPF_Application.CentralStation.DTO
 {
-    public class CentralStateData
+    public class Z21ClientData
     {
         public bool EmergencyStop { get; set; } = true;
 

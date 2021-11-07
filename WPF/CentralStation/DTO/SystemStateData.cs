@@ -18,10 +18,10 @@ namespace WPF_Application.CentralStation.DTO
     {
         public SystemStateData()
         {
-            CentralState = new CentralStateData();
+            ClientData = new Z21ClientData();
         }
 
-        public CentralStateData CentralState { get; set; }
+        public Z21ClientData ClientData { get; set; }
 
         public int FilteredMainCurrent { get; set; } = -1;
 

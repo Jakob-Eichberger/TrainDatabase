@@ -261,7 +261,7 @@ namespace WPF_Application.CentralStation
             Senden(bytes);
         }
 
-        internal void Empfang(IAsyncResult res)
+        private void Empfang(IAsyncResult res)
         {
             try
             {
@@ -277,7 +277,7 @@ namespace WPF_Application.CentralStation
             }
         }
 
-        internal void EndConnect(IAsyncResult res)
+        private void EndConnect(IAsyncResult res)
         {
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} Reconnection abgeschlossen");
             Client.EndConnect(res);
@@ -538,14 +538,14 @@ namespace WPF_Application.CentralStation
             statedata.Temperature = (received[10] << 8) + received[11];
             statedata.SupplyVoltage = (received[12] << 8) + received[13];
             statedata.VCCVoltage = (received[14] << 8) + received[15];
-            statedata.CentralState.EmergencyStop = (received[16] & 0x01) == 0x01;
-            statedata.CentralState.TrackVoltageOff = (received[16] & 0x02) == 0x02;
-            statedata.CentralState.ShortCircuit = (received[16] & 0x04) == 0x04;
-            statedata.CentralState.ProgrammingModeActive = (received[16] & 0x20) == 0x20;
-            statedata.CentralState.HighTemperature = (received[17] & 0x01) == 0x01;
-            statedata.CentralState.PowerLost = (received[17] & 0x02) == 0x02;
-            statedata.CentralState.ShortCircuitExternal = (received[17] & 0x04) == 0x04;
-            statedata.CentralState.ShortCircuitInternal = (received[17] & 0x08) == 0x08;
+            statedata.ClientData.EmergencyStop = (received[16] & 0x01) == 0x01;
+            statedata.ClientData.TrackVoltageOff = (received[16] & 0x02) == 0x02;
+            statedata.ClientData.ShortCircuit = (received[16] & 0x04) == 0x04;
+            statedata.ClientData.ProgrammingModeActive = (received[16] & 0x20) == 0x20;
+            statedata.ClientData.HighTemperature = (received[17] & 0x01) == 0x01;
+            statedata.ClientData.PowerLost = (received[17] & 0x02) == 0x02;
+            statedata.ClientData.ShortCircuitExternal = (received[17] & 0x04) == 0x04;
+            statedata.ClientData.ShortCircuitInternal = (received[17] & 0x08) == 0x08;
             return statedata;
         }
 
