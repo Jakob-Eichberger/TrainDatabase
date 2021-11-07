@@ -19,9 +19,9 @@ using TrainDatabase.Z21Client.DTO;
 using TrainDatabase.Z21Client.Enum;
 using TrainDatabase.Z21Client.Events;
 using TrainDatabase.Extensions;
-using TrainDatabase.Helper;
 using TrainDatabase.Infrastructure;
 using TrainDatabase.JoyStick;
+using Helper;
 
 namespace TrainDatabase
 {

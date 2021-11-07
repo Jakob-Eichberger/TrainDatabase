@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel;
-using TrainDatabase;
 
 namespace Model
 {
 
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    //[TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum Epoch
     {
         [Description("Keine Epoche")]

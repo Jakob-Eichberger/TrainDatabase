@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
-using TrainDatabase;
 
 namespace Model
 {
-    [TypeConverter(typeof(EnumDescriptionTypeConverter))]
+    //[TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum FunctionType
     {
         None,

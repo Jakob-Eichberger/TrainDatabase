@@ -12,6 +12,7 @@
  * 
  */
 
+using Helper;
 using Model;
 using System;
 using System.Collections;
@@ -22,8 +23,6 @@ using System.Timers;
 using TrainDatabase.Z21Client.DTO;
 using TrainDatabase.Z21Client.Enum;
 using TrainDatabase.Z21Client.Events;
-using TrainDatabase.Exceptions;
-using TrainDatabase.Helper;
 
 namespace TrainDatabase.Z21Client
 {

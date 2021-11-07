@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Reflection;
 
-namespace TrainDatabase
+namespace WPF_Application
 {
     public class EnumDescriptionTypeConverter : EnumConverter
     {
@@ -14,11 +14,11 @@ namespace TrainDatabase
             {
                 if (value != null)
                 {
-                    FieldInfo fi = value.GetType().GetField(value.ToString());
+                    var fi = value.GetType().GetField(value.ToString());
                     if (fi != null)
                     {
                         var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
-                        return ((attributes.Length > 0) && (!String.IsNullOrEmpty(attributes[0].Description))) ? attributes[0].Description : value.ToString();
+                        return attributes.Length > 0 && !string.IsNullOrEmpty(attributes[0].Description) ? attributes[0].Description : value.ToString();
                     }
                 }
 

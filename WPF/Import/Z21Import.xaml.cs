@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using Helper;
+using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.Win32;
 using Model;
@@ -14,7 +15,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using TrainDatabase.Extensions;
-using TrainDatabase.Helper;
 using TrainDatabase.Infrastructure;
 
 namespace Importer

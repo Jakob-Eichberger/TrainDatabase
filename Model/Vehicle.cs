@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using TrainDatabase.Z21Client;
 
 #nullable disable
 
@@ -82,9 +81,9 @@ namespace Model
 
         public List<Function> Functions { get; set; } = new();
 
-        public decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.maxDccStep + 1];
+        public decimal?[] TractionForward { get; set; } = new decimal?[127 + 1];
 
-        public decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.maxDccStep + 1];
+        public decimal?[] TractionBackward { get; set; } = new decimal?[127 + 1];
 
         public int CompareTo(object obj) => Id.CompareTo(obj);
 

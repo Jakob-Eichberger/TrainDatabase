@@ -17,8 +17,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TrainDatabase;
 using TrainDatabase.Z21Client;
-using TrainDatabase.Helper;
 using TrainDatabase.Infrastructure;
+using Helper;
 
 namespace Wpf_Application
 {

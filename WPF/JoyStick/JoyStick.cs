@@ -1,9 +1,9 @@
-﻿using SharpDX.DirectInput;
+﻿using Helper;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using TrainDatabase.Helper;
 
 namespace TrainDatabase.JoyStick
 {

@@ -3,10 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TrainDatabase"
         xmlns:wpf="clr-namespace:TrainDatabase"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:model="clr-namespace:Model"
+        xmlns:model="clr-namespace:Model;assembly=Model"
         mc:Ignorable="d"
         Title="VehicleManagement" Height="450" Width="800" Name="Vm" MinHeight="500" MinWidth="800" Closing="Vm_Closing" >
     <Grid>
@@ -72,7 +71,7 @@
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.FullName, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5" VerticalAlignment="Center"/>
 
                     <Label Grid.Row="2" Grid.Column="0" Content="Type"  Margin="5" VerticalAlignment="Center"/>
-                    <ComboBox  Grid.Row="2" Grid.Column="1" Margin="5" Padding="5" ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type model:VehicleType}}}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle.Type,Mode=TwoWay}" />
+                    <!--<ComboBox  Grid.Row="2" Grid.Column="1" Margin="5" Padding="5" ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type model:VehicleType}}}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle.Type,Mode=TwoWay}" />-->
 
                     <Label Grid.Row="3" Grid.Column="0" Content="Adresse"  Margin="5" VerticalAlignment="Center"/>
                     <xctk:IntegerUpDown   Grid.Row="3" Grid.Column="1"   Text="{Binding ElementName=Vm,Path=SelectedVehicle.Address, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>

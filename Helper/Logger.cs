@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace TrainDatabase.Helper
+namespace Helper
 {
     public class Logger
     {
