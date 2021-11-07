@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using Model;
-using ModelTrainController;
-using ModelTrainController.Z21;
 using OxyPlot;
 using Renci.SshNet.Common;
 using System;

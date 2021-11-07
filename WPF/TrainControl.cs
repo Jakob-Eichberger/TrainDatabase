@@ -1,5 +1,4 @@
-﻿using Helper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Model;
 using OxyPlot;
 using OxyPlot.Series;
@@ -33,7 +32,7 @@ namespace WPF_Application
     {
         public Database db = default!;
         private Vehicle vehicle = default!;
-        public CentralStationClient controller = default!;
+        public Z21Client controller = default!;
         private LokInfoData liveData = new();
         private TrackPower trackPower;
         private bool lastTrackPowerUpdateWasShort = false;
@@ -64,7 +63,7 @@ namespace WPF_Application
         {
             get => speed; set
             {
-                if (value < 0 || value > CentralStationClient.maxDccStep) return;
+                if (value < 0 || value > Z21Client.maxDccStep) return;
                 speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
                 if (LiveData.Speed != speed)
                     SetLocoDrive(speedstep: speed);
@@ -109,7 +108,7 @@ namespace WPF_Application
 
         public List<(Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction)> DoubleTractionVehicles { get; } = new();
 
-        public static int MaxDccSpeed => CentralStationClient.maxDccStep;
+        public static int MaxDccSpeed => Z21Client.maxDccStep;
 
         public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
 

@@ -82,9 +82,9 @@ namespace Model
 
         public List<Function> Functions { get; set; } = new();
 
-        public decimal?[] TractionForward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
+        public decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.maxDccStep + 1];
 
-        public decimal?[] TractionBackward { get; set; } = new decimal?[CentralStationClient.maxDccStep + 1];
+        public decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.maxDccStep + 1];
 
         public int CompareTo(object obj) => Id.CompareTo(obj);
 

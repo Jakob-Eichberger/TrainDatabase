@@ -25,47 +25,52 @@ using WPF_Application.CentralStation.Events;
 using WPF_Application.Exceptions;
 using WPF_Application.Helper;
 
-namespace WPF_Application.CentralStation.Z21
+namespace WPF_Application.CentralStation
 {
-
-    public class Z21 : CentralStationClient
+    public class Z21Client : UdpClient
     {
-        public Z21(IPAddress address, Int32 port = 21105) : base(address, port)
+        public const int maxDccStep = 127;
+
+        public Z21Client(IPAddress address, int port = 21105) : base(port)
         {
+            Address = address;
+            Port = port;
+            Connect(Address, Port);
             BeginReceive(new AsyncCallback(Empfang), null);
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} Z21 initialisiert.");
             RenewClientSubscription.Elapsed += RenewClientSubscription_Elapsed;
         }
 
-        public override event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion = default!;
+        public event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion = default!;
 
-        public override event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo = default!;
+        public event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo = default!;
 
-        public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo = default!;
+        public event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo = default!;
 
-        public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;
+        public event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;
 
-        public override event EventHandler<VersionInfoEventArgs> OnGetVersion = default!;
+        public event EventHandler<VersionInfoEventArgs> OnGetVersion = default!;
 
-        public override event EventHandler<DataEventArgs> OnReceive = default!;
+        public event EventHandler<DataEventArgs> OnReceive = default!;
 
-        public override event EventHandler<StateEventArgs> OnStatusChanged = default!;
+        public event EventHandler<StateEventArgs> OnStatusChanged = default!;
 
-        public override event EventHandler OnStopped = default!;
+        public event EventHandler OnStopped = default!;
 
-        public override event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;
+        public event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;
 
-        public override event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
+        public event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
 
+        public IPAddress Address { get; }
+        public int Port { get; }
         private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
-
-        public override void Dispose()
+        public void Dispose()
         {
             LogOFF();
             Close();
         }
 
-        public override void GetFirmwareVersion()
+        public void GetFirmwareVersion()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -79,7 +84,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void GetHardwareInfo()
+        public void GetHardwareInfo()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -90,7 +95,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void GetLocoInfo(LokAdresse adresse)
+        public void GetLocoInfo(LokAdresse adresse)
         {
             if (adresse is null) return;
             byte[] bytes = new byte[9];
@@ -107,7 +112,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void GetSerialNumber()
+        public void GetSerialNumber()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -118,7 +123,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void GetStatus()
+        public void GetStatus()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -132,7 +137,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void GetVersion()
+        public void GetVersion()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -147,7 +152,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void LogOFF()
+        public void LogOFF()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -157,7 +162,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void LogOn()
+        public void LogOn()
         {
             var flags = BitConverter.GetBytes(0x00000001 | 0x00010000);
             byte[] bytes = new byte[8];
@@ -173,7 +178,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void SetLocoDrive(List<LokInfoData> data)
+        public void SetLocoDrive(List<LokInfoData> data)
         {
             var array = new byte[10 * data.Count];
             for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
@@ -181,15 +186,15 @@ namespace WPF_Application.CentralStation.Z21
             Senden(array);
         }
 
-        public override void SetLocoDrive(LokInfoData data) => Senden(GetLocoDriveByteArray(data));
+        public void SetLocoDrive(LokInfoData data) => Senden(GetLocoDriveByteArray(data));
 
-        public override void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
+        public void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
         {
             byte[] bytes = GetLocoFunctionByteArray(adresse, function, toggelType);
             Senden(bytes);
         }
 
-        public override void SetLocoFunction(List<(ToggleType toggle, Function Func)> data)
+        public void SetLocoFunction(List<(ToggleType toggle, Function Func)> data)
         {
             var array = new byte[10 * data.Count];
             for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
@@ -200,7 +205,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(array);
         }
 
-        public override void SetStop()
+        public void SetStop()
         {
             byte[] bytes = new byte[6];
             bytes[0] = 0x06;
@@ -213,7 +218,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void SetTrackPowerOFF()
+        public void SetTrackPowerOFF()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -227,7 +232,7 @@ namespace WPF_Application.CentralStation.Z21
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET TRACK POWER OFF " + getByteString(bytes));
         }
 
-        public override void SetTrackPowerON()
+        public void SetTrackPowerON()
         {
             byte[] bytes = new byte[7];
             bytes[0] = 0x07;
@@ -241,7 +246,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        public override void SystemStateGetData()
+        public void SystemStateGetData()
         {
             byte[] bytes = new byte[4];
             bytes[0] = 0x04;
@@ -252,7 +257,7 @@ namespace WPF_Application.CentralStation.Z21
             Senden(bytes);
         }
 
-        internal override void Empfang(IAsyncResult res)
+        internal void Empfang(IAsyncResult res)
         {
             try
             {
@@ -268,7 +273,7 @@ namespace WPF_Application.CentralStation.Z21
             }
         }
 
-        internal override void EndConnect(IAsyncResult res)
+        internal void EndConnect(IAsyncResult res)
         {
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} Reconnection abgeschlossen");
             Client.EndConnect(res);
@@ -563,7 +568,7 @@ namespace WPF_Application.CentralStation.Z21
             catch (Exception ex)
             {
                 if (ex is SocketException)
-                    Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
+                    Client.BeginConnect(Address, Port, new AsyncCallback(EndConnect), null);
                 Logger.Log("Fehler beim Senden", ex);
             }
         }

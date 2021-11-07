@@ -1,5 +1,4 @@
-﻿using Helper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Model;
 using System;
 using System.Collections.Generic;
@@ -18,7 +17,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPF_Application;
 using WPF_Application.CentralStation;
-using WPF_Application.CentralStation.Z21;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
 
@@ -72,7 +70,7 @@ namespace Wpf_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        CentralStationClient? Controller { get; set; }
+        Z21Client? Controller { get; set; }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
@@ -158,7 +156,7 @@ namespace Wpf_Application
 
         private void CreatController()
         {
-            Controller = new Z21(Settings.ControllerIP, Settings.ControllerPort);
+            Controller = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
             Controller.LogOn();
         }
 

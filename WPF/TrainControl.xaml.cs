@@ -30,7 +30,7 @@ namespace WPF_Application
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
-        public TrainControl(CentralStationClient _controller, Vehicle _vehicle, Database _db)
+        public TrainControl(Z21Client _controller, Vehicle _vehicle, Database _db)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace WPF_Application
                 return;
             }
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
-            if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[CentralStationClient.maxDccStep] is null || temp.TractionForward[CentralStationClient.maxDccStep] is null))
+            if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[Z21Client.maxDccStep] is null || temp.TractionForward[Z21Client.maxDccStep] is null))
                 MessageBox.Show("Achtung! Fahrzeug ist nicht eingemessen!");
             DoubleTractionVehicles.Add((temp, (GetLineSeries(temp.TractionForward), GetLineSeries(temp.TractionBackward))));
             await DeterminSlowestVehicleInList();
@@ -229,7 +229,7 @@ namespace WPF_Application
         /// <param name="inUse"></param>
         private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
-            if (speedstep is not null && speedstep != 0 && speedstep != CentralStationClient.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100))
+            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100))
                 return;
             else
                 lastSpeedchange = DateTime.Now;
@@ -323,7 +323,7 @@ namespace WPF_Application
 
             SortedSet<FunctionPoint>? function = new();
 
-            for (int i = 0; i <= CentralStationClient.maxDccStep; i++)
+            for (int i = 0; i <= Z21Client.maxDccStep; i++)
                 if (tractionArray[i] is not null)
                     function.Add(new(i, (double)(tractionArray[i] ?? 0)));
             return function;
@@ -390,7 +390,7 @@ namespace WPF_Application
                     {
                         case FunctionType.Drive:
                             SliderLastused = DateTime.Now;
-                            Speed = CentralStationClient.maxDccStep - (e.currentValue * CentralStationClient.maxDccStep / Function.Value.maxValue);
+                            Speed = Z21Client.maxDccStep - (e.currentValue * Z21Client.maxDccStep / Function.Value.maxValue);
                             break;
                         case FunctionType.ChangeDirection:
                             if (e.currentValue == e.maxValue)
