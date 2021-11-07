@@ -45,21 +45,6 @@ namespace WPF_Application
             }
         }
 
-        public static CentralStationType? CentralStation
-        {
-            get
-            {
-                return Enum.TryParse(typeof(CentralStationType), Get(nameof(CentralStation)), out var type) ? (CentralStationType)type! : null;
-            }
-            set
-            {
-                if (value is not null)
-                    Set(nameof(CentralStation), Enum.GetName((CentralStationType)value)!);
-                else
-                    Set(nameof(CentralStation), null!);
-            }
-        }
-
         public static bool UsingJoyStick
         {
             get

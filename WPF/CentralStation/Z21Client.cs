@@ -62,12 +62,16 @@ namespace WPF_Application.CentralStation
         public event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
 
         public IPAddress Address { get; }
+
         public int Port { get; }
+
         private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
-        public void Dispose()
+
+        public new void Dispose()
         {
             LogOFF();
             Close();
+            base.Dispose();
         }
 
         public void GetFirmwareVersion()
@@ -79,7 +83,7 @@ namespace WPF_Application.CentralStation
             bytes[3] = 0;
             bytes[4] = 0xF1;
             bytes[5] = 0x0A;
-            bytes[6] = 0xFB;   // = XOR-Byte
+            bytes[6] = 0xFB;
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET FIRMWARE VERSION " + getByteString(bytes));
             Senden(bytes);
         }
@@ -90,7 +94,7 @@ namespace WPF_Application.CentralStation
             bytes[0] = 0x04;
             bytes[1] = 0;
             bytes[2] = 0x1A;
-            bytes[3] = 0;      // kein XOR-Byte  ???
+            bytes[3] = 0;
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET HWINFO " + getByteString(bytes));
             Senden(bytes);
         }
@@ -132,7 +136,7 @@ namespace WPF_Application.CentralStation
             bytes[3] = 0;
             bytes[4] = 0x21;
             bytes[5] = 0x24;
-            bytes[6] = 0x05;   // = XOR-Byte
+            bytes[6] = 0x05;
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET STATUS " + getByteString(bytes));
             Senden(bytes);
         }
@@ -213,7 +217,7 @@ namespace WPF_Application.CentralStation
             bytes[2] = 0x40;
             bytes[3] = 0;
             bytes[4] = 0x80;
-            bytes[5] = 0x80;   // = XOR-Byte
+            bytes[5] = 0x80;
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET STOP " + getByteString(bytes));
             Senden(bytes);
         }
@@ -227,7 +231,7 @@ namespace WPF_Application.CentralStation
             bytes[3] = 0;
             bytes[4] = 0x21;
             bytes[5] = 0x80;
-            bytes[6] = 0xA1;   // = XOR-Byte
+            bytes[6] = 0xA1;
             Senden(bytes);
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET TRACK POWER OFF " + getByteString(bytes));
         }
@@ -241,7 +245,7 @@ namespace WPF_Application.CentralStation
             bytes[3] = 0;
             bytes[4] = 0x21;
             bytes[5] = 0x81;
-            bytes[6] = 0xA0;   // = XOR-Byte
+            bytes[6] = 0xA0;
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET TRACK POWER ON " + getByteString(bytes));
             Senden(bytes);
         }
@@ -297,7 +301,7 @@ namespace WPF_Application.CentralStation
                 }
                 else
                 {
-                    z = max;  //Notausgang, falls ungültige Länge, Restliche Daten werden verworfen
+                    z = max;
                     Console.WriteLine($"{DateTime.Now:HH-mm-ss} > Fehlerhaftes Telegramm.");
                 }
             }
