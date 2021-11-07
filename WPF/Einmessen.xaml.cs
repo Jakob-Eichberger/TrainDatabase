@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using WPF_Application.Extensions;
-using WPF_Application.Helper;
-using WPF_Application.Infrastructure;
+using TrainDatabase.Extensions;
+using TrainDatabase.Helper;
+using TrainDatabase.Infrastructure;
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Renci.SshNet;
-using WPF_Application.CentralStation.DTO;
-using WPF_Application.CentralStation.Events;
-using WPF_Application.CentralStation;
+using TrainDatabase.Z21Client.DTO;
+using TrainDatabase.Z21Client.Events;
+using TrainDatabase.Z21Client;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     /// <summary>
     /// Interaction logic for Einmessen.xaml
@@ -37,7 +37,7 @@ namespace WPF_Application
 
         public Database Db { get; } = default!;
 
-        private Z21Client Controller { get; } = default!;
+        private Z21Client.Z21Client Controller { get; } = default!;
 
         private SshClient SshClient { get; } = new("192.168.0.73", "pi", "raspberry");
 
@@ -58,9 +58,9 @@ namespace WPF_Application
             set => Settings.Set(nameof(DistanceBetweenSensorsInMM), value.ToString());
         }
 
-        private decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.maxDccStep + 1];
+        private decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
 
-        private decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.maxDccStep + 1];
+        private decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
 
         public int Start_Measurement { get => Settings.GetInt(nameof(Start_Measurement)) ?? 2; set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
 
@@ -79,7 +79,7 @@ namespace WPF_Application
             }
         }
 
-        public Einmessen(Database db, Z21Client controller)
+        public Einmessen(Database db, Z21Client.Z21Client controller)
         {
             this.DataContext = this;
             if (db is null) throw new ApplicationException($"Paramter '{nameof(db)}' darf nicht null sein!");
@@ -96,12 +96,12 @@ namespace WPF_Application
         {
             PointsBackward = new();
             PointsForward = new();
-            for (int i = 2; i <= Z21Client.maxDccStep; i++)
+            for (int i = 2; i <= Z21Client.Z21Client.maxDccStep; i++)
             {
                 if (TractionBackward[i] is not null)
                     PointsBackward.Add(new(i, (double)Math.Round((TractionBackward[i] / 3.6m) ?? 0, 2)));
             }
-            for (int i = 2; i <= Z21Client.maxDccStep; i++)
+            for (int i = 2; i <= Z21Client.Z21Client.maxDccStep; i++)
             {
                 if (TractionForward[i] is not null)
                     PointsForward.Add(new(i, (double)Math.Round((TractionForward[i] / 3.6m) ?? 0, 2)));
@@ -119,10 +119,10 @@ namespace WPF_Application
 
             CreatSpeedTableRow($"Step", $"km/h (V)", $"km/h (R)");
             bool lastStep = false;
-            for (int i = Start_Measurement; i <= Z21Client.maxDccStep; i += Step_Measurement)
+            for (int i = Start_Measurement; i <= Z21Client.Z21Client.maxDccStep; i += Step_Measurement)
             {
                 CreatSpeedTableRow($"Step {i}", $"{(TractionForward[i] is null ? "-" : (double)Math.Round((TractionForward[i] / 3.6m) ?? 0, 2))} km/h", $"{(TractionBackward[i] is null ? "-" : (double)Math.Round((TractionBackward[i] / 3.6m) ?? 0, 2))}  km/h");
-                if (!lastStep && i + Step_Measurement > Z21Client.maxDccStep) { i = (Z21Client.maxDccStep - Step_Measurement); lastStep = true; }
+                if (!lastStep && i + Step_Measurement > Z21Client.Z21Client.maxDccStep) { i = (Z21Client.Z21Client.maxDccStep - Step_Measurement); lastStep = true; }
             }
 
             void CreatSpeedTableRow(string text1, string text2, string text3)
@@ -168,11 +168,11 @@ namespace WPF_Application
                 Log("Starting...");
                 bool lastStep = false;
                 bool direction = true;
-                for (int speed = Start_Measurement; speed <= Z21Client.maxDccStep; speed += Step_Measurement)
+                for (int speed = Start_Measurement; speed <= Z21Client.Z21Client.maxDccStep; speed += Step_Measurement)
                 {
                     await GetSpeed(speed, direction);
                     await GetSpeed(speed, !direction);
-                    if (!lastStep && speed + Step_Measurement > Z21Client.maxDccStep) { speed = (Z21Client.maxDccStep - Step_Measurement); lastStep = true; }
+                    if (!lastStep && speed + Step_Measurement > Z21Client.Z21Client.maxDccStep) { speed = (Z21Client.Z21Client.maxDccStep - Step_Measurement); lastStep = true; }
                 }
                 await ReturnHome();
                 await SaveChanges();
@@ -340,7 +340,7 @@ namespace WPF_Application
         private LinearAxis GetXAxis()
         {
             OxyPlot.Axes.LinearAxis Xaxis = new();
-            Xaxis.Maximum = Z21Client.maxDccStep;
+            Xaxis.Maximum = Z21Client.Z21Client.maxDccStep;
             Xaxis.Minimum = Start_Measurement;
             Xaxis.Position = OxyPlot.Axes.AxisPosition.Bottom;
             Xaxis.Title = "Dcc Speed Step";
@@ -379,8 +379,8 @@ namespace WPF_Application
             {
                 if (Vehicle is null) { return; }
                 Initialize();
-                TractionForward = new decimal?[Z21Client.maxDccStep + 1];
-                TractionBackward = new decimal?[Z21Client.maxDccStep + 1];
+                TractionForward = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
+                TractionBackward = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
                 DrawSpeedMeasurementTable();
                 await DrawSpeedDataPlot();
 

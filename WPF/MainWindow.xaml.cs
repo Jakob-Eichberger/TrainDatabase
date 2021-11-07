@@ -15,10 +15,10 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WPF_Application;
-using WPF_Application.CentralStation;
-using WPF_Application.Helper;
-using WPF_Application.Infrastructure;
+using TrainDatabase;
+using TrainDatabase.Z21Client;
+using TrainDatabase.Helper;
+using TrainDatabase.Infrastructure;
 
 namespace Wpf_Application
 {
@@ -70,7 +70,7 @@ namespace Wpf_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        Z21Client? Controller { get; set; }
+        Z21Client? Client { get; set; }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {
@@ -156,8 +156,8 @@ namespace Wpf_Application
 
         private void CreatController()
         {
-            Controller = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
-            Controller.LogOn();
+            Client = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
+            Client.LogOn();
         }
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -187,12 +187,12 @@ namespace Wpf_Application
             }
         }
 
-        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Controller).Show();
+        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Client).Show();
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
-            if (Controller is not null)
-                Controller.LogOFF();
+            if (Client is not null)
+                Client.LogOFF();
             Application.Current.Shutdown();
         }
 
@@ -205,7 +205,7 @@ namespace Wpf_Application
                 trainControl.RefreshSource();
             }
             else
-                new TrainControl(Controller, vehicle, db).Show();
+                new TrainControl(Client, vehicle, db).Show();
         }
 
         private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e)

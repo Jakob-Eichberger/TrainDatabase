@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 
-namespace WPF_Application.JoyStick
+namespace TrainDatabase.JoyStick
 {
     /// <summary>
     /// Interaction logic for JoyStickButtonSelection.xaml

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     public class EnumBindingSourceExtension : MarkupExtension
     {

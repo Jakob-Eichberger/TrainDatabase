@@ -14,15 +14,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using WPF_Application.Extensions;
-using WPF_Application.Helper;
-using WPF_Application.Infrastructure;
+using TrainDatabase.Extensions;
+using TrainDatabase.Helper;
+using TrainDatabase.Infrastructure;
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Renci.SshNet;
 using System.Collections.ObjectModel;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     /// <summary>
     /// Interaction logic for VehicleManagement.xaml

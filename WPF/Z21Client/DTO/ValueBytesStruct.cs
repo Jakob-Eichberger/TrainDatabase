@@ -9,16 +9,14 @@
  * Die Anwendung und die Quelltextdateien sind freie Software und stehen unter der
  * GNU General Public License. Der Originaltext dieser Lizenz kann eingesehen werden
  * unter http://www.gnu.org/licenses/gpl.html.
- * 
  */
 
-namespace WPF_Application.CentralStation.Enum
+namespace TrainDatabase.Z21Client.DTO
 {
-    public enum VersionTyp
+    public struct ValueBytesStruct
     {
-        Z21,
-        z21,
-        Other,
-        None
-    };
+        public byte Adr_LSB;
+
+        public byte Adr_MSB;
+    }
 }

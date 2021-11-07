@@ -12,7 +12,7 @@
  * 
  */
 
-namespace WPF_Application.CentralStation.Enum
+namespace TrainDatabase.Z21Client.Enum
 {
     public enum HardwareTyp
     {

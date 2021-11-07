@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Reflection;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     public class EnumDescriptionTypeConverter : EnumConverter
     {

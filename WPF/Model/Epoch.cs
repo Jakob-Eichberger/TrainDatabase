@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using WPF_Application;
+using TrainDatabase;
 
 namespace Model
 {

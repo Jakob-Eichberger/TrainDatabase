@@ -12,18 +12,20 @@
  * 
  */
 
-using System;
-using WPF_Application.CentralStation.DTO;
+using TrainDatabase.Z21Client.Enum;
 
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.DTO
 {
-    public class VersionInfoEventArgs : EventArgs
+    public class HardwareInfo
     {
-        public VersionInfo Data;
-
-        public VersionInfoEventArgs(VersionInfo data) : base()
+        public HardwareInfo(HardwareTyp hardware, int firmware)
         {
-            Data = data;
+            Hardware = hardware;
+            FirmwareVersion = firmware;
         }
+
+        public int FirmwareVersion { get; set; }
+
+        public HardwareTyp Hardware { get; set; }
     }
 }

@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
-using WPF_Application.CentralStation.Enum;
-using WPF_Application.Extensions;
+using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Extensions;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     public static class Settings
     {

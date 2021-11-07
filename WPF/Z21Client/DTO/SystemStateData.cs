@@ -12,17 +12,27 @@
  * 
  */
 
-using System;
-
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.DTO
 {
-    public class GetSerialNumberEventArgs : EventArgs
+    public class SystemStateData
     {
-        public int SerialNumber;
-
-        public GetSerialNumberEventArgs(int serialNumber) : base()
+        public SystemStateData()
         {
-            SerialNumber = serialNumber;
+            ClientData = new Z21ClientData();
         }
+
+        public Z21ClientData ClientData { get; set; }
+
+        public int FilteredMainCurrent { get; set; } = -1;
+
+        public int MainCurrent { get; set; } = -1;
+
+        public int ProgCurrent { get; set; } = -1;
+
+        public int SupplyVoltage { get; set; } = -1;
+
+        public int Temperature { get; set; } = -1;
+
+        public int VCCVoltage { get; set; } = -1;
     }
 }

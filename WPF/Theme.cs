@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     public class Theme
     {

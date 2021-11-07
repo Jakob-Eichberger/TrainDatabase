@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WPF_Application.Extensions
+namespace TrainDatabase.Extensions
 {
     public static class IEnumerableExtensions
     {

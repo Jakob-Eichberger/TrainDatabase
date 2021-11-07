@@ -11,17 +11,16 @@
  * unter http://www.gnu.org/licenses/gpl.html.
  * 
  */
-
 using System;
-using WPF_Application.CentralStation.DTO;
+using TrainDatabase.Z21Client.DTO;
 
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.Events
 {
-    public class FirmwareVersionInfoEventArgs : EventArgs
+    public class GetLocoInfoEventArgs : EventArgs
     {
-        public FirmwareVersionInfo Data;
+        public LokInfoData Data;
 
-        public FirmwareVersionInfoEventArgs(FirmwareVersionInfo data) : base()
+        public GetLocoInfoEventArgs(LokInfoData data) : base()
         {
             Data = data;
         }

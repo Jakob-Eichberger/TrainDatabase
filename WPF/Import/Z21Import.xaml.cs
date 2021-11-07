@@ -13,9 +13,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using WPF_Application.Extensions;
-using WPF_Application.Helper;
-using WPF_Application.Infrastructure;
+using TrainDatabase.Extensions;
+using TrainDatabase.Helper;
+using TrainDatabase.Infrastructure;
 
 namespace Importer
 {

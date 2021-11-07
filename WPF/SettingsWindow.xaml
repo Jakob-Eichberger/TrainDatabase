@@ -1,9 +1,9 @@
-﻿<Window x:Class="WPF_Application.SettingsWindow"
+﻿<Window x:Class="TrainDatabase.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WPF_Application"
+        xmlns:local="clr-namespace:TrainDatabase"
         mc:Ignorable="d"
         Title="Einstellungen" Name="settingsw" MinHeight="170" MinWidth="400" Height="280" Width="451" Closed="settingsw_Closed">
     <Grid>

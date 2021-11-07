@@ -12,18 +12,12 @@
  * 
  */
 
-using System;
-using WPF_Application.CentralStation.DTO;
-
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.Enum
 {
-    public class SystemStateEventArgs : EventArgs
+    public enum ToggleType
     {
-        public SystemStateData Data;
-
-        public SystemStateEventArgs(SystemStateData data) : base()
-        {
-            Data = data;
-        }
+        Off = 00,
+        On = 01,
+        Toggle = 10
     }
 }

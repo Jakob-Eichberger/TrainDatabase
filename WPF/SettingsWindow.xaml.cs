@@ -6,10 +6,10 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using WPF_Application.Extensions;
-using WPF_Application.JoyStick;
+using TrainDatabase.Extensions;
+using TrainDatabase.JoyStick;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     /// <summary>
     /// Interaction logic for SettingsWindow.xaml

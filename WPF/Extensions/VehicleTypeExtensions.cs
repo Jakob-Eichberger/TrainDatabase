@@ -1,6 +1,6 @@
 ﻿using Model;
 
-namespace WPF_Application.Extensions
+namespace TrainDatabase.Extensions
 {
     public static class VehicleTypeExtensions
     {

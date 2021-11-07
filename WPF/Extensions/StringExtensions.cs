@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WPF_Application.Extensions
+namespace TrainDatabase.Extensions
 {
     public static class StringExtensions
     {

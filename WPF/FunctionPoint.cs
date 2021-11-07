@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     public struct FunctionPoint : IComparable<FunctionPoint>
     {

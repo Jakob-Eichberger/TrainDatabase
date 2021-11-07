@@ -12,18 +12,24 @@
  * 
  */
 
-using System;
-using WPF_Application.CentralStation.Enum;
-
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.DTO
 {
-    public class TrackPowerEventArgs : EventArgs
+    public class Z21ClientData
     {
-        public TrackPowerEventArgs(TrackPower trackPower)
-        {
-            TrackPower = trackPower;
-        }
+        public bool EmergencyStop { get; set; } = true;
 
-        public TrackPower TrackPower { get; set; }
+        public bool HighTemperature { get; set; } = true;
+
+        public bool PowerLost { get; set; } = true;
+
+        public bool ProgrammingModeActive { get; set; } = true;
+
+        public bool ShortCircuit { get; set; } = true;
+
+        public bool ShortCircuitExternal { get; set; } = true;
+
+        public bool ShortCircuitInternal { get; set; } = true;
+
+        public bool TrackVoltageOff { get; set; } = true;
     }
 }

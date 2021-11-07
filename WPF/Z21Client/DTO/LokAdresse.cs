@@ -14,7 +14,7 @@
 
 using System;
 
-namespace WPF_Application.CentralStation.DTO
+namespace TrainDatabase.Z21Client.DTO
 {
     public class LokAdresse
     {

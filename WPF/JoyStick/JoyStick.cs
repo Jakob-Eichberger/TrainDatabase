@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using WPF_Application.Helper;
+using TrainDatabase.Helper;
 
-namespace WPF_Application.JoyStick
+namespace TrainDatabase.JoyStick
 {
     public class JoyStick
     {

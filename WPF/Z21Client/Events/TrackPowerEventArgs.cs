@@ -13,16 +13,17 @@
  */
 
 using System;
+using TrainDatabase.Z21Client.Enum;
 
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.Events
 {
-    public class DataEventArgs : EventArgs
+    public class TrackPowerEventArgs : EventArgs
     {
-        public byte[] Received;
-
-        public DataEventArgs(byte[] received) : base()
+        public TrackPowerEventArgs(TrackPower trackPower)
         {
-            Received = received;
+            TrackPower = trackPower;
         }
+
+        public TrackPower TrackPower { get; set; }
     }
 }

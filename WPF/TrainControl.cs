@@ -15,15 +15,15 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using WPF_Application.CentralStation;
-using WPF_Application.CentralStation.DTO;
-using WPF_Application.CentralStation.Enum;
-using WPF_Application.Extensions;
-using WPF_Application.Helper;
-using WPF_Application.Infrastructure;
-using WPF_Application.JoyStick;
+using TrainDatabase.Z21Client;
+using TrainDatabase.Z21Client.DTO;
+using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Extensions;
+using TrainDatabase.Helper;
+using TrainDatabase.Infrastructure;
+using TrainDatabase.JoyStick;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     /// <summary>
     /// Partial class that holds every property and global variable for the <see cref="TrainControl"/> class.
@@ -32,7 +32,7 @@ namespace WPF_Application
     {
         public Database db = default!;
         private Vehicle vehicle = default!;
-        public Z21Client controller = default!;
+        public Z21Client.Z21Client controller = default!;
         private LokInfoData liveData = new();
         private TrackPower trackPower;
         private bool lastTrackPowerUpdateWasShort = false;
@@ -63,7 +63,7 @@ namespace WPF_Application
         {
             get => speed; set
             {
-                if (value < 0 || value > Z21Client.maxDccStep) return;
+                if (value < 0 || value > Z21Client.Z21Client.maxDccStep) return;
                 speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
                 if (LiveData.Speed != speed)
                     SetLocoDrive(speedstep: speed);
@@ -108,7 +108,7 @@ namespace WPF_Application
 
         public List<(Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction)> DoubleTractionVehicles { get; } = new();
 
-        public static int MaxDccSpeed => Z21Client.maxDccStep;
+        public static int MaxDccSpeed => Z21Client.Z21Client.maxDccStep;
 
         public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
 

@@ -7,9 +7,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using WPF_Application.Infrastructure;
+using TrainDatabase.Infrastructure;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     /// <summary>
     /// Interaction logic for EditFunctionWindow.xaml

@@ -1,9 +1,9 @@
-﻿<Window x:Class="WPF_Application.TrainControl"
+﻿<Window x:Class="TrainDatabase.TrainControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WPF_Application"
+        xmlns:local="clr-namespace:TrainDatabase"
         mc:Ignorable="d"
         Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen">
     <Grid Margin="5">

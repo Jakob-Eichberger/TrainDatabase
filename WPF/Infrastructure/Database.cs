@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WPF_Application.Extensions;
+using TrainDatabase.Extensions;
 
 #nullable disable
 
-namespace WPF_Application.Infrastructure
+namespace TrainDatabase.Infrastructure
 {
     public partial class Database : DbContext
     {

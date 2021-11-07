@@ -12,12 +12,18 @@
  * 
  */
 
-namespace WPF_Application.CentralStation.Enum
+using System;
+using TrainDatabase.Z21Client.DTO;
+
+namespace TrainDatabase.Z21Client.Events
 {
-    public enum ToggleType
+    public class HardwareInfoEventArgs : EventArgs
     {
-        Off = 00,
-        On = 01,
-        Toggle = 10
+        public HardwareInfo Data;
+
+        public HardwareInfoEventArgs(HardwareInfo data) : base()
+        {
+            Data = data;
+        }
     }
 }

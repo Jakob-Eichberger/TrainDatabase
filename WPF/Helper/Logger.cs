@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace WPF_Application.Helper
+namespace TrainDatabase.Helper
 {
     public class Logger
     {

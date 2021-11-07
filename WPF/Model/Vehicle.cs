@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using WPF_Application.CentralStation;
+using TrainDatabase.Z21Client;
 
 #nullable disable
 

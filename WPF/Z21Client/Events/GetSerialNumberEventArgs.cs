@@ -12,20 +12,17 @@
  * 
  */
 
-using WPF_Application.CentralStation.Enum;
+using System;
 
-namespace WPF_Application.CentralStation.DTO
+namespace TrainDatabase.Z21Client.Events
 {
-    public class VersionInfo
+    public class GetSerialNumberEventArgs : EventArgs
     {
-        public VersionTyp Version;
+        public int SerialNumber;
 
-        public int XBusVersion;
-
-        public VersionInfo(int xBusVersion, VersionTyp version)
+        public GetSerialNumberEventArgs(int serialNumber) : base()
         {
-            XBusVersion = xBusVersion;
-            Version = version;
+            SerialNumber = serialNumber;
         }
     }
 }

@@ -14,7 +14,7 @@
 using Model;
 using System.Collections.Generic;
 
-namespace WPF_Application.CentralStation.DTO
+namespace TrainDatabase.Z21Client.DTO
 {
     public class LokInfoData
     {

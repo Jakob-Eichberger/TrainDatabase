@@ -13,9 +13,9 @@
  */
 
 using System;
-using WPF_Application.CentralStation.Enum;
+using TrainDatabase.Z21Client.Enum;
 
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.Events
 {
     public class StateEventArgs : EventArgs
     {

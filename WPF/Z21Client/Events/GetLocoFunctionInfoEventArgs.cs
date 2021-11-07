@@ -1,7 +1,7 @@
 ﻿using System;
-using WPF_Application.CentralStation.DTO;
+using TrainDatabase.Z21Client.DTO;
 
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.Events
 {
     public class GetLocoFunctionInfoEventArgs : EventArgs
     {

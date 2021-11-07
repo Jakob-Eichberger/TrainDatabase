@@ -9,14 +9,24 @@
  * Die Anwendung und die Quelltextdateien sind freie Software und stehen unter der
  * GNU General Public License. Der Originaltext dieser Lizenz kann eingesehen werden
  * unter http://www.gnu.org/licenses/gpl.html.
+ * 
  */
 
-namespace WPF_Application.CentralStation.DTO
+namespace TrainDatabase.Z21Client.DTO
 {
-    public struct ValueBytesStruct
+    public class FirmwareVersionInfo
     {
-        public byte Adr_LSB;
+        public FirmwareVersionInfo(int major, int minor)
+        {
+            Major = major;
+            Minor = minor;
+            Firmware = major.ToString("X") + "." + minor.ToString("X");
+        }
 
-        public byte Adr_MSB;
+        public string Firmware { get; set; } = string.Empty;
+
+        public int Major { get; set; } = 0;
+
+        public int Minor { get; set; } = 0;
     }
 }

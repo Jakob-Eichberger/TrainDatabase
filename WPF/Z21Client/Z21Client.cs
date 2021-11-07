@@ -19,13 +19,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Timers;
-using WPF_Application.CentralStation.DTO;
-using WPF_Application.CentralStation.Enum;
-using WPF_Application.CentralStation.Events;
-using WPF_Application.Exceptions;
-using WPF_Application.Helper;
+using TrainDatabase.Z21Client.DTO;
+using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Z21Client.Events;
+using TrainDatabase.Exceptions;
+using TrainDatabase.Helper;
 
-namespace WPF_Application.CentralStation
+namespace TrainDatabase.Z21Client
 {
     public class Z21Client : UdpClient
     {

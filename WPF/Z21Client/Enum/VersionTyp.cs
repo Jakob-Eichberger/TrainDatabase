@@ -12,27 +12,13 @@
  * 
  */
 
-namespace WPF_Application.CentralStation.DTO
+namespace TrainDatabase.Z21Client.Enum
 {
-    public class SystemStateData
+    public enum VersionTyp
     {
-        public SystemStateData()
-        {
-            ClientData = new Z21ClientData();
-        }
-
-        public Z21ClientData ClientData { get; set; }
-
-        public int FilteredMainCurrent { get; set; } = -1;
-
-        public int MainCurrent { get; set; } = -1;
-
-        public int ProgCurrent { get; set; } = -1;
-
-        public int SupplyVoltage { get; set; } = -1;
-
-        public int Temperature { get; set; } = -1;
-
-        public int VCCVoltage { get; set; } = -1;
-    }
+        Z21,
+        z21,
+        Other,
+        None
+    };
 }

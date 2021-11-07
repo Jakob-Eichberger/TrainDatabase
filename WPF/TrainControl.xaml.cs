@@ -14,23 +14,23 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using WPF_Application.CentralStation;
-using WPF_Application.CentralStation.DTO;
-using WPF_Application.CentralStation.Enum;
-using WPF_Application.CentralStation.Events;
-using WPF_Application.Extensions;
-using WPF_Application.Helper;
-using WPF_Application.Infrastructure;
-using WPF_Application.JoyStick;
+using TrainDatabase.Z21Client;
+using TrainDatabase.Z21Client.DTO;
+using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Z21Client.Events;
+using TrainDatabase.Extensions;
+using TrainDatabase.Helper;
+using TrainDatabase.Infrastructure;
+using TrainDatabase.JoyStick;
 
-namespace WPF_Application
+namespace TrainDatabase
 {
     /// <summary>
     /// Interaction logic for VehicleController.xaml
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
-        public TrainControl(Z21Client _controller, Vehicle _vehicle, Database _db)
+        public TrainControl(Z21Client.Z21Client _controller, Vehicle _vehicle, Database _db)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace WPF_Application
                 return;
             }
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
-            if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[Z21Client.maxDccStep] is null || temp.TractionForward[Z21Client.maxDccStep] is null))
+            if (temp.Type == VehicleType.Lokomotive && (temp.TractionForward[Z21Client.Z21Client.maxDccStep] is null || temp.TractionForward[Z21Client.Z21Client.maxDccStep] is null))
                 MessageBox.Show("Achtung! Fahrzeug ist nicht eingemessen!");
             DoubleTractionVehicles.Add((temp, (GetLineSeries(temp.TractionForward), GetLineSeries(temp.TractionBackward))));
             await DeterminSlowestVehicleInList();
@@ -229,7 +229,7 @@ namespace WPF_Application
         /// <param name="inUse"></param>
         private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
-            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100))
+            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100))
                 return;
             else
                 lastSpeedchange = DateTime.Now;
@@ -237,9 +237,9 @@ namespace WPF_Application
             bool direction = drivingDirection ??= LiveData.DrivingDirection;
             int speed = speedstep ?? Speed;
             List<LokInfoData> data = new();
-            var slowestVehicle = DoubleTractionVehicles.FirstOrDefault(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
+            var slowestVehicle = DoubleTractionVehicles.FirstOrDefault<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
             var yValue = GetSlowestVehicleSpeed(speed, direction, slowestVehicle);
-            foreach (var item in DoubleTractionVehicles.Where(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
+            foreach (var item in DoubleTractionVehicles.Where<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
             {
                 if (IsVehicleMeasured(item))
                 {
@@ -323,7 +323,7 @@ namespace WPF_Application
 
             SortedSet<FunctionPoint>? function = new();
 
-            for (int i = 0; i <= Z21Client.maxDccStep; i++)
+            for (int i = 0; i <= Z21Client.Z21Client.maxDccStep; i++)
                 if (tractionArray[i] is not null)
                     function.Add(new(i, (double)(tractionArray[i] ?? 0)));
             return function;
@@ -390,7 +390,7 @@ namespace WPF_Application
                     {
                         case FunctionType.Drive:
                             SliderLastused = DateTime.Now;
-                            Speed = Z21Client.maxDccStep - (e.currentValue * Z21Client.maxDccStep / Function.Value.maxValue);
+                            Speed = Z21Client.Z21Client.maxDccStep - (e.currentValue * Z21Client.Z21Client.maxDccStep / Function.Value.maxValue);
                             break;
                         case FunctionType.ChangeDirection:
                             if (e.currentValue == e.maxValue)

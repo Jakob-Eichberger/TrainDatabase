@@ -12,21 +12,17 @@
  * 
  */
 
-namespace WPF_Application.CentralStation.DTO
+using System;
+
+namespace TrainDatabase.Z21Client.Events
 {
-    public class FirmwareVersionInfo
+    public class DataEventArgs : EventArgs
     {
-        public FirmwareVersionInfo(int major, int minor)
+        public byte[] Received;
+
+        public DataEventArgs(byte[] received) : base()
         {
-            Major = major;
-            Minor = minor;
-            Firmware = major.ToString("X") + "." + minor.ToString("X");
+            Received = received;
         }
-
-        public string Firmware { get; set; } = string.Empty;
-
-        public int Major { get; set; } = 0;
-
-        public int Minor { get; set; } = 0;
     }
 }

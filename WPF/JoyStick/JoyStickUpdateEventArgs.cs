@@ -1,7 +1,7 @@
 ﻿using SharpDX.DirectInput;
 using System;
 
-namespace WPF_Application.JoyStick
+namespace TrainDatabase.JoyStick
 {
     public class JoyStickUpdateEventArgs : EventArgs
     {

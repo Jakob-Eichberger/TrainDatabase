@@ -13,15 +13,15 @@
  */
 
 using System;
-using WPF_Application.CentralStation.DTO;
+using TrainDatabase.Z21Client.DTO;
 
-namespace WPF_Application.CentralStation.Events
+namespace TrainDatabase.Z21Client.Events
 {
-    public class HardwareInfoEventArgs : EventArgs
+    public class VersionInfoEventArgs : EventArgs
     {
-        public HardwareInfo Data;
+        public VersionInfo Data;
 
-        public HardwareInfoEventArgs(HardwareInfo data) : base()
+        public VersionInfoEventArgs(VersionInfo data) : base()
         {
             Data = data;
         }
