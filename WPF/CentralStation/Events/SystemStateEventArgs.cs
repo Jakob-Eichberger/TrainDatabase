@@ -9,13 +9,21 @@
  * Die Anwendung und die Quelltextdateien sind freie Software und stehen unter der
  * GNU General Public License. Der Originaltext dieser Lizenz kann eingesehen werden
  * unter http://www.gnu.org/licenses/gpl.html.
+ * 
  */
 
-namespace ModelTrainController.Z21
+using System;
+using WPF_Application.CentralStation.DTO;
+
+namespace WPF_Application.CentralStation.Events
 {
-    public struct ValueBytesStruct
+    public class SystemStateEventArgs : EventArgs
     {
-        public byte Adr_MSB;
-        public byte Adr_LSB;
+        public SystemStateData Data;
+
+        public SystemStateEventArgs(SystemStateData data) : base()
+        {
+            Data = data;
+        }
     }
 }

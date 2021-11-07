@@ -12,18 +12,21 @@
  * 
  */
 
-using ModelTrainController;
-using System;
-
-namespace WPF_Application.CentralStation
+namespace WPF_Application.CentralStation.DTO
 {
-    public class TrackPowerEventArgs : EventArgs
+    public class FirmwareVersionInfo
     {
-        public TrackPowerEventArgs(TrackPower trackPower)
+        public FirmwareVersionInfo(int major, int minor)
         {
-            TrackPower = trackPower;
+            Major = major;
+            Minor = minor;
+            Firmware = major.ToString("X") + "." + minor.ToString("X");
         }
 
-        public TrackPower TrackPower { get; set; }
+        public string Firmware { get; set; } = string.Empty;
+
+        public int Major { get; set; } = 0;
+
+        public int Minor { get; set; } = 0;
     }
 }

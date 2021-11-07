@@ -13,15 +13,17 @@
  */
 
 using System;
+using WPF_Application.CentralStation.Enum;
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.Events
 {
-    public class DataEventArgs : EventArgs
+    public class StateEventArgs : EventArgs
     {
-        public DataEventArgs(byte[] received) : base()
+        public StateEventArgs(TrackPower data) : base()
         {
-            Received = received;
+            TrackPower = data;
         }
-        public byte[] Received;
+
+        public TrackPower TrackPower { get; }
     }
 }

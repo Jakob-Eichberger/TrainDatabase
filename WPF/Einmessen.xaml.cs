@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using Model;
-using ModelTrainController;
-using ModelTrainController.Z21;
 using OxyPlot;
 using Renci.SshNet.Common;
 using System;
@@ -21,7 +19,9 @@ using WPF_Application.Infrastructure;
 using LineSeries = OxyPlot.Series.LineSeries;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using Renci.SshNet;
-
+using WPF_Application.CentralStation.DTO;
+using WPF_Application.CentralStation.Events;
+using WPF_Application.CentralStation;
 
 namespace WPF_Application
 {

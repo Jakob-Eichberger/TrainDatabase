@@ -12,16 +12,17 @@
  * 
  */
 
-namespace ModelTrainController.Z21
+using System;
+
+namespace WPF_Application.CentralStation.Events
 {
-    public class HardwareInfo
+    public class DataEventArgs : EventArgs
     {
-        public HardwareTyp Hardware;
-        public int FirmwareVersion;
-        public HardwareInfo(HardwareTyp hardware, int firmware)
+        public byte[] Received;
+
+        public DataEventArgs(byte[] received) : base()
         {
-            Hardware = hardware;
-            FirmwareVersion = firmware;
+            Received = received;
         }
     }
 }

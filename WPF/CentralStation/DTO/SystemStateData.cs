@@ -12,16 +12,27 @@
  * 
  */
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.DTO
 {
-    public class VersionInfo
+    public class SystemStateData
     {
-        public int XBusVersion;
-        public VersionTyp Version;
-        public VersionInfo(int xBusVersion, VersionTyp version)
+        public SystemStateData()
         {
-            XBusVersion = xBusVersion;
-            Version = version;
+            CentralState = new CentralStateData();
         }
+
+        public CentralStateData CentralState { get; set; }
+
+        public int FilteredMainCurrent { get; set; } = -1;
+
+        public int MainCurrent { get; set; } = -1;
+
+        public int ProgCurrent { get; set; } = -1;
+
+        public int SupplyVoltage { get; set; } = -1;
+
+        public int Temperature { get; set; } = -1;
+
+        public int VCCVoltage { get; set; } = -1;
     }
 }

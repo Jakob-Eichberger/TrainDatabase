@@ -1,8 +1,6 @@
 ﻿using Helper;
 using Microsoft.EntityFrameworkCore;
 using Model;
-using ModelTrainController;
-using ModelTrainController.Z21;
 using OxyPlot;
 using OxyPlot.Series;
 using SharpDX.DirectInput;
@@ -18,6 +16,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using WPF_Application.CentralStation;
+using WPF_Application.CentralStation.DTO;
+using WPF_Application.CentralStation.Enum;
 using WPF_Application.Extensions;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
@@ -32,7 +33,7 @@ namespace WPF_Application
     {
         public Database db = default!;
         private Vehicle vehicle = default!;
-        public ModelTrainController.CentralStationClient controller = default!;
+        public CentralStationClient controller = default!;
         private LokInfoData liveData = new();
         private TrackPower trackPower;
         private bool lastTrackPowerUpdateWasShort = false;

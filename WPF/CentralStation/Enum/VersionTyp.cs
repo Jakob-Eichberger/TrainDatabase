@@ -12,17 +12,13 @@
  * 
  */
 
-using System;
-
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.Enum
 {
-    public class HardwareInfoEventArgs : EventArgs
+    public enum VersionTyp
     {
-        public HardwareInfoEventArgs(HardwareInfo data)
-            : base()
-        {
-            Data = data;
-        }
-        public HardwareInfo Data;
-    }
+        Z21,
+        z21,
+        Other,
+        None
+    };
 }

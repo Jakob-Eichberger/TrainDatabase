@@ -12,17 +12,18 @@
  * 
  */
 
-namespace ModelTrainController.Z21
+using System;
+using WPF_Application.CentralStation.Enum;
+
+namespace WPF_Application.CentralStation.Events
 {
-    public class CentralStateData
+    public class TrackPowerEventArgs : EventArgs
     {
-        public bool EmergencyStop = true;
-        public bool TrackVoltageOff = true;
-        public bool ShortCircuit = true;
-        public bool ProgrammingModeActive = true;
-        public bool HighTemperature = true;
-        public bool PowerLost = true;
-        public bool ShortCircuitExternal = true;
-        public bool ShortCircuitInternal = true;
+        public TrackPowerEventArgs(TrackPower trackPower)
+        {
+            TrackPower = trackPower;
+        }
+
+        public TrackPower TrackPower { get; set; }
     }
 }

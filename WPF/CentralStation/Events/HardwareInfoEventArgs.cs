@@ -13,16 +13,17 @@
  */
 
 using System;
+using WPF_Application.CentralStation.DTO;
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.Events
 {
-    public class SystemStateEventArgs : EventArgs
+    public class HardwareInfoEventArgs : EventArgs
     {
-        public SystemStateEventArgs(SystemStateData data)
-            : base()
+        public HardwareInfo Data;
+
+        public HardwareInfoEventArgs(HardwareInfo data) : base()
         {
             Data = data;
         }
-        public SystemStateData Data;
     }
 }

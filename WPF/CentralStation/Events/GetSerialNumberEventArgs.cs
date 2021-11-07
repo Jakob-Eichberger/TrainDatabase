@@ -11,16 +11,18 @@
  * unter http://www.gnu.org/licenses/gpl.html.
  * 
  */
+
 using System;
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.Events
 {
-    public class GetLocoInfoEventArgs : EventArgs
+    public class GetSerialNumberEventArgs : EventArgs
     {
-        public GetLocoInfoEventArgs(LokInfoData data) : base()
+        public int SerialNumber;
+
+        public GetSerialNumberEventArgs(int serialNumber) : base()
         {
-            Data = data;
+            SerialNumber = serialNumber;
         }
-        public LokInfoData Data;
     }
 }

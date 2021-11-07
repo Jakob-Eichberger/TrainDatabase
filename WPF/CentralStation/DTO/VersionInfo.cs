@@ -12,20 +12,20 @@
  * 
  */
 
-namespace ModelTrainController.Z21
+using WPF_Application.CentralStation.Enum;
+
+namespace WPF_Application.CentralStation.DTO
 {
-    public class SystemStateData
+    public class VersionInfo
     {
-        public int MainCurrent = -1;
-        public int ProgCurrent = -1;
-        public int FilteredMainCurrent = -1;
-        public int Temperature = -1;
-        public int SupplyVoltage = -1;
-        public int VCCVoltage = -1;
-        public CentralStateData CentralState;
-        public SystemStateData()
+        public VersionTyp Version;
+
+        public int XBusVersion;
+
+        public VersionInfo(int xBusVersion, VersionTyp version)
         {
-            CentralState = new CentralStateData();
+            XBusVersion = xBusVersion;
+            Version = version;
         }
     }
 }

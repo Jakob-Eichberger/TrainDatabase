@@ -1,17 +1,23 @@
-﻿using Helper;
-using Model;
-using ModelTrainController.Z21;
+﻿using Model;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using WPF_Application.CentralStation;
+using WPF_Application.CentralStation.DTO;
+using WPF_Application.CentralStation.Enum;
+using WPF_Application.CentralStation.Events;
 
-namespace ModelTrainController
+namespace WPF_Application.CentralStation
 {
     public abstract class CentralStationClient : UdpClient
     {
         public const int maxDccStep = 127;
+
+        internal IPAddress lanAdresse;
+
+        internal string lanAdresseS;
+
+        internal int lanPort;
 
         public CentralStationClient(IPAddress address, int port) : base(port)
         {
@@ -24,14 +30,26 @@ namespace ModelTrainController
             EnableBroadcast = false;
         }
 
-        internal abstract void Empfang(IAsyncResult res);
-        
-        internal abstract void EndConnect(IAsyncResult res);
+        public abstract event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion;
 
-        internal IPAddress lanAdresse;
-        
-        internal string lanAdresseS;
-        
+        public abstract event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo;
+
+        public abstract event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;
+
+        public abstract event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber;
+
+        public abstract event EventHandler<VersionInfoEventArgs> OnGetVersion;
+
+        public abstract event EventHandler<DataEventArgs> OnReceive;
+
+        public abstract event EventHandler<StateEventArgs> OnStatusChanged;
+
+        public abstract event EventHandler OnStopped;
+
+        public abstract event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged;
+
+        public abstract event EventHandler<TrackPowerEventArgs> TrackPowerChanged;
+
         internal string LanAdresse
         {
             get
@@ -40,7 +58,6 @@ namespace ModelTrainController
             }
         }
 
-        internal int lanPort;
         internal int LanPort
         {
             get
@@ -49,39 +66,24 @@ namespace ModelTrainController
             }
         }
 
-        public abstract event EventHandler<DataEventArgs> OnReceive;                         //  Allgemeiner Empfang von Daten
-        public abstract event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
-        public abstract event EventHandler<VersionInfoEventArgs> OnGetVersion;               //  40 21 LAN X GET VERSION  2.3 (xx)
-        public abstract event EventHandler<TrackPowerEventArgs> TrackPowerChanged;
-        public abstract event EventHandler<StateEventArgs> OnStatusChanged;                  //  40 62 LAN X STATUS CHANGED 2.12 (13)
-        public abstract event EventHandler OnStopped;                                        //  40 81 LAN X BC STOPPED 2.14 (14)
-        public abstract event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion;// 40 F3 LAN X GET FIRMWARE VERSION 2.15 (xx)
-        public abstract event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged;   //  84    LAN SYSTEMSTATE_DATACHANGED 2.18 (16) 
-        public abstract event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo;         //  1A    LAN GET HWINFO
-        public abstract event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo;              //  40 EF LAN X LOCO INFO   4.4 (22)
-
-        public abstract void GetSerialNumber();
-
-        public abstract void GetVersion();
-
-        public abstract void GetStatus();
-
-        public abstract void SetTrackPowerOFF();
-
-        public abstract void SetTrackPowerON();
-
-        public abstract void SetStop();
+        public abstract new void Dispose();
 
         public abstract void GetFirmwareVersion();
-
-        public abstract void LogOn();
-
-        public abstract void SystemStateGetData();
 
         public abstract void GetHardwareInfo();
 
         public abstract void GetLocoInfo(LokAdresse adresse);
-      
+
+        public abstract void GetSerialNumber();
+
+        public abstract void GetStatus();
+
+        public abstract void GetVersion();
+
+        public abstract void LogOFF();
+
+        public abstract void LogOn();
+
         public abstract void SetLocoDrive(LokInfoData data);
 
         public abstract void SetLocoDrive(List<LokInfoData> data);
@@ -90,9 +92,16 @@ namespace ModelTrainController
 
         public abstract void SetLocoFunction(List<(ToggleType toggle, Function Func)> list);
 
-        public abstract void LogOFF();
+        public abstract void SetStop();
 
-        public abstract new void Dispose();
+        public abstract void SetTrackPowerOFF();
 
+        public abstract void SetTrackPowerON();
+
+        public abstract void SystemStateGetData();
+
+        internal abstract void Empfang(IAsyncResult res);
+
+        internal abstract void EndConnect(IAsyncResult res);
     }
 }

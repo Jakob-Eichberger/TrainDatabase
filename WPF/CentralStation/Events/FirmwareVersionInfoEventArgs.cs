@@ -13,16 +13,17 @@
  */
 
 using System;
+using WPF_Application.CentralStation.DTO;
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.Events
 {
-    public class StateEventArgs : EventArgs
+    public class FirmwareVersionInfoEventArgs : EventArgs
     {
-        public StateEventArgs(TrackPower data)
-            : base()
+        public FirmwareVersionInfo Data;
+
+        public FirmwareVersionInfoEventArgs(FirmwareVersionInfo data) : base()
         {
-            TrackPower = data;
+            Data = data;
         }
-        public TrackPower TrackPower { get; }
     }
 }

@@ -12,16 +12,16 @@
  * 
  */
 
-using Helper;
 using Model;
-using ModelTrainController;
-using ModelTrainController.Z21;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Timers;
+using WPF_Application.CentralStation.DTO;
+using WPF_Application.CentralStation.Enum;
+using WPF_Application.CentralStation.Events;
 using WPF_Application.Exceptions;
 using WPF_Application.Helper;
 
@@ -30,8 +30,6 @@ namespace WPF_Application.CentralStation.Z21
 
     public class Z21 : CentralStationClient
     {
-        private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
-
         public Z21(IPAddress address, Int32 port = 21105) : base(address, port)
         {
             BeginReceive(new AsyncCallback(Empfang), null);
@@ -39,19 +37,220 @@ namespace WPF_Application.CentralStation.Z21
             RenewClientSubscription.Elapsed += RenewClientSubscription_Elapsed;
         }
 
-        private void RenewClientSubscription_Elapsed(object sender, System.Timers.ElapsedEventArgs e) => GetStatus();
+        public override event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion = default!;
 
+        public override event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo = default!;
 
-        public override event EventHandler<DataEventArgs> OnReceive = default!;                         //  Allgemeiner Empfang von Daten
-        public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;      //  10    LAN GET SERIAL NUMBER  2.1 (10)  
-        public override event EventHandler<VersionInfoEventArgs> OnGetVersion = default!;               //  40 21 LAN X GET VERSION  2.3 (xx)
-        public override event EventHandler<StateEventArgs> OnStatusChanged = default!;                  //  40 62 LAN X STATUS CHANGED 2.12 (13)
-        public override event EventHandler OnStopped = default!;                                        //  40 81 LAN X BC STOPPED 2.14 (14)
-        public override event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion = default!;// 40 F3 LAN X GET FIRMWARE VERSION 2.15 (xx)
-        public override event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;   //  84    LAN SYSTEMSTATE_DATACHANGED 2.18 (16) 
-        public override event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo = default!;         //  1A    LAN GET HWINFO
-        public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo = default!;              //  40 EF LAN X LOCO INFO   4.4 (22)
+        public override event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo = default!;
+
+        public override event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;
+
+        public override event EventHandler<VersionInfoEventArgs> OnGetVersion = default!;
+
+        public override event EventHandler<DataEventArgs> OnReceive = default!;
+
+        public override event EventHandler<StateEventArgs> OnStatusChanged = default!;
+
+        public override event EventHandler OnStopped = default!;
+
+        public override event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;
+
         public override event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
+
+        private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
+
+        public override void Dispose()
+        {
+            LogOFF();
+            Close();
+        }
+
+        public override void GetFirmwareVersion()
+        {
+            byte[] bytes = new byte[7];
+            bytes[0] = 0x07;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0xF1;
+            bytes[5] = 0x0A;
+            bytes[6] = 0xFB;   // = XOR-Byte
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET FIRMWARE VERSION " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void GetHardwareInfo()
+        {
+            byte[] bytes = new byte[4];
+            bytes[0] = 0x04;
+            bytes[1] = 0;
+            bytes[2] = 0x1A;
+            bytes[3] = 0;      // kein XOR-Byte  ???
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET HWINFO " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void GetLocoInfo(LokAdresse adresse)
+        {
+            if (adresse is null) return;
+            byte[] bytes = new byte[9];
+            bytes[0] = 0x09;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0xE3;
+            bytes[5] = 0xF0;
+            bytes[6] = adresse.ValueBytes.Adr_MSB;
+            bytes[7] = adresse.ValueBytes.Adr_LSB;
+            bytes[8] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7]);
+            Console.WriteLine("LAN X GET LOCO INFO " + getByteString(bytes) + " (#" + adresse.Value.ToString() + ")");
+            Senden(bytes);
+        }
+
+        public override void GetSerialNumber()
+        {
+            byte[] bytes = new byte[4];
+            bytes[0] = 0x04;
+            bytes[1] = 0;
+            bytes[2] = 0x10;
+            bytes[3] = 0;
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET SERIAL NUMBER " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void GetStatus()
+        {
+            byte[] bytes = new byte[7];
+            bytes[0] = 0x07;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0x21;
+            bytes[5] = 0x24;
+            bytes[6] = 0x05;   // = XOR-Byte
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET STATUS " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void GetVersion()
+        {
+            byte[] bytes = new byte[7];
+            bytes[0] = 0x07;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0x21;
+            bytes[5] = 0x21;
+            //bytes[6] = 0x47;   // = XOR-Byte  selbst ausgerechnet, in der LAN-Doku steht 0 ?!
+            bytes[6] = 0;
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET VERSION " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void LogOFF()
+        {
+            byte[] bytes = new byte[4];
+            bytes[0] = 0x04;
+            bytes[1] = 0x00;
+            bytes[2] = 0x30;
+            bytes[3] = 0x00;
+            Senden(bytes);
+        }
+
+        public override void LogOn()
+        {
+            var flags = BitConverter.GetBytes(0x00000001 | 0x00010000);
+            byte[] bytes = new byte[8];
+            bytes[0] = 0x08;
+            bytes[1] = 0;
+            bytes[2] = 0x50;
+            bytes[3] = 0;
+            bytes[4] = flags[0];
+            bytes[5] = flags[1];
+            bytes[6] = flags[2];
+            bytes[7] = flags[3];
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET BROADCASTFLAGS " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void SetLocoDrive(List<LokInfoData> data)
+        {
+            var array = new byte[10 * data.Count];
+            for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
+                Array.Copy(GetLocoDriveByteArray(data[i]), 0, array, currentIndex, 10);
+            Senden(array);
+        }
+
+        public override void SetLocoDrive(LokInfoData data) => Senden(GetLocoDriveByteArray(data));
+
+        public override void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
+        {
+            byte[] bytes = GetLocoFunctionByteArray(adresse, function, toggelType);
+            Senden(bytes);
+        }
+
+        public override void SetLocoFunction(List<(ToggleType toggle, Function Func)> data)
+        {
+            var array = new byte[10 * data.Count];
+            for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
+            {
+                (ToggleType toggleType, Function function) = data[i];
+                Array.Copy(GetLocoFunctionByteArray(new(function.Vehicle.Address), function, toggleType), 0, array, currentIndex, 10);
+            }
+            Senden(array);
+        }
+
+        public override void SetStop()
+        {
+            byte[] bytes = new byte[6];
+            bytes[0] = 0x06;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0x80;
+            bytes[5] = 0x80;   // = XOR-Byte
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET STOP " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void SetTrackPowerOFF()
+        {
+            byte[] bytes = new byte[7];
+            bytes[0] = 0x07;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0x21;
+            bytes[5] = 0x80;
+            bytes[6] = 0xA1;   // = XOR-Byte
+            Senden(bytes);
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET TRACK POWER OFF " + getByteString(bytes));
+        }
+
+        public override void SetTrackPowerON()
+        {
+            byte[] bytes = new byte[7];
+            bytes[0] = 0x07;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0x21;
+            bytes[5] = 0x81;
+            bytes[6] = 0xA0;   // = XOR-Byte
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET TRACK POWER ON " + getByteString(bytes));
+            Senden(bytes);
+        }
+
+        public override void SystemStateGetData()
+        {
+            byte[] bytes = new byte[4];
+            bytes[0] = 0x04;
+            bytes[1] = 0;
+            bytes[2] = 0x85;
+            bytes[3] = 0;
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SYSTEMSTATE GETDATA " + getByteString(bytes));
+            Senden(bytes);
+        }
 
         internal override void Empfang(IAsyncResult res)
         {
@@ -106,28 +305,28 @@ namespace WPF_Application.CentralStation.Z21
 
             switch (received[2])
             {
-                case 0x1A:           //  LAN GET HWINFO  2.2 (xx)
+                case 0x1A:
                     Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET HWINFO " + getByteString(received));
                     HardwareTyp hardwareTyp;
                     i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
                     j = (received[11] << 24) + (received[10] << 16) + (received[9] << 8) + received[8];
                     switch (i)
                     {
-                        case 0x00000200: hardwareTyp = HardwareTyp.Z21_OLD; break;
-                        case 0x00000201: hardwareTyp = HardwareTyp.Z21_NEW; break;
-                        case 0x00000202: hardwareTyp = HardwareTyp.SMARTRAIL; break;
-                        case 0x00000203: hardwareTyp = HardwareTyp.z21_SMALL; break;
+                        case 0x00000200: hardwareTyp = HardwareTyp.Z21Old; break;
+                        case 0x00000201: hardwareTyp = HardwareTyp.Z21New; break;
+                        case 0x00000202: hardwareTyp = HardwareTyp.SmartRail; break;
+                        case 0x00000203: hardwareTyp = HardwareTyp.z21Small; break;
                         default: hardwareTyp = HardwareTyp.None; break;
                     }
                     OnGetHardwareInfo?.Invoke(this, new HardwareInfoEventArgs(new HardwareInfo(hardwareTyp, j)));
                     break;
-                case 0x10:           //  LAN GET SERIAL NUMBER  2.1 (10)
+                case 0x10:
                     Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET SERIAL NUMBER " + getByteString(received));
                     i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
                     OnGetSerialNumber?.Invoke(this, new GetSerialNumberEventArgs(i));
 
                     break;
-                case 0x40:           //  X-Bus-Telegramm
+                case 0x40:
                     switch (received[4])
                     {
                         case 0x61:
@@ -219,7 +418,7 @@ namespace WPF_Application.CentralStation.Z21
                         case 0xF3:
                             switch (received[5])
                             {
-                                case 0x0A:           //  LAN X GET FIRMWARE VERSION 2.15 (xx)
+                                case 0x0A:
                                     Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET FIRMWARE VERSION " + getByteString(received));
                                     OnGetFirmwareVersion?.Invoke(this, new FirmwareVersionInfoEventArgs(new FirmwareVersionInfo(received[6], received[7])));
                                     // Achtung: die z21 bringt die Minor-Angabe hexadezimal !!!!!!!!    z.B. Firmware 1.23 = Minor 34
@@ -245,6 +444,16 @@ namespace WPF_Application.CentralStation.Z21
             }
         }
 
+        private string getByteString(byte[] bytes)
+        {
+            string s = "";
+            foreach (byte b in bytes)
+            {
+                s += b.ToString("X") + ",";
+            }
+            return s;
+        }
+
         private TrackPower GetCentralStateData(byte[] received)
         {
             TrackPower state = TrackPower.ON;
@@ -260,6 +469,55 @@ namespace WPF_Application.CentralStation.Z21
                 state = TrackPower.Programing;
             Console.WriteLine($"{DateTime.Now:HH-mm-ss} LAN_X_STATUS_CHANGED: {getByteString(received)}\n \t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}\n");
             return state;
+        }
+
+        private byte[] GetLocoDriveByteArray(LokInfoData data)
+        {
+            if (data.DrivingDirection) data.Speed |= 0x080;
+            byte[] bytes = new byte[10];
+            bytes[0] = 0x0A;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0xE4;
+            bytes[5] = 0x13; //  = 128 Fahrstufen
+            bytes[6] = data.Adresse.ValueBytes.Adr_MSB;
+            bytes[7] = data.Adresse.ValueBytes.Adr_LSB;
+            bytes[8] = (byte)data.Speed;
+            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET LOCO DRIVE: Add:'{data.Adresse.Value:D3}' Direction: '{data.DrivingDirection}'\t Speed:'{data.Speed:D3}' ByteString: '{getByteString(bytes)}'");
+            return bytes;
+        }
+
+        private byte[] GetLocoFunctionByteArray(LokAdresse adresse, Function function, ToggleType toggelType)
+        {
+            byte[] bytes = new byte[10];
+            bytes[0] = 0x0A;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0xE4;
+            bytes[5] = 0xF8;
+            bytes[6] = adresse.ValueBytes.Adr_MSB;
+            bytes[7] = adresse.ValueBytes.Adr_LSB;
+            bytes[8] = (byte)function.FunctionIndex;
+
+            var bitarray = new BitArray(new byte[] { bytes[8] });
+            switch (toggelType)
+            {
+                case ToggleType.Off:
+                    break;
+                case ToggleType.On:
+                    bitarray.Set(6, true);
+                    break;
+                case ToggleType.Toggle:
+                    bitarray.Set(7, true);
+                    break;
+            }
+            bitarray.CopyTo(bytes, 8);
+            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET LOCO FUNCTION { getByteString(bytes) }  ({adresse } - index: { function.FunctionIndex } - { toggelType })");
+            return bytes;
         }
 
         private SystemStateData GetSystemStateData(byte[] received)
@@ -282,298 +540,7 @@ namespace WPF_Application.CentralStation.Z21
             return statedata;
         }
 
-        /// <summary>
-        /// LAN_GET_SERIAL_NUMBER()    
-        /// </summary>
-        public override void GetSerialNumber()
-        {
-            byte[] bytes = new byte[4];
-            bytes[0] = 0x04;
-            bytes[1] = 0;
-            bytes[2] = 0x10;
-            bytes[3] = 0;
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET SERIAL NUMBER " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_X_GET_VERSION
-        /// </summary>
-        public override void GetVersion()
-        {
-            byte[] bytes = new byte[7];
-            bytes[0] = 0x07;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0x21;
-            bytes[5] = 0x21;
-            //bytes[6] = 0x47;   // = XOR-Byte  selbst ausgerechnet, in der LAN-Doku steht 0 ?!
-            bytes[6] = 0;
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET VERSION " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_X_GET_STATUS
-        /// </summary>
-        public override void GetStatus()
-        {
-            byte[] bytes = new byte[7];
-            bytes[0] = 0x07;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0x21;
-            bytes[5] = 0x24;
-            bytes[6] = 0x05;   // = XOR-Byte
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET STATUS " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_X_SET_TRACK_POWER_OFF
-        /// </summary>
-        public override void SetTrackPowerOFF()
-        {
-            byte[] bytes = new byte[7];
-            bytes[0] = 0x07;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0x21;
-            bytes[5] = 0x80;
-            bytes[6] = 0xA1;   // = XOR-Byte
-            Senden(bytes);
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET TRACK POWER OFF " + getByteString(bytes));
-        }
-
-        /// <summary>
-        /// LAN_X_SET_TRACK_POWER_ON
-        /// </summary>
-        public override void SetTrackPowerON()
-        {
-            byte[] bytes = new byte[7];
-            bytes[0] = 0x07;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0x21;
-            bytes[5] = 0x81;
-            bytes[6] = 0xA0;   // = XOR-Byte
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET TRACK POWER ON " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_X_SET_STOP
-        /// </summary>
-        public override void SetStop()
-        {
-            byte[] bytes = new byte[6];
-            bytes[0] = 0x06;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0x80;
-            bytes[5] = 0x80;   // = XOR-Byte
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET STOP " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_X_GET_FIRMWARE_VERSION
-        /// </summary>
-        public override void GetFirmwareVersion()
-        {
-            byte[] bytes = new byte[7];
-            bytes[0] = 0x07;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0xF1;
-            bytes[5] = 0x0A;
-            bytes[6] = 0xFB;   // = XOR-Byte
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET FIRMWARE VERSION " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_SET_BROADCASTFLAGS
-        /// </summary>
-        public override void LogOn()
-        {
-            var flags = BitConverter.GetBytes(0x00000001 | 0x00010000);
-            byte[] bytes = new byte[8];
-            bytes[0] = 0x08;
-            bytes[1] = 0;
-            bytes[2] = 0x50;
-            bytes[3] = 0;
-            bytes[4] = flags[0];
-            bytes[5] = flags[1];
-            bytes[6] = flags[2];
-            bytes[7] = flags[3];
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET BROADCASTFLAGS " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_SYSTEMSTATE_GETDATA
-        /// </summary>
-        public override void SystemStateGetData()
-        {
-            byte[] bytes = new byte[4];
-            bytes[0] = 0x04;
-            bytes[1] = 0;
-            bytes[2] = 0x85;
-            bytes[3] = 0;
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SYSTEMSTATE GETDATA " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_GET_HWINFO
-        /// </summary>
-        public override void GetHardwareInfo()
-        {
-            byte[] bytes = new byte[4];
-            bytes[0] = 0x04;
-            bytes[1] = 0;
-            bytes[2] = 0x1A;
-            bytes[3] = 0;      // kein XOR-Byte  ???
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} GET HWINFO " + getByteString(bytes));
-            Senden(bytes);
-        }
-
-        /// <summary>
-        /// LAN_X_GET_LOCO_INFO
-        /// </summary>
-        /// <param name="adresse"></param>
-        public override void GetLocoInfo(LokAdresse adresse)
-        {
-            if (adresse is null) return;
-            byte[] bytes = new byte[9];
-            bytes[0] = 0x09;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0xE3;
-            bytes[5] = 0xF0;
-            bytes[6] = adresse.ValueBytes.Adr_MSB;
-            bytes[7] = adresse.ValueBytes.Adr_LSB;
-            bytes[8] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7]);
-            Console.WriteLine("LAN X GET LOCO INFO " + getByteString(bytes) + " (#" + adresse.Value.ToString() + ")");
-            Senden(bytes);
-        }
-
-        public override void SetLocoDrive(List<LokInfoData> data)
-        {
-            var array = new byte[10 * data.Count];
-            for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
-                Array.Copy(GetLocoDriveByteArray(data[i]), 0, array, currentIndex, 10);
-            Senden(array);
-        }
-
-
-        public override void SetLocoDrive(LokInfoData data) => Senden(GetLocoDriveByteArray(data));
-
-        private byte[] GetLocoDriveByteArray(LokInfoData data)
-        {
-            if (data.DrivingDirection) data.Speed |= 0x080;
-            byte[] bytes = new byte[10];
-            bytes[0] = 0x0A;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0xE4;
-            bytes[5] = 0x13; //  = 128 Fahrstufen
-            bytes[6] = data.Adresse.ValueBytes.Adr_MSB;
-            bytes[7] = data.Adresse.ValueBytes.Adr_LSB;
-            bytes[8] = (byte)data.Speed;
-            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET LOCO DRIVE: Add:'{data.Adresse.Value:D3}' Direction: '{data.DrivingDirection}'\t Speed:'{data.Speed:D3}' ByteString: '{getByteString(bytes)}'");
-            return bytes;
-        }
-
-        /// <summary>
-        /// LAN_X_SET_LOCO_FUNCTION
-        /// </summary>
-        /// <param name="adresse"></param>
-        /// <param name="function"></param>
-        /// <param name="toggelType"></param>
-        public override void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
-        {
-            byte[] bytes = GetLocoFunctionByteArray(adresse, function, toggelType);
-            Senden(bytes);
-        }
-
-
-        public override void SetLocoFunction(List<(ToggleType toggle, Function Func)> data)
-        {
-            var array = new byte[10 * data.Count];
-            for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
-            {
-                (ToggleType toggleType, Function function) = data[i];
-                Array.Copy(GetLocoFunctionByteArray(new(function.Vehicle.Address), function, toggleType), 0, array, currentIndex, 10);
-            }
-            Senden(array);
-        }
-
-
-        private byte[] GetLocoFunctionByteArray(LokAdresse adresse, Function function, ToggleType toggelType)
-        {
-            byte[] bytes = new byte[10];
-            bytes[0] = 0x0A;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0xE4;
-            bytes[5] = 0xF8;
-            bytes[6] = adresse.ValueBytes.Adr_MSB;
-            bytes[7] = adresse.ValueBytes.Adr_LSB;
-            bytes[8] = (byte)function.FunctionIndex;
-
-            var bitarray = new BitArray(new byte[] { bytes[8] });
-            switch (toggelType)
-            {
-                case ToggleType.off:
-                    break;
-                case ToggleType.on:
-                    bitarray.Set(6, true);
-                    break;
-                case ToggleType.@switch:
-                    bitarray.Set(7, true);
-                    break;
-            }
-            bitarray.CopyTo(bytes, 8);
-            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} SET LOCO FUNCTION { getByteString(bytes) }  ({adresse } - index: { function.FunctionIndex } - { toggelType })");
-            return bytes;
-        }
-
-
-        /// <summary>
-        /// LAN_LOGOFF
-        /// </summary>
-        public override void LogOFF()
-        {
-            byte[] bytes = new byte[4];
-            bytes[0] = 0x04;
-            bytes[1] = 0x00;
-            bytes[2] = 0x30;
-            bytes[3] = 0x00;
-            Senden(bytes);
-        }
-
-        private string getByteString(byte[] bytes)
-        {
-            string s = "";
-            foreach (byte b in bytes)
-            {
-                s += b.ToString("X") + ",";
-            }
-            return s;
-        }
+        private void RenewClientSubscription_Elapsed(object sender, System.Timers.ElapsedEventArgs e) => GetStatus();
 
         private async void Senden(byte[] bytes)
         {
@@ -599,12 +566,6 @@ namespace WPF_Application.CentralStation.Z21
                     Client.BeginConnect(lanAdresse, lanPort, new AsyncCallback(EndConnect), null);
                 Logger.Log("Fehler beim Senden", ex);
             }
-        }
-
-        public override void Dispose()
-        {
-            LogOFF();
-            Close();
         }
     }
 }

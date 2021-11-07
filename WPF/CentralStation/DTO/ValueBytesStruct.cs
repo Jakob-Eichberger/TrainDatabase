@@ -9,15 +9,14 @@
  * Die Anwendung und die Quelltextdateien sind freie Software und stehen unter der
  * GNU General Public License. Der Originaltext dieser Lizenz kann eingesehen werden
  * unter http://www.gnu.org/licenses/gpl.html.
- * 
  */
 
-namespace Helper
+namespace WPF_Application.CentralStation.DTO
 {
-    public enum ToggleType
+    public struct ValueBytesStruct
     {
-        off = 00,
-        on = 01,
-        @switch = 10
+        public byte Adr_LSB;
+
+        public byte Adr_MSB;
     }
 }

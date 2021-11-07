@@ -14,31 +14,17 @@
 using Model;
 using System.Collections.Generic;
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.DTO
 {
     public class LokInfoData
     {
-        private int speed = 0;
-
-        public LokAdresse Adresse { get; set; } = default!;
-
-        public bool InUse { get; set; } = default!;
-
-        public bool DrivingDirection { get; set; } = true;
-
-        public int Speed
-        {
-            get => speed; set
-            {
-                speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
-            }
-        }
-
         /// <summary>
         /// int -> <see cref="Function.FunctionIndex"/> |
         /// bool -> TRUE: ON, FALSE, OFF
         /// </summary>
         public List<(int functionIndex, bool state)> Functions = new();
+
+        private int speed = 0;
 
         public LokInfoData(LokAdresse adresse)
         {
@@ -51,6 +37,20 @@ namespace ModelTrainController.Z21
 
         public LokInfoData()
         {
+        }
+
+        public LokAdresse Adresse { get; set; } = default!;
+
+        public bool DrivingDirection { get; set; } = true;
+
+        public bool InUse { get; set; } = default!;
+
+        public int Speed
+        {
+            get => speed; set
+            {
+                speed = value == 1 ? speed > 1 ? 0 : 2 : value;
+            }
         }
     }
 }

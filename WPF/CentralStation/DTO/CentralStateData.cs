@@ -12,18 +12,24 @@
  * 
  */
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.DTO
 {
-    public class FirmwareVersionInfo
+    public class CentralStateData
     {
-        public int Major;
-        public int Minor;
-        public string Firmware;
-        public FirmwareVersionInfo(int major, int minor)
-        {
-            Major = major;
-            Minor = minor;
-            Firmware = major.ToString("X") + "." + minor.ToString("X");    // z21 liefert minor hex
-        }
+        public bool EmergencyStop { get; set; } = true;
+
+        public bool HighTemperature { get; set; } = true;
+
+        public bool PowerLost { get; set; } = true;
+
+        public bool ProgrammingModeActive { get; set; } = true;
+
+        public bool ShortCircuit { get; set; } = true;
+
+        public bool ShortCircuitExternal { get; set; } = true;
+
+        public bool ShortCircuitInternal { get; set; } = true;
+
+        public bool TrackVoltageOff { get; set; } = true;
     }
 }

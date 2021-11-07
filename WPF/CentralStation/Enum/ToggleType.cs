@@ -12,7 +12,12 @@
  * 
  */
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.Enum
 {
-    public enum VersionTyp { Z21, z21, Other, None };
+    public enum ToggleType
+    {
+        Off = 00,
+        On = 01,
+        Toggle = 10
+    }
 }

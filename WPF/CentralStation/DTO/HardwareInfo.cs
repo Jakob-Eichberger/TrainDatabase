@@ -12,7 +12,20 @@
  * 
  */
 
-namespace ModelTrainController.Z21
+using WPF_Application.CentralStation.Enum;
+
+namespace WPF_Application.CentralStation.DTO
 {
-    public enum HardwareTyp { Z21_OLD, Z21_NEW, SMARTRAIL, z21_SMALL, None };
+    public class HardwareInfo
+    {
+        public HardwareInfo(HardwareTyp hardware, int firmware)
+        {
+            Hardware = hardware;
+            FirmwareVersion = firmware;
+        }
+
+        public int FirmwareVersion { get; set; }
+
+        public HardwareTyp Hardware { get; set; }
+    }
 }

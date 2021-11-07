@@ -17,6 +17,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using WPF_Application;
+using WPF_Application.CentralStation;
 using WPF_Application.CentralStation.Z21;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
@@ -71,7 +72,7 @@ namespace Wpf_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        ModelTrainController.CentralStationClient? Controller { get; set; }
+        CentralStationClient? Controller { get; set; }
 
         public void DrawAllVehicles(IEnumerable<Vehicle> list)
         {

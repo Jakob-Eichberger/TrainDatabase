@@ -1,8 +1,5 @@
-﻿using Helper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Model;
-using ModelTrainController;
-using ModelTrainController.Z21;
 using OxyPlot;
 using OxyPlot.Series;
 using SharpDX.DirectInput;
@@ -17,6 +14,10 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using WPF_Application.CentralStation;
+using WPF_Application.CentralStation.DTO;
+using WPF_Application.CentralStation.Enum;
+using WPF_Application.CentralStation.Events;
 using WPF_Application.Extensions;
 using WPF_Application.Helper;
 using WPF_Application.Infrastructure;
@@ -89,7 +90,7 @@ namespace WPF_Application
 
         private void Controller_OnStatusChanged(object? sender, StateEventArgs e) => TrackPower = e.TrackPower;
 
-        private void Controller_TrackPowerChanged(object? sender, CentralStation.TrackPowerEventArgs e) => TrackPower = e.TrackPower;
+        private void Controller_TrackPowerChanged(object? sender, TrackPowerEventArgs e) => TrackPower = e.TrackPower;
 
         private async void Controller_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
         {
@@ -108,11 +109,11 @@ namespace WPF_Application
             }
         }
 
-        void FunctionToggle_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(((sender as ToggleButton)!.IsChecked ?? false) ? ToggleType.on : ToggleType.off, ((e.Source as ToggleButton)!.Tag as Function)!);
+        void FunctionToggle_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(((sender as ToggleButton)!.IsChecked ?? false) ? ToggleType.On : ToggleType.Off, ((e.Source as ToggleButton)!.Tag as Function)!);
 
-        void FunctionButtonDown_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.on, ((e.Source as Button)?.Tag as Function)!);
+        void FunctionButtonDown_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.On, ((e.Source as Button)?.Tag as Function)!);
 
-        void FunctionButtonUp_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.off, ((e.Source as Button)?.Tag as Function)!);
+        void FunctionButtonUp_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.Off, ((e.Source as Button)?.Tag as Function)!);
 
         /// <summary>
         /// Method for event when user checks a checkbox.
@@ -406,13 +407,13 @@ namespace WPF_Application
                                 {
                                     case ButtonType.Switch:
                                         if (e.currentValue == Function.Value.maxValue)
-                                            list.Add((ToggleType.@switch, item));
+                                            list.Add((ToggleType.Toggle, item));
                                         break;
                                     case ButtonType.PushButton:
                                         if (e.currentValue == Function.Value.maxValue)
-                                            list.Add((ToggleType.on, item));
+                                            list.Add((ToggleType.On, item));
                                         if (e.currentValue == 0)
-                                            list.Add((ToggleType.off, item));
+                                            list.Add((ToggleType.Off, item));
                                         break;
                                     case ButtonType.Timer:
                                         break;

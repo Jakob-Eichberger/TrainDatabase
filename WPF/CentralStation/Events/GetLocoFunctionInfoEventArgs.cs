@@ -1,6 +1,7 @@
 ﻿using System;
+using WPF_Application.CentralStation.DTO;
 
-namespace ModelTrainController
+namespace WPF_Application.CentralStation.Events
 {
     public class GetLocoFunctionInfoEventArgs : EventArgs
     {

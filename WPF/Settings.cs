@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
-using WPF_Application.CentralStation;
+using WPF_Application.CentralStation.Enum;
 using WPF_Application.Extensions;
 
 namespace WPF_Application

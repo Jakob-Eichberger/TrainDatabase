@@ -1,4 +1,4 @@
-﻿namespace ModelTrainController
+﻿namespace WPF_Application.CentralStation.Enum
 {
     public enum TrackPower
     {

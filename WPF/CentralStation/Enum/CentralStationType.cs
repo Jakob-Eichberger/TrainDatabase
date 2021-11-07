@@ -1,4 +1,4 @@
-﻿namespace WPF_Application.CentralStation
+﻿namespace WPF_Application.CentralStation.Enum
 {
     public enum CentralStationType
     {

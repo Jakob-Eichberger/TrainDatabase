@@ -12,17 +12,14 @@
  * 
  */
 
-using System;
-
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.Enum
 {
-    public class VersionInfoEventArgs : EventArgs
+    public enum HardwareTyp
     {
-        public VersionInfoEventArgs(VersionInfo data)
-            : base()
-        {
-            Data = data;
-        }
-        public VersionInfo Data;
-    }
+        Z21Old,
+        Z21New,
+        SmartRail,
+        z21Small,
+        None
+    };
 }

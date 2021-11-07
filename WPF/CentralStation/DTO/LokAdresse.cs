@@ -14,10 +14,11 @@
 
 using System;
 
-namespace ModelTrainController.Z21
+namespace WPF_Application.CentralStation.DTO
 {
     public class LokAdresse
     {
+        private int val = 0;
 
         public LokAdresse(int adresse)
         {
@@ -34,20 +35,14 @@ namespace ModelTrainController.Z21
             ValueBytes = valueBytes;
         }
 
-        private int val = 0;
-
         public int Value
         {
             set
             {
                 if (value >= 1 & value <= 9999)
-                {
                     val = value;
-                }
                 else
-                {
                     val = -99;
-                }
             }
             get
             {
@@ -67,11 +62,9 @@ namespace ModelTrainController.Z21
 
                 try
                 {
-                    byte b = Convert.ToByte(val >> 8);
+                    var b = Convert.ToByte(val >> 8);
                     if (val >= 128)
-                    {
                         b += 192;
-                    }
                     vbs.Adr_MSB = b;
                     vbs.Adr_LSB = Convert.ToByte(val % 256);
 
