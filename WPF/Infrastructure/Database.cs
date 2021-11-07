@@ -50,10 +50,7 @@ namespace TrainDatabase.Infrastructure
             return result;
         }
 
-        public void InvokeCollectionChanged()
-        {
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
-        }
+        public void InvokeCollectionChanged() => CollectionChanged?.Invoke(this, new EventArgs());
 
         public override EntityEntry<TEntity> Remove<TEntity>(TEntity obj) where TEntity : class
         {
