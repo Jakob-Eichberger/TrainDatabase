@@ -16,14 +16,9 @@ namespace TrainDatabase.Infrastructure
     {
         public event EventHandler CollectionChanged;
 
-        public Database()
-        {
-        }
+        public Database() { }
 
-        public Database(DbContextOptions<Database> options)
-            : base(options)
-        {
-        }
+        public Database(DbContextOptions<Database> options) : base(options) { }
 
         public virtual DbSet<Category> Categories => Set<Category>();
 
@@ -49,10 +44,6 @@ namespace TrainDatabase.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<Vehicle>().HasOne(e => e.Category);
-            //modelBuilder.Entity<Vehicle>().HasMany(e => e.Functions);
-            //modelBuilder.Entity<Category>().HasMany(e => e.Vehicles);
-
             var converter = new ValueConverter<decimal?[], string>(v => string.Join(";", v), v => v.Split(";", StringSplitOptions.None).Select(val => val.IsDecimal() ? decimal.Parse(val) : (decimal?)null).ToArray());
             modelBuilder.Entity<Vehicle>().Property(e => e.TractionForward).HasConversion(converter);
             modelBuilder.Entity<Vehicle>().Property(e => e.TractionBackward).HasConversion(converter);
@@ -65,7 +56,7 @@ namespace TrainDatabase.Infrastructure
         {
             var result = Set<TEntity>().Add(obj);
             SaveChanges();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
             return result;
         }
 
@@ -73,7 +64,7 @@ namespace TrainDatabase.Infrastructure
         {
             var result = await Set<TEntity>().AddAsync(obj);
             await SaveChangesAsync();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
             return result;
         }
 
