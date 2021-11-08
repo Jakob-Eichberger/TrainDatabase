@@ -90,7 +90,7 @@
                     <Label Grid.Row="7" Grid.Column="0" Content="Hersteller"  Margin="5" VerticalAlignment="Center"/>
                     <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Manufacturer, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"  VerticalAlignment="Center" />
 
-                    <Label Grid.Row="8" Grid.Column="0" Content="ArticleNumber"  Margin="5" VerticalAlignment="Center"/>
+                    <Label Grid.Row="8" Grid.Column="0" Content="Artikel Nummer"  Margin="5" VerticalAlignment="Center"/>
                     <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.ArticleNumber, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"  VerticalAlignment="Center" />
 
                     <Label Grid.Row="9" Grid.Column="0" Content="Beschreibung"  Margin="5" VerticalAlignment="Top"/>
@@ -110,8 +110,8 @@
                             <DataGridTextColumn Header="Adresse" Binding="{Binding FunctionIndex, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridTextColumn Header="Name"  Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridTextColumn Header="ButtonType"  Binding="{Binding ButtonType, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridCheckBoxColumn Header="Active" Binding="{Binding IsActive, UpdateSourceTrigger=PropertyChanged}" />
-                            <DataGridCheckBoxColumn Header="Nummer anzeigen" Binding="{Binding ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridCheckBoxColumn Header="Aktiv" Binding="{Binding IsActive, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridCheckBoxColumn Header="Adresse anzeigen" Binding="{Binding ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <DockPanel Grid.Row="1">
