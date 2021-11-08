@@ -58,8 +58,6 @@ namespace TrainDatabase
                 controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
                 controller.TrackPowerChanged += Controller_TrackPowerChanged;
                 controller.OnStatusChanged += Controller_OnStatusChanged;
-                controller.GetLocoInfo(new(Vehicle.Address));
-                controller.GetStatus();
 
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
@@ -160,10 +158,8 @@ namespace TrainDatabase
         public void DrawAllFunctions()
         {
             FunctionGrid.Children.Clear();
-            int i = 0;
             foreach (var item in Vehicle.Functions.OrderBy(e => e.FunctionIndex))
             {
-                i++;
                 Border border = new();
                 border.Padding = new(2);
                 border.Margin = new(10);
@@ -178,6 +174,7 @@ namespace TrainDatabase
                     tb.Click += FunctionToggle_Click;
                     tb.Tag = item;
                     tb.Name = $"btn_Function_{item.Id}";
+                    tb.ToolTip = $"{item}";
                     FunctionToggleButtons.Add(tb);
                     sp.Children.Add(tb);
                 }
@@ -188,6 +185,7 @@ namespace TrainDatabase
                     btn.PreviewMouseUp += FunctionButtonUp_Click;
                     btn.Tag = item;
                     btn.Name = $"btn_Function_{item.Id}";
+                    btn.ToolTip = $"{item}";
                     FunctionButtons.Add(btn);
                     sp.Children.Add(btn);
                 }
