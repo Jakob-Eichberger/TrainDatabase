@@ -8,7 +8,7 @@ The features of this software are as followed:
 - Measuring the vehicle's speed using a raspberry pi. 
 - Database can be imported from the new Roco Z21 app. 
 
-*Note: TrainDatabase itself is in German. An English language package is planned.*
+*Note: TrainDatabase and its documentation is written in German. An English language package is **not** planned.*
 
 ## Getting Started
 
@@ -16,9 +16,8 @@ The features of this software are as followed:
 
 1. Make sure that you have a z21/Z21 from Roco/Fleischmann. (No other digital control center is currently supported)
 2. Go to this [link](https://github.com/Jakob-Eichberger/TrainDatabase/releases) to download the software.
-3. Unpack the .zip file, copy the folder to its final directory and start the TrainDB.exe.
+3. Unpack the .zip file, copy the folder to its final directory and start the TrainDB.exe. (*Note: A wix based installer is planned*)
 4. When it's your first time starting the app you get the option to import your Z21 Layout (from the new Z21 Android/IOS App).
-5. Done!
 
 ### Import existing z21 Layout. 
 1. Open the Roco/Fleischmann Z21 App.
@@ -29,9 +28,9 @@ The features of this software are as followed:
 6. Save the file to your device or send it to yourself via Email.
 7. In the TrainDatabase go to "Database".
 8. Click "Neue Datenbank importieren".
-9. Select the file.
-10. Click Go!
-11. Done!
+9. Select the .z21 File.
+10. Click "Jetzt importieren".
+11. The Software imports the database, and it will show a "Import erfolgreich" dialog, if the import was successful.
 
 ## Examples of use
 
@@ -48,15 +47,16 @@ In the edit window, the vehicle and its functions can be changed.
 
 **Note:** The shown fields are not yet final. 
 
-![image](https://user-images.githubusercontent.com/53713395/140195384-340776e6-c6cd-4751-8758-25be618d2857.png)
-![image](https://user-images.githubusercontent.com/53713395/140195396-eb63fe55-c37e-4c44-8e26-66c33d44cbee.png)
-![image](https://user-images.githubusercontent.com/53713395/140195414-d8126d7a-c65a-4daf-add4-bfd68c114662.png)
+![image](https://user-images.githubusercontent.com/53713395/140822639-1f07bcd9-de62-45f9-afd3-61c8f13acb3f.png)
+![image](https://user-images.githubusercontent.com/53713395/140822682-2b9de754-85eb-48f0-8cbd-5c29560fdb69.png)
+![image](https://user-images.githubusercontent.com/53713395/140822719-24a59654-d83a-4c33-ab6a-9fa798324ce1.png)
+![image](https://user-images.githubusercontent.com/53713395/140822897-d496ea8d-cfb1-48f3-9ab0-40a8a7ab9b6b.png)
 
 ### Vehicle control window
 
 In the control window the speed, direction of travel, and functions of a vehicle can be controlled.
 
-![image](https://user-images.githubusercontent.com/53713395/130352398-85260549-59de-4edd-8550-6c56cf23b666.png)
+![image](https://user-images.githubusercontent.com/53713395/140822127-be8e3e04-c2da-49e1-aedb-21cd6444b2fe.png)
 
 ### Speeed measurement window
 
