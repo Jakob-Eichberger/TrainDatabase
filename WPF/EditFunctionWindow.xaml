@@ -41,7 +41,7 @@
             <ComboBox Grid.Row="3" Grid.Column="1"  SelectedItem="{Binding Function.EnumType, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type model:FunctionType} }}" Padding="5" Margin="5" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False"/>
 
             <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding ElementName=ew,Path=Function.IsActive, UpdateSourceTrigger=PropertyChanged}" Content="Active" Margin="5"/>
-            <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding ElementName=ew,Path=Function.ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}" Content="Funktionsnummer anzeigen" Margin="5"/>
+            <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding ElementName=ew,Path=Function.ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}" Content="Adresse anzeigen" Margin="5"/>
         </Grid>
     </ScrollViewer>
 
