@@ -26,13 +26,13 @@
                             <DataGridTextColumn Header="Langer Name" Binding="{Binding FullName}"/>
                             <DataGridTextColumn Header="Type" Binding="{Binding Type}"/>
                             <DataGridTextColumn Header="Adresse" Binding="{Binding Address}"/>
-                            <DataGridCheckBoxColumn Header="IsActive" Binding="{Binding IsActive}"/>
-                            <DataGridCheckBoxColumn Header="InvertTraction" Binding="{Binding InvertTraction}"/>
-                            <DataGridTextColumn Header="Railway" Binding="{Binding Railway}"/>
+                            <DataGridCheckBoxColumn Header="Aktiv" Binding="{Binding IsActive}"/>
+                            <DataGridCheckBoxColumn Header="Traktion Invertieren" Binding="{Binding InvertTraction}"/>
+                            <DataGridTextColumn Header="EVU" Binding="{Binding Railway}"/>
                             <DataGridTextColumn Header="Rmin" Binding="{Binding Rmin}"/>
                             <DataGridTextColumn Header="Hersteller" Binding="{Binding Manufacturer}"/>
-                            <DataGridTextColumn Header="ArticleNumber" Binding="{Binding ArticleNumber}"/>
-                            <DataGridTextColumn Header="DecoderType" Binding="{Binding DecoderType}"/>
+                            <DataGridTextColumn Header="Artikel Nummer" Binding="{Binding ArticleNumber}"/>
+                            <DataGridTextColumn Header="Decoder Type" Binding="{Binding DecoderType}"/>
                             <DataGridTextColumn Header="Kaufdatum" Binding="{Binding BuildYear}"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -81,7 +81,7 @@
                     <TextBox Grid.Row="4" Grid.Column="1" Margin="5,5,40,5" Padding="5"  IsReadOnly="True" Text="{Binding ElementName=Vm,Path=SelectedVehicle.ImageName, UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Grid.Row="4" Grid.Column="1" Margin="5" Padding="5" HorizontalAlignment="Right" Content=" ... " ToolTip="Bild ändern." Click="BtnEditVehicleFunction_Click"/>
 
-                    <Label Grid.Row="5" Grid.Column="0" Content="Railway"  Margin="5" VerticalAlignment="Center"/>
+                    <Label Grid.Row="5" Grid.Column="0" Content="EVU"  Margin="5" VerticalAlignment="Center" ToolTip="Eisenbahnverkehrsunternehmen"/>
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Railway, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"   VerticalAlignment="Center"/>
 
                     <Label Grid.Row="6" Grid.Column="0" Content="Decoder Type"  Margin="5" VerticalAlignment="Center"/>
