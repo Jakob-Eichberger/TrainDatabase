@@ -272,6 +272,7 @@ namespace TrainDatabase
         private void Controller_OnStatusChanged(object? sender, StateEventArgs e) => TrackPower = e.TrackPower;
 
         private void Controller_TrackPowerChanged(object? sender, TrackPowerEventArgs e) => TrackPower = e.TrackPower;
+
         private async Task DeterminSlowestVehicleInList() => await Task.Run(() =>
         {
             var list = DoubleTractionVehicles.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.Traction.Forwards is not null && e.Traction.Backwards is not null).ToList();
@@ -282,11 +283,12 @@ namespace TrainDatabase
                 SlowestVehicleInTractionList = Vehicle;
         });
 
-        void FunctionButtonDown_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.On, ((e.Source as Button)?.Tag as Function)!);
+        private void FunctionButtonDown_Click(object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.On, ((e.Source as Button)?.Tag as Function)!);
 
-        void FunctionButtonUp_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.Off, ((e.Source as Button)?.Tag as Function)!);
+        private void FunctionButtonUp_Click(object sender, RoutedEventArgs e) => SetLocoFunction(ToggleType.Off, ((e.Source as Button)?.Tag as Function)!);
 
-        void FunctionToggle_Click(Object sender, RoutedEventArgs e) => SetLocoFunction(((sender as ToggleButton)!.IsChecked ?? false) ? ToggleType.On : ToggleType.Off, ((e.Source as ToggleButton)!.Tag as Function)!);
+        private void FunctionToggle_Click(object sender, RoutedEventArgs e) => SetLocoFunction(((sender as ToggleButton)!.IsChecked ?? false) ? ToggleType.On : ToggleType.Off, ((e.Source as ToggleButton)!.Tag as Function)!);
+
         private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
 
         private double GetSlowestVehicleSpeed(bool direction, int xValue)
@@ -398,7 +400,7 @@ namespace TrainDatabase
         /// <param name="e"></param>
         private async void VehicleCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            if (((sender as CheckBox)?.Tag ?? null) is null)
+            if ((sender as CheckBox)?.Tag is null)
                 return;
 
             var temp = (Vehicle)(sender as CheckBox)!.Tag;
@@ -407,7 +409,7 @@ namespace TrainDatabase
 
             await DeterminSlowestVehicleInList();
         }
-        
+
         private void BtnDirection_Click(object sender, RoutedEventArgs e) => SwitchDirection();
 
         private void SwitchDirection() => SetLocoDrive(drivingDirection: !LiveData.DrivingDirection);
@@ -424,7 +426,7 @@ namespace TrainDatabase
             e.Handled = true;
             SliderLastused = DateTime.Now;
         }
-   
+
         private void SliderSpeed_PreviewMouseDown(object sender, MouseButtonEventArgs e) => SliderInUser = true;
 
         private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
