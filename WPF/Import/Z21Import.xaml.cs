@@ -185,7 +185,7 @@ namespace Importer
             db.SaveChanges();
         }
 
-        private static string ParseFunctionName(string name) => Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(Regex.Replace(name?.Replace("_", " ") ?? "", "[0-9]", " ").Trim());
+        private static string ParseFunctionName(string name) => Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(Regex.Replace(name?.ToLower()?.Replace("_", " ") ?? "", "[0-9]", " ").Trim());
 
         private void ImportVehicles(SqliteConnection connection)
         {
