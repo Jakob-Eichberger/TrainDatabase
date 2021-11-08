@@ -121,11 +121,13 @@ namespace Importer
             Dictionary<string, FunctionType> dic = new();
             dic.Add("sound", FunctionType.Sound1);
             dic.Add("light", FunctionType.Light1);
+            dic.Add("main_beam", FunctionType.MainBeam);
+            dic.Add("main_beam2", FunctionType.LowBeam);
 
-            if (Enum.TryParse<FunctionType>(name.Replace("_", ""), true, out var result))
-                return result;
-            else if (dic.TryGetValue(name, out FunctionType func))
+            if (dic.TryGetValue(name?.ToLower(), out FunctionType func))
                 return func;
+            else if (Enum.TryParse<FunctionType>(name.Replace("_", ""), true, out var result))
+                return result;
             else
                 return FunctionType.None;
         }
