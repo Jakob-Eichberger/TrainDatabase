@@ -70,7 +70,7 @@
                     <Label Grid.Row="1" Grid.Column="0" Content="Langer Name"  Margin="5" VerticalAlignment="Center"/>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.FullName, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5" VerticalAlignment="Center"/>
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Type"  Margin="5" VerticalAlignment="Center"/>
+                    <!--<Label Grid.Row="2" Grid.Column="0" Content="Type"  Margin="5" VerticalAlignment="Center"/>-->
                     <!--<ComboBox  Grid.Row="2" Grid.Column="1" Margin="5" Padding="5" ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type model:VehicleType}}}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle.Type,Mode=TwoWay}" />-->
 
                     <Label Grid.Row="3" Grid.Column="0" Content="Adresse"  Margin="5" VerticalAlignment="Center"/>
