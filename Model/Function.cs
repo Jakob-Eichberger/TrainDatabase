@@ -31,5 +31,9 @@ namespace Model
         public FunctionType EnumType { get; set; }
 
         public override bool Equals(object obj) => obj is Function function && Id == function?.Id;
+
+        public override string ToString() =>
+            $"Name: \t{Name}\n" +
+            $"Adresse:\t{FunctionIndex}";
     }
 }
