@@ -12,6 +12,8 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TrainDatabase.Extensions;
@@ -165,7 +167,7 @@ namespace Importer
                     Id = reader.GetString(0).ToInt32(),
                     Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
                     ButtonType = (ButtonType)reader.GetString(2).ToInt32(),
-                    Name = reader.GetString(3).IsNullOrWhiteSpace() ? reader.GetString(6) : reader.GetString(3),
+                    Name = ParseFunctionName(reader.GetString(3).IsNullOrWhiteSpace() ? reader.GetString(6) : reader.GetString(3)),
                     Time = reader.GetString(4).ToDecimal(),
                     Position = reader.GetString(5).ToInt32(),
                     ImageName = reader.GetString(6),
@@ -177,6 +179,8 @@ namespace Importer
             }
             db.SaveChanges();
         }
+
+        private static string ParseFunctionName(string reader) => Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(Regex.Replace(reader?.Replace("_", " ") ?? "", "[0-9]", " ").Trim());
 
         private void ImportVehicles(SqliteConnection connection)
         {
