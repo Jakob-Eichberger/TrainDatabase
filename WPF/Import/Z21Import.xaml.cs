@@ -164,7 +164,7 @@ namespace Importer
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                db.Functions.Add(new()
+                Function func = new()
                 {
                     Id = reader.GetString(0).ToInt32(),
                     Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
@@ -177,7 +177,10 @@ namespace Importer
                     ShowFunctionNumber = reader.GetString(8).ToBoolean(),
                     IsConfigured = reader.GetString(9).ToBoolean(),
                     EnumType = GetFunctionType(reader.GetString(6))
-                });
+                };
+
+                if (func.Name != "Empty")
+                    db.Functions.Add(func);
             }
             db.SaveChanges();
         }
