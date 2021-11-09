@@ -12,7 +12,7 @@ namespace Helper
             string path = Directory.GetCurrentDirectory() + @"\Log";
             Directory.CreateDirectory(path);
             path += $@"\{DateTime.UtcNow.Date:dd-MM-yyyy}.txt";
-            File.AppendAllText(path, $"ERROR in function '{functionName ?? " - "}' ({DateTime.UtcNow:dd.MM.yyyy HH:mm:ss}): '{message}'\n\n Exception: {exception.ToString() ?? "-"} \n\n StackTrace: {exception.StackTrace ?? "-"}\n\n------------------------------------------------------------------------------------------------\n");
+            File.AppendAllText(path, $"ERROR in function '{functionName ?? " - "}' ({DateTime.UtcNow:dd.MM.yyyy HH:mm:ss}): '{message}'\n\n Exception: {exception} \n\n------------------------------------------------------------------------------------------------\n");
         }
     }
 }
