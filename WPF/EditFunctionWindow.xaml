@@ -7,7 +7,7 @@
         xmlns:wpf="clr-namespace:TrainDatabase"
         xmlns:model="clr-namespace:Model;assembly=Model"
         mc:Ignorable="d"
-        Title="EditFunctionWindow" SizeToContent="WidthAndHeight" MinWidth="250" MinHeight="250" Height="250" Name="ew">
+        Title="EditFunctionWindow" SizeToContent="WidthAndHeight" MinWidth="250" MinHeight="210" Height="210" Name="ew">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.ColumnDefinitions>
