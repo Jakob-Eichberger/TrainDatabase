@@ -43,10 +43,7 @@ namespace TrainDatabase.Z21Client.DTO
 
         public ValueBytesStruct ValueBytes
         {
-            set
-            {
-                Value = ((value.Adr_MSB & 0x3F) << 8) + value.Adr_LSB;
-            }
+            set => Value = ((value.Adr_MSB & 0x3F) << 8) + value.Adr_LSB;
             get
             {
                 ValueBytesStruct vbs;
