@@ -18,22 +18,13 @@ namespace TrainDatabase.Z21Client.DTO
 {
     public class LokAdresse
     {
-        private int val = 0;
+        private int val;
 
-        public LokAdresse(int adresse)
-        {
-            Value = adresse;
-        }
+        public LokAdresse(int adresse) => Value = adresse;
 
-        public LokAdresse(long adresse)
-        {
-            Value = (int)adresse;
-        }
+        public LokAdresse(long adresse) => Value = (int)adresse;
 
-        public LokAdresse(ValueBytesStruct valueBytes)
-        {
-            ValueBytes = valueBytes;
-        }
+        public LokAdresse(ValueBytesStruct valueBytes) => ValueBytes = valueBytes;
 
         public int Value
         {
@@ -79,11 +70,7 @@ namespace TrainDatabase.Z21Client.DTO
             }
         }
 
-        public override string ToString()
-        {
-            return Value.ToString();
-
-        }
+        public override string ToString() => Value.ToString();
 
     }
 }
