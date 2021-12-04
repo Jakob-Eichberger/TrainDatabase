@@ -65,7 +65,6 @@ namespace TrainDatabase.JoyStick
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-
         public void OnJoyStickValueUpdate(Object? sender, JoyStickUpdateEventArgs e)
         {
             if (JoyStickButton is not null)
