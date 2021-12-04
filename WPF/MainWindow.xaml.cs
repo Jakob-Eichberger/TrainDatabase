@@ -191,7 +191,6 @@ namespace Wpf_Application
             {
                 trainControl.WindowState = WindowState.Normal;
                 trainControl.Activate();
-                trainControl.RefreshSource();
             }
             else
                 new TrainControl(Client, vehicle, db).Show();
