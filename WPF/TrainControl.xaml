@@ -27,7 +27,7 @@
         <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPowerBoolean}" Content="{Binding ElementName=Tc,Path=TrackPowerMessage}" HorizontalAlignment="Right"/>
         <TabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" >
             <TabItem Header="Funktionen">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" >
+                <ScrollViewer VerticalScrollBarVisibility="Visible" >
                     <WrapPanel Name="FunctionGrid" />
                 </ScrollViewer>
             </TabItem>
@@ -38,7 +38,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBox Name="tbSearch" Grid.Row="0" Margin="5" Padding="5" TextChanged="SearchBar_TextChanged"/>
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible">
                         <StackPanel Name="SPVehilces"/>
                     </ScrollViewer>
                 </Grid>
