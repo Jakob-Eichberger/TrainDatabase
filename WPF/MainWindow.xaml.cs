@@ -49,16 +49,15 @@ namespace Wpf_Application
                     return;
                 }
 #endif
-                this.DataContext = this;
+                DataContext = this;
                 InitializeComponent();
 
                 if (Settings.OpenDebugConsoleOnStart)
                     ShowConsoleWindow();
-
                 DrawVehiclesIfAnyExist();
-                CreatController();
                 RemoveUnneededImages();
-                db.CollectionChanged += Db_CollectionChanged;
+                db.CollectionChanged += (a, b) => Dispatcher.Invoke(() => Search());
+                Client.LogOn();
             }
             catch (Exception e)
             {
@@ -70,9 +69,40 @@ namespace Wpf_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        Z21Client? Client { get; set; }
+        private Z21Client? Client { get; } = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
 
-        public void DrawAllVehicles(IEnumerable<Vehicle> list)
+        protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        private static BitmapImage LoadPhoto(string path)
+        {
+            BitmapImage bmi = new();
+            bmi.BeginInit();
+            bmi.CacheOption = BitmapCacheOption.OnLoad;
+            bmi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bmi.UriSource = new(path);
+            bmi.EndInit();
+            return bmi;
+        }
+
+        private async void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2 && sender is VehicleBorder border)
+            {
+                await Task.Delay(150);
+                OpenNewTrainControlWindow(border.Vehicle);
+            }
+        }
+
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Logger.Log("An unhandled exception occoured.", e.Exception);
+            e.Handled = true;
+            MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
+        }
+
+        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(db).ShowDialog();
+
+        private void DrawVehicles(IEnumerable<Vehicle> list)
         {
             VehicleGrid.Children.Clear();
             foreach (var item in list.OrderBy(e => e.Position))
@@ -100,91 +130,35 @@ namespace Wpf_Application
 
                 sp.Children.Add(new TextBlock()
                 {
-                    Text = !string.IsNullOrWhiteSpace(item?.Name) ? item.Name : (!string.IsNullOrWhiteSpace(item.FullName) ? item.FullName : $"Adresse: {item.Address}")
+                    Text = !string.IsNullOrWhiteSpace(item?.Name) ? item.Name : (!string.IsNullOrWhiteSpace(item?.FullName) ? item.FullName : $"Adresse: {item?.Address}")
                 });
 
-                Border border = new()
+                VehicleBorder border = new()
                 {
                     Padding = new(2),
                     Margin = new(10),
                     BorderThickness = new(1),
                     BorderBrush = Brushes.Black,
-                    Tag = item,
-                    Child = sp
+                    Vehicle = item,
+                    Child = sp,
+                    ContextMenu = new()
                 };
-                border.MouseDown += Border_MouseDown;
 
+                var mi = new VehicleMenuItem() { Header = "Fahrzeug steuern", Vehicle = item };
+                mi.Click += (a, b) => { OpenNewTrainControlWindow((a as VehicleMenuItem)?.Vehicle); };
+                border.ContextMenu.Items.Add(mi);
+
+                border.MouseDown += Border_MouseDown;
                 VehicleGrid.Children.Add(border);
             }
         }
 
-        public void RemoveUnneededImages() => Task.Run(() =>
-        {
-            try
-            {
-                var images = db.Vehicles.Select(e => e.ImageName).ToList();
-                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
-                Directory.CreateDirectory(directory);
-                foreach (var item in Directory.GetFiles($"{directory}\\"))
-                    if (!images.Any(e => e == Path.GetFileName(item)))
-                        File.Delete(item);
-            }
-            catch { }
-        });
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-        private static BitmapImage LoadPhoto(string path)
-        {
-            BitmapImage bmi = new();
-            bmi.BeginInit();
-            bmi.CacheOption = BitmapCacheOption.OnLoad;
-            bmi.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            bmi.UriSource = new(path);
-            bmi.EndInit();
-            return bmi;
-        }
-
-        private async void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2 && sender.GetType()?.GetProperty("Tag")?.GetValue(sender, null) is Vehicle vehicle)
-            {
-                await Task.Delay(150);
-                OpenNewTrainControlWindow(vehicle);
-            }
-        }
-
-        private void CreatController()
-        {
-            Client = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
-            Client.LogOn();
-        }
-
-        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            Logger.Log("", e.Exception);
-            e.Handled = true;
-            MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
-        }
-
-        private void Db_CollectionChanged(object? sender, EventArgs e) => Dispatcher.Invoke(() => Search());
-
-        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(db).ShowDialog();
-
         private void DrawVehiclesIfAnyExist()
         {
             db.Database.EnsureCreated();
-            if (db.Vehicles.Any())
-                Search();
-            else
-            {
-                if (MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                {
-                    var importer = new Importer.Z21Import(db);
-                    importer.ShowDialog();
-                    Search();
-                }
-            }
+            if (!db.Vehicles.Any() && MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                new Importer.Z21Import(db).ShowDialog();
+            Search();
         }
 
         private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Client).Show();
@@ -219,7 +193,21 @@ namespace Wpf_Application
                 new VehicleManagement(db).Show();
         }
 
-        private void Search() => DrawAllVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && ($"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}").ToLower().Contains(tbSearch.Text.ToLower().Trim())));
+        private void RemoveUnneededImages() => Task.Run(() =>
+        {
+            try
+            {
+                var images = db.Vehicles.Select(e => e.ImageName).ToList();
+                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                Directory.CreateDirectory(directory);
+                foreach (var item in Directory.GetFiles($"{directory}\\"))
+                    if (!images.Any(e => e == Path.GetFileName(item)))
+                        File.Delete(item);
+            }
+            catch { }
+        });
+
+        private void Search() => DrawVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && $"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}".ToLower().Contains(tbSearch.Text.ToLower().Trim())));
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
@@ -231,6 +219,7 @@ namespace Wpf_Application
             else
                 new SettingsWindow().Show();
         }
+
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
 
         #region Console
