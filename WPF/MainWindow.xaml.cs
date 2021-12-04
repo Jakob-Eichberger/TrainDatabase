@@ -42,6 +42,7 @@ namespace Wpf_Application
                     return;
                 }
                 Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+                ResizeTimer.Elapsed += ResizeTimer_Elapsed;
 #if RELEASE
                 if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
                 {
@@ -58,6 +59,8 @@ namespace Wpf_Application
                 RemoveUnneededImages();
                 db.CollectionChanged += (a, b) => Dispatcher.Invoke(() => Search());
                 Client.LogOn();
+
+
             }
             catch (Exception e)
             {
@@ -68,6 +71,8 @@ namespace Wpf_Application
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        private System.Timers.Timer ResizeTimer { get; } = new System.Timers.Timer() { Enabled = false, Interval = new TimeSpan(0, 0, 0, 1).TotalMilliseconds, AutoReset = false };
 
         private Z21Client? Client { get; } = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
 
@@ -165,9 +170,19 @@ namespace Wpf_Application
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
-            if (Client is not null)
-                Client.LogOFF();
+            Client?.LogOFF();
             Application.Current.Shutdown();
+        }
+
+        private void mw_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!ResizeTimer.Enabled)
+                ResizeTimer.Start();
+            else
+            {
+                ResizeTimer.Stop();
+                ResizeTimer.Start();
+            }
         }
 
         private void OpenNewTrainControlWindow(Vehicle? vehicle)
@@ -205,6 +220,16 @@ namespace Wpf_Application
                         File.Delete(item);
             }
             catch { }
+        });
+
+        private void ResizeTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e) => Dispatcher.Invoke(() =>
+        {
+            //var menuHeight = RSearchbar.ActualHeight + RMenu.ActualHeight;
+            //int hCount = (int)((Height - (menuHeight)) / 152);
+            //Height = (hCount * 152) + menuHeight;
+
+            int wCount = (int)((Width - 18 + 10) / 282);
+            Width = (wCount * 282) + 18;
         });
 
         private void Search() => DrawVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && $"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}".ToLower().Contains(tbSearch.Text.ToLower().Trim())));
