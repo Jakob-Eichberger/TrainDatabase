@@ -62,10 +62,14 @@ namespace TrainDatabase
         {
             get => speed; set
             {
-                if (value < 0 || value > Z21Client.Z21Client.maxDccStep) return;
+                if (value < 0 || value > Z21Client.Z21Client.maxDccStep)
+                    return;
+
                 speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
+
                 if (LiveData.Speed != speed)
                     SetLocoDrive(speedstep: speed);
+
                 OnPropertyChanged();
             }
         }
@@ -157,8 +161,5 @@ namespace TrainDatabase
         public new bool IsActive { get; set; } = false;
 
         private JoyStick.JoyStick? Joystick { get; }
-
-
     }
-
 }
