@@ -30,7 +30,7 @@
             <Label Content="Suche: " Height="AUTO" Width="AUTO" Padding="0,0,0,0"/>
             <TextBox x:Name="tbSearch" Height="AUTO"  Width="AUTO" TextChanged="TbSearch_TextChanged" VerticalAlignment="Stretch"/>
         </DockPanel>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2">
+        <ScrollViewer VerticalScrollBarVisibility="Visible" Grid.Row="2">
             <WrapPanel Name="VehicleGrid" />
         </ScrollViewer>
     </Grid>
