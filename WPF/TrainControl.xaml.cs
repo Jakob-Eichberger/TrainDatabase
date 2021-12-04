@@ -87,13 +87,6 @@ namespace TrainDatabase
             Joystick?.Dispose();
         }
 
-        public void RefreshSource()
-        {
-            Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == Vehicle.Id)!;
-            DrawAllFunctions();
-            DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
-        }
-
         protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
