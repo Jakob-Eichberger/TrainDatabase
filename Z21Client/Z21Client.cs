@@ -32,12 +32,19 @@ namespace TrainDatabase.Z21Client
 
         public Z21Client(IPAddress address, int port = 21105) : base(port)
         {
-            Address = address;
-            Port = port;
-            Connect(Address, Port);
-            BeginReceive(new AsyncCallback(Empfang), null);
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} Z21 initialisiert.");
-            RenewClientSubscription.Elapsed += RenewClientSubscription_Elapsed;
+            try
+            {
+                Address = address;
+                Port = port;
+                Connect(Address, Port);
+                BeginReceive(new AsyncCallback(Empfang), null);
+                Console.WriteLine($"{DateTime.Now:HH-mm-ss} Z21 initialisiert.");
+                RenewClientSubscription.Elapsed += RenewClientSubscription_Elapsed;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(exception: ex);
+            }
         }
 
         public event EventHandler<FirmwareVersionInfoEventArgs> OnGetFirmwareVersion = default!;
