@@ -231,7 +231,13 @@ namespace Wpf_Application
             Width = (wCount * 282) + 18;
         });
 
-        private void Search() => DrawVehicles(db.Vehicles.Include(e => e.Category).ToList().Where(i => i.IsActive && $"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}".ToLower().Contains(tbSearch.Text.ToLower().Trim())));
+        private void Search()
+        {
+            var vehicles = db.Vehicles.Include(e => e.Category).Where(e => e.IsActive).ToList();
+            foreach (var item in tbSearch.Text.Split(" ", StringSplitOptions.RemoveEmptyEntries))
+                vehicles = vehicles.Where(i => i.IsActive && $"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}".ToLower().Contains(item.ToLower().Trim())).ToList();
+            DrawVehicles(vehicles);
+        }
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
