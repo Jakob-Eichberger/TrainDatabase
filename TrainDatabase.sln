@@ -5,11 +5,15 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPF Application", "WPF\WPF Application.csproj", "{AEB176C2-14E7-488C-BB3A-1BA664BB049B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z21Client", "Z21Client\Z21Client.csproj", "{DA11C61E-A409-405C-B33E-6C2F79D89E28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Z21Client", "Z21Client\Z21Client.csproj", "{DA11C61E-A409-405C-B33E-6C2F79D89E28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{F4B61145-CFA9-4D8B-A0C8-DD22F1842F7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj", "{F4B61145-CFA9-4D8B-A0C8-DD22F1842F7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helper", "Helper\Helper.csproj", "{3E4A6837-231D-403B-8EA4-AF61C231E777}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helper", "Helper\Helper.csproj", "{3E4A6837-231D-403B-8EA4-AF61C231E777}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{AF9EA895-1225-4EE6-994F-35E45CCF007D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{C835F402-5C60-402C-9201-708A12E0D5F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{3E4A6837-231D-403B-8EA4-AF61C231E777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E4A6837-231D-403B-8EA4-AF61C231E777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E4A6837-231D-403B-8EA4-AF61C231E777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF9EA895-1225-4EE6-994F-35E45CCF007D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF9EA895-1225-4EE6-994F-35E45CCF007D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF9EA895-1225-4EE6-994F-35E45CCF007D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF9EA895-1225-4EE6-994F-35E45CCF007D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C835F402-5C60-402C-9201-708A12E0D5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C835F402-5C60-402C-9201-708A12E0D5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C835F402-5C60-402C-9201-708A12E0D5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C835F402-5C60-402C-9201-708A12E0D5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
