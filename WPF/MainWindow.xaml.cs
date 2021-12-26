@@ -70,9 +70,9 @@ namespace Wpf_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private System.Timers.Timer ResizeTimer { get; } = new System.Timers.Timer() { Enabled = false, Interval = new TimeSpan(0, 0, 0, 1).TotalMilliseconds, AutoReset = false };
-
         private Z21Client? Client { get; } = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
+
+        private System.Timers.Timer ResizeTimer { get; } = new System.Timers.Timer() { Enabled = false, Interval = new TimeSpan(0, 0, 0, 1).TotalMilliseconds, AutoReset = false };
 
         protected void OnPropertyChanged([CallerMemberName] string name = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
@@ -170,6 +170,12 @@ namespace Wpf_Application
         {
             Client?.LogOFF();
             Application.Current.Shutdown();
+        }
+
+        private void mw_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (IsActive && !tbSearch.IsFocused)
+                tbSearch.Focus();
         }
 
         private void mw_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -274,11 +280,5 @@ namespace Wpf_Application
         [DllImport(@"user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         #endregion
-
-        private void mw_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (IsActive && !tbSearch.IsFocused)
-                tbSearch.Focus();
-        }
     }
 }
