@@ -17,7 +17,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TrainDatabase.Extensions;
-using TrainDatabase.Infrastructure;
+using Infrastructure;
+using Extensions;
 
 namespace Importer
 {
