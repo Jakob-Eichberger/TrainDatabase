@@ -10,6 +10,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Data\**" />
+	  <Compile Remove="Z21Client\**" />
+	  <EmbeddedResource Remove="Data\**" />
+	  <EmbeddedResource Remove="Z21Client\**" />
+	  <None Remove="Data\**" />
+	  <None Remove="Z21Client\**" />
+	  <Page Remove="Data\**" />
+	  <Page Remove="Z21Client\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Remove="Datenbank.ico" />
 	</ItemGroup>
 
@@ -55,11 +66,6 @@
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 			<SubType>Designer</SubType>
 		</Page>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Data\VehicleImage\" />
-		<Folder Include="Z21Client\" />
 	</ItemGroup>
 
 	<ItemGroup>
