@@ -276,5 +276,11 @@ namespace Wpf_Application
         [DllImport(@"user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         #endregion
+
+        private void mw_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (IsActive && !tbSearch.IsFocused)
+                tbSearch.Focus();
+        }
     }
 }
