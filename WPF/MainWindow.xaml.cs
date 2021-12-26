@@ -59,14 +59,12 @@ namespace Wpf_Application
                 RemoveUnneededImages();
                 db.CollectionChanged += (a, b) => Dispatcher.Invoke(() => Search());
                 Client.LogOn();
-
-
             }
             catch (Exception e)
             {
                 Close();
                 Logger.Log($"Fehler beim start", e);
-                MessageBox.Show($"Fehler beim Start!.\n Error: '{e?.Message ?? ""}' \nIm Ordner ...\\Log\\ finden Sie ein Logfile. Bitte an contact@jakob-eichberger.at schicken.");
+                MessageBox.Show($"{e}");
             }
         }
 
@@ -253,9 +251,9 @@ namespace Wpf_Application
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
 
         #region Console
-        const int SwHide = 0;
+        private const int SwHide = 0;
 
-        const int SwShow = 5;
+        private const int SwShow = 5;
 
         public static void ShowConsoleWindow()
         {
