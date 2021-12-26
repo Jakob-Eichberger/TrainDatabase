@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Net;
 using TrainDatabase.Z21Client.Enum;
 using TrainDatabase.Extensions;
+using Extensions;
 
 namespace TrainDatabase
 {
