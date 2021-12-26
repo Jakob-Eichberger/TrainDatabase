@@ -19,7 +19,7 @@ using TrainDatabase.Z21Client.DTO;
 using TrainDatabase.Z21Client.Enum;
 using TrainDatabase.Z21Client.Events;
 using TrainDatabase.Extensions;
-using TrainDatabase.Infrastructure;
+using Infrastructure;
 using TrainDatabase.JoyStick;
 using Helper;
 
