@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using TrainDatabase.Infrastructure;
+using Infrastructure;
 
 namespace TrainDatabase
 {
