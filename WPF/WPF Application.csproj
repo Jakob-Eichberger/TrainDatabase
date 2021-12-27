@@ -69,7 +69,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+<<<<<<< Updated upstream
 	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+=======
+>>>>>>> Stashed changes
 	  <ProjectReference Include="..\Model\Model.csproj" />
 	  <ProjectReference Include="..\Z21Client\Z21Client.csproj" />
 	</ItemGroup>
