@@ -28,7 +28,8 @@ void getTime(int pin2) {
   }
   long end = micros();
   WaitForSensorClear(pin2);
-  Serial.println((end - start) / val, 22);
+  Serial.flush();
+  Serial.print(String((end - start) / val, 22));
 }
 
 void WaitForSensorClear(int pin2) {
