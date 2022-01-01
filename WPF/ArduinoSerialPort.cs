@@ -9,7 +9,7 @@ namespace TrainDatabase
     /// <summary>
     /// Used to read the arduiono serial bus.
     /// </summary>
-    public class ArduinoSerialPort : SerialPort, IDisposable
+    public sealed class ArduinoSerialPort : SerialPort, IDisposable
     {
         public ArduinoSerialPort(string portName, int baudRate = 9600) : base(portName, baudRate)
         {
