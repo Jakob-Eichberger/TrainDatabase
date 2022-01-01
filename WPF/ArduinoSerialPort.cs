@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO.Ports;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TrainDatabase
 {
@@ -23,6 +25,8 @@ namespace TrainDatabase
         /// When a message is fully received the event is fired.
         /// </summary>
         public new event EventHandler<DataReceivedEventArgs>? DataReceived = null;
+
+        private Semaphore Semaphore { get; set; } = new(0, 1);
 
         private Queue<char> SerialBuffer { get; } = new();
 
@@ -51,6 +55,38 @@ namespace TrainDatabase
             }
         }
 
+        /// <summary>
+        /// Disposes this object and closes the serial port.
+        /// </summary>
+        public new void Dispose() => Close();
+
+        /// <summary>
+        /// Resets the Arduino.
+        /// </summary>
+        public void Reset()
+        {
+            //https://www.theengineeringprojects.com/2015/11/reset-arduino-programmatically.html
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Blocks the current thread until some data has been read from the serial bus. 
+        /// </summary>
+        /// <param name="millisecondsTimeout">The number of milliseconds to wait, or System.Threading.Timeout.Infinite (-1) to wait indefinitely.</param>
+        /// <returns>Returns the read data.</returns>
+        public async Task<string> WaitForValue(int millisecondsTimeout = -1) => await Task.Run(() =>
+        {
+            try
+            {
+                Semaphore.WaitOne(millisecondsTimeout);
+                return String.Join("", SerialBuffer.ToList());
+            }
+            finally
+            {
+                SerialBuffer.Clear();
+            }
+        });
+
         private void Arduino_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             ResetTimer();
@@ -59,8 +95,19 @@ namespace TrainDatabase
             ResetTimer();
         }
 
+        private void ReleaseSemaphore()
+        {
+            try
+            {
+                var f = Semaphore.Release();
+            }
+            catch (SemaphoreFullException) { }
+        }
+
         private void ResetTimer()
         {
+            if (!Timer.Enabled)
+                SerialBuffer.Clear();
             Timer.Stop();
             Timer.Start();
         }
@@ -68,7 +115,7 @@ namespace TrainDatabase
         private void ResetTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             DataReceived?.Invoke(this, new DataReceivedEventArgs(String.Join("", SerialBuffer.ToList())));
-            SerialBuffer.Clear();
+            ReleaseSemaphore();
         }
 
         public class DataReceivedEventArgs : EventArgs
@@ -80,15 +127,6 @@ namespace TrainDatabase
 
             public string Value { get; set; } = "";
         }
-
-        public new void Dispose() => Close();
-
-        /// <summary>
-        /// Resets the Arduino.
-        /// </summary>
-        public void Reset()
-        {
-            throw new NotImplementedException();
-        }
     }
+
 }
