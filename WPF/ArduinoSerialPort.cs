@@ -53,16 +53,10 @@ namespace TrainDatabase
 
         private void Arduino_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            try
-            {
-                ResetTimer();
-                foreach (var item in Regex.Replace(ReadExisting().Trim(), @"\s+", string.Empty).ToCharArray())
-                    SerialBuffer.Enqueue(item);
-            }
-            finally
-            {
-                ResetTimer();
-            }
+            ResetTimer();
+            foreach (var item in Regex.Replace(ReadExisting().Trim(), @"\s+", string.Empty).ToCharArray())
+                SerialBuffer.Enqueue(item);
+            ResetTimer();
         }
 
         private void ResetTimer()
