@@ -22,11 +22,11 @@ bool pinOn(int pin) {
 }
 
 void getTime(int pin2) {
-  long start = micros();
+  long start = millis();
   while (!pinOn(pin2)) {
     continue;
   }
-  long end = micros();
+  long end = millis();
   WaitForSensorClear(pin2);
   Serial.flush();
   Serial.print(String((end - start) / val, 22));
