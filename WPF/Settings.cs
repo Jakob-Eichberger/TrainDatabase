@@ -7,6 +7,8 @@ using System.Net;
 using TrainDatabase.Z21Client.Enum;
 using TrainDatabase.Extensions;
 using Extensions;
+using System.IO.Ports;
+using System.Linq;
 
 namespace TrainDatabase
 {
@@ -71,6 +73,18 @@ namespace TrainDatabase
             set => Set(nameof(OpenDebugConsoleOnStart), value.ToString());
         }
 
+        public static string ArduinoComPort
+        {
+            get => Get(nameof(ArduinoComPort)) ?? SerialPort.GetPortNames().FirstOrDefault() ?? "";
+            set => Set(nameof(ArduinoComPort), value?.ToString());
+        }
+
+        public static int? ArduinoBaudrate
+        {
+            get => GetInt(nameof(ArduinoBaudrate)) ?? 9600;
+            set => Set(nameof(ArduinoBaudrate), value?.ToString());
+        }
+
         /// <summary>
         /// Sets a value for a key.
         /// </summary>
@@ -99,7 +113,7 @@ namespace TrainDatabase
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string Get(string key) => ConfigurationManager.AppSettings[key] ?? "";
+        public static string? Get(string key) => ConfigurationManager.AppSettings[key];
 
         /// <summary>
         /// Tries to get the value for the key as a <see cref="bool"/>.
@@ -162,5 +176,7 @@ namespace TrainDatabase
             }
             return l;
         }
+
+
     }
 }
