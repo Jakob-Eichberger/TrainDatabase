@@ -1,6 +1,7 @@
-﻿using Helper;
+﻿using Extensions;
+using Helper;
+using Infrastructure;
 using Microsoft.Data.Sqlite;
-using Microsoft.VisualBasic.CompilerServices;
 using Microsoft.Win32;
 using Model;
 using System;
@@ -16,9 +17,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using TrainDatabase.Extensions;
-using Infrastructure;
-using Extensions;
 
 namespace Importer
 {
