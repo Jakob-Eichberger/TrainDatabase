@@ -1,26 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Extensions;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
 using Model;
-using OxyPlot;
 using Renci.SshNet.Common;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using TrainDatabase.Extensions;
-using LineSeries = OxyPlot.Series.LineSeries;
-using LinearAxis = OxyPlot.Axes.LinearAxis;
-using Renci.SshNet;
-using System.Collections.ObjectModel;
-using Extensions;
-using Infrastructure;
 
 namespace TrainDatabase
 {
