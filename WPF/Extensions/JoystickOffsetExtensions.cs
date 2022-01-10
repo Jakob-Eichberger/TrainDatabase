@@ -1,6 +1,6 @@
-﻿using SharpDX.DirectInput;
+﻿using Extensions;
+using SharpDX.DirectInput;
 using System;
-using Extensions;
 
 namespace TrainDatabase.Extensions
 {
