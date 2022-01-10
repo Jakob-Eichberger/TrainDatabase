@@ -1,13 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Model;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using Infrastructure;
 
 namespace TrainDatabase
 {
@@ -36,12 +35,12 @@ namespace TrainDatabase
             DataContext = this;
             InitializeComponent();
             db = _db ?? throw new ApplicationException($"Paramter '{nameof(_db)}' darf nicht null sein!");
-            
-            if (function is null) 
+
+            if (function is null)
                 throw new ApplicationException($"Paramter '{nameof(function)}' darf nicht null sein!");
-         
+
             Function = db.Functions.Include(m => m.Vehicle).ThenInclude(m => m.Functions).FirstOrDefault(e => e.Id == function.Id) ?? throw new ApplicationException($"Funktion  mit der ID '{function.Id} konnte nicht geöffnet werden!");
-          
+
             Title = Function.Name ?? "";
 
             switch (Function.ButtonType)
