@@ -1,14 +1,13 @@
-﻿using Model;
+﻿using Extensions;
+using Model;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Net;
-using TrainDatabase.Z21Client.Enum;
-using TrainDatabase.Extensions;
-using Extensions;
 using System.IO.Ports;
 using System.Linq;
+using System.Net;
+using TrainDatabase.Extensions;
 
 namespace TrainDatabase
 {
