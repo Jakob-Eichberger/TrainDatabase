@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Model
+﻿namespace Model
 {
     //[TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum FunctionType
