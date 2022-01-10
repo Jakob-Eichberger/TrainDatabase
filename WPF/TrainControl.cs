@@ -1,27 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Extensions;
+using Infrastructure;
 using Model;
-using OxyPlot;
-using OxyPlot.Series;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-using TrainDatabase.Z21Client;
 using TrainDatabase.Z21Client.DTO;
 using TrainDatabase.Z21Client.Enum;
-using TrainDatabase.Extensions;
-using Infrastructure;
-using TrainDatabase.JoyStick;
-using Extensions;
 
 namespace TrainDatabase
 {
