@@ -87,17 +87,27 @@
                                 <RowDefinition Height="AUTO"/>
                                 <RowDefinition Height="AUTO"/>
                                 <RowDefinition Height="AUTO"/>
+                                <RowDefinition Height="AUTO"/>
+                                <RowDefinition Height="AUTO"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="AUTO"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Content="Abstand zwischen Sensoren:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <xctk:IntegerUpDown Text="cm"  Grid.Column="1"  Grid.Row="0" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="200" Maximum="1000" Value="{Binding ElementName=EinmessenWindow,Path=DistanceBetweenSensorsInMM}" ValueChanged="IntegerUpDown_ValueChanged"/>
-                            <Label Grid.Row="1" Grid.Column="0" Content="Startgeschwindigkeit:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="1" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="2" Maximum="15" Value="{Binding ElementName=EinmessenWindow,Path=Start_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
-                            <Label Grid.Row="3" Grid.Column="0" Content="Stufe:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="3" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="1" Maximum="10" Value="{Binding ElementName=EinmessenWindow,Path=Step_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
+
+                            <Label Grid.Row="0" Grid.Column="0" Content="Com Port:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="5" Padding="5" Text="{Binding Path=(local:Settings.ArduinoComPort), Mode=TwoWay}" HorizontalContentAlignment="Right" />
+
+                            <Label Grid.Row="1" Grid.Column="0" Content="Baudrate:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <xctk:IntegerUpDown Text="cm"  Grid.Column="1"  Grid.Row="1" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="100" Maximum="20000" Value="{Binding Path=(local:Settings.ArduinoComPort), Mode=TwoWay}" ValueChanged="IntegerUpDown_ValueChanged"/>
+
+                            <Label Grid.Row="2" Grid.Column="0" Content="Sensorabstand (in MM):" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <xctk:IntegerUpDown Text="cm"  Grid.Column="1"  Grid.Row="2" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="200" Maximum="1000" Value="{Binding ElementName=EinmessenWindow,Path=DistanceBetweenSensorsInMM}" ValueChanged="IntegerUpDown_ValueChanged" ToolTip="Abstand der beiden Sensoren in Millimeter."/>
+                            <Label Grid.Row="3" Grid.Column="0" Content="Startgeschwindigkeit:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="3" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="2" Maximum="15" Value="{Binding ElementName=EinmessenWindow,Path=Start_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
+                            <Label Grid.Row="4" Grid.Column="0" Content="Stufe:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <xctk:IntegerUpDown  Grid.Column="1"  Grid.Row="4" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="1" Maximum="10" Value="{Binding ElementName=EinmessenWindow,Path=Step_Measurement}" ValueChanged="IntegerUpDown_ValueChanged"/>
                         </Grid>
                     </Grid>
                 </TabItem>
