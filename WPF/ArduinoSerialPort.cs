@@ -26,6 +26,7 @@ namespace TrainDatabase
         /// </summary>
         public new event EventHandler<DataReceivedEventArgs>? DataReceived = null;
 
+
         private Semaphore Semaphore { get; set; } = new(0, 1);
 
         private Queue<char> SerialBuffer { get; } = new();
