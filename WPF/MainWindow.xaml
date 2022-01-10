@@ -21,7 +21,7 @@
             </MenuItem>
             <MenuItem Header="Fahrzeuge">
                 <MenuItem Header="Fahrzeuge verwalten" Click="OpenVehicleManagement_Click"/>
-                <MenuItem Header="Lok einmessen" Click="MeasureLoko_Click"  IsEnabled="False"/>
+                <MenuItem Header="Lok einmessen" Click="MeasureLoko_Click"/>
             </MenuItem>
             <MenuItem Header="Optionen" Click="Settings_Click">
             </MenuItem>
