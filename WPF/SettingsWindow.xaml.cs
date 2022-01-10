@@ -1,4 +1,5 @@
-﻿using Model;
+﻿using Infrastructure;
+using Model;
 using SharpDX.DirectInput;
 using System;
 using System.ComponentModel;
