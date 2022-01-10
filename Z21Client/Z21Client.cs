@@ -267,28 +267,6 @@ namespace TrainDatabase.Z21Client
             Senden(bytes);
         }
 
-        private void Empfang(IAsyncResult res)
-        {
-            try
-            {
-                IPEndPoint RemoteIpEndPoint = null!;
-                byte[] received = EndReceive(res, ref RemoteIpEndPoint!);
-                BeginReceive(new AsyncCallback(Empfang), null);
-                if (OnReceive != null) OnReceive(this, new DataEventArgs(received));
-                CutTelegramm(received);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"{DateTime.Now:HH-mm-ss} Fehler beim Empfang  " + ex.Message);
-            }
-        }
-
-        private void EndConnect(IAsyncResult res)
-        {
-            Console.WriteLine($"{DateTime.Now:HH-mm-ss} Reconnection abgeschlossen");
-            Client.EndConnect(res);
-        }
-
         private void CutTelegramm(byte[] bytes)
         {
             if (bytes == null) return;
@@ -312,6 +290,28 @@ namespace TrainDatabase.Z21Client
                 }
             }
 
+        }
+
+        private void Empfang(IAsyncResult res)
+        {
+            try
+            {
+                IPEndPoint RemoteIpEndPoint = null!;
+                byte[] received = EndReceive(res, ref RemoteIpEndPoint!);
+                BeginReceive(new AsyncCallback(Empfang), null);
+                if (OnReceive != null) OnReceive(this, new DataEventArgs(received));
+                CutTelegramm(received);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{DateTime.Now:HH-mm-ss} Fehler beim Empfang  " + ex.Message);
+            }
+        }
+
+        private void EndConnect(IAsyncResult res)
+        {
+            Console.WriteLine($"{DateTime.Now:HH-mm-ss} Reconnection abgeschlossen");
+            Client.EndConnect(res);
         }
 
         private void Evaluation(byte[] received)
