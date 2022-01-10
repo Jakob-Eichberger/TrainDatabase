@@ -22,6 +22,8 @@ using TrainDatabase.Z21Client.Events;
 using TrainDatabase.Z21Client;
 using Helper;
 using Infrastructure;
+using System.Globalization;
+using System.Management;
 
 namespace TrainDatabase
 {
@@ -30,24 +32,24 @@ namespace TrainDatabase
     /// </summary>
     public partial class Einmessen : Window, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
         private Vehicle _vehicle = default!;
-
-        //private readonly SshClient _sshClient = new(Settings.Get("RaspberryPiHost"), Settings.Get("RaspberryPiUsername"), Settings.Get("RaspberryPiPassword"));
-
-        public Database Db { get; } = default!;
-
-        private Z21Client.Z21Client Controller { get; } = default!;
-
-        private SshClient SshClient { get; } = new("192.168.0.73", "pi", "raspberry");
-
-        private LokInfoData LokData { get; set; } = new();
-
-        public List<DataPoint> PointsBackward { get; private set; } = new();
-
-        public List<DataPoint> PointsForward { get; private set; } = new();
-
         private bool IsDisposed = false;
+        public Einmessen(Database db, Z21Client.Z21Client controller)
+        {
+            this.DataContext = this;
+            if (db is null) throw new ApplicationException($"Paramter '{nameof(db)}' darf nicht null sein!");
+            if (controller is null) throw new ApplicationException($"Paramter '{nameof(controller)}' darf nicht null sein!");
+            this.Db = db;
+            this.Controller = controller;
+            InitializeComponent();
+            SetupManagementEventWatcher();
+            Controller.OnGetLocoInfo += OnGetLocoInfoEventArgs;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public static List<string> ComPorts => ArduinoSerialPort.GetPortNames().ToList();
+        public Database Db { get; } = default!;
 
         /// <summary>
         /// Holds the distance between the two raspberry pi sensors in mm.
@@ -58,18 +60,21 @@ namespace TrainDatabase
             set => Settings.Set(nameof(DistanceBetweenSensorsInMM), value.ToString());
         }
 
-        private decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
-
-        private decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
-
+        public ManagementEventWatcher ManagementEventWatcher { get; } = new ManagementEventWatcher();
+        public List<DataPoint> PointsBackward { get; private set; } = new();
+        public List<DataPoint> PointsForward { get; private set; } = new();
         public int Start_Measurement { get => Settings.GetInt(nameof(Start_Measurement)) ?? 2; set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
-
         public int Step_Measurement
         {
             get => Settings.GetInt(nameof(Step_Measurement)) ?? 1;
             set { Settings.Set(nameof(Step_Measurement), value.ToString()); OnPropertyChanged(); }
         }
 
+        private Z21Client.Z21Client Controller { get; } = default!;
+
+        private LokInfoData LokData { get; set; } = new();
+        private decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
+        private decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
         private Vehicle Vehicle
         {
             get => _vehicle; set
@@ -78,35 +83,136 @@ namespace TrainDatabase
                 OnPropertyChanged();
             }
         }
-
-        public Einmessen(Database db, Z21Client.Z21Client controller)
-        {
-            this.DataContext = this;
-            if (db is null) throw new ApplicationException($"Paramter '{nameof(db)}' darf nicht null sein!");
-            if (controller is null) throw new ApplicationException($"Paramter '{nameof(controller)}' darf nicht null sein!");
-            this.Db = db;
-            this.Controller = controller;
-            InitializeComponent();
-            Controller.OnGetLocoInfo += OnGetLocoInfoEventArgs;
-        }
-
         protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 
-        private async Task FillDataPointsList() => await Task.Run(() =>
+        private static LinearAxis GetYAxis()
         {
-            PointsBackward = new();
-            PointsForward = new();
-            for (int i = 2; i <= Z21Client.Z21Client.maxDccStep; i++)
+            OxyPlot.Axes.LinearAxis Yaxis = new();
+            Yaxis.Minimum = 0;
+            Yaxis.MinorStep = double.NaN;
+            Yaxis.Title = "km/h";
+            return Yaxis;
+        }
+
+        private static void Log(string message) => Console.WriteLine(message);
+
+        private async void BtnStartSpeedMeasurement_Click(object sender, RoutedEventArgs e)
+        {
+            try
             {
-                if (TractionBackward[i] is not null)
-                    PointsBackward.Add(new(i, (double)Math.Round((TractionBackward[i] / 3.6m) ?? 0, 2)));
+                if (Vehicle is null) { return; }
+                Initialize();
+                TractionForward = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
+                TractionBackward = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
+                DrawSpeedMeasurementTable();
+                await DrawSpeedDataPlot();
+
+                Controller.SetTrackPowerON();
+                Controller.GetLocoInfo(new(Vehicle.Address));
+                PointsBackward = new();
+                PointsForward = new();
+                await Run();
             }
-            for (int i = 2; i <= Z21Client.Z21Client.maxDccStep; i++)
+            catch (SshConnectionException) { MessageBox.Show($"Die ssh Verbindung zum Pi wurde terminiert!"); }
+            catch (System.Net.Sockets.SocketException) { MessageBox.Show($"Verbindung zum Raspberry Pi konnte nicht hergestellt werden."); }
+            catch (SshAuthenticationException) { MessageBox.Show($"Authentifizierung hat fehlgeschlagen."); }
+            catch (Exception ex)
             {
-                if (TractionForward[i] is not null)
-                    PointsForward.Add(new(i, (double)Math.Round((TractionForward[i] / 3.6m) ?? 0, 2)));
+                Logger.Log($"", ex);
+                MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex.Message}");
             }
-        });
+            finally
+            {
+                Deinitialize();
+            }
+        }
+
+        private void BtnStopSpeedMeasurement_Click(object sender, RoutedEventArgs e)
+        {
+            IsDisposed = true;
+            this.Close();
+        }
+
+        /// <summary>
+        /// Checks if the speed reported by the controller is the same as the one set by the  <see cref="SetLocoDrive(int, bool)"/> function.
+        /// If it is the same nothing happens, if it differs the <see cref="SetLocoDrive(int, bool)"/> function gets called again with the same parameters. Needed to midigate the package loss problem.
+        /// </summary>
+        /// <param name="speed"></param>
+        /// <param name="direction"></param>
+        /// <returns>Returns a <see cref="Task"/> that can be awaited.</returns>
+        /// <remarks>The Function waits 2 seconds before it checks if the speed matches.</remarks>
+        private async Task CheckSpeed(int speed, bool direction)
+        {
+            await Task.Delay(new TimeSpan(0, 0, 0, 1, 500));
+            if (!(speed == LokData.Speed && LokData.DrivingDirection == direction))
+            {
+                Log("Speed check failed. Trying again. ...");
+                await SetLocoDrive(speed, direction);
+            }
+        }
+
+        private async void CmbAllVehicles_Loaded(object sender, RoutedEventArgs e)
+        {
+            CmbAllVehicles.Items.Clear();
+            foreach (var vehicle in await Db.Vehicles.Where(e => e.Type == VehicleType.Lokomotive).OrderBy(e => e.Address).ToListAsync())
+            {
+                CmbAllVehicles.Items.Add(new ComboBoxItem() { Tag = vehicle, Content = $"({vehicle.Address:D3})  {(string.IsNullOrWhiteSpace(vehicle.Name) ? vehicle.FullName : vehicle.Name)}" });
+            }
+        }
+
+        private async void CmbAllVehicles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TcMeasure.IsEnabled = CmbAllVehicles.SelectedItem is not Model.Vehicle;
+            if (CmbAllVehicles.SelectedItem is not ComboBoxItem cbi || cbi.Tag is not Vehicle vehicle) return;
+            Vehicle = vehicle;
+            TractionForward = vehicle.TractionForward;
+            TractionBackward = vehicle.TractionBackward;
+
+            DrawSpeedMeasurementTable();
+            await DrawSpeedDataPlot();
+        }
+
+        private async void Deinitialize()
+        {
+            TabTraktionSettings.IsEnabled = true;
+            btnStart.IsEnabled = true;
+            btnStop.IsEnabled = false;
+        }
+
+        private async Task DrawSpeedDataPlot()
+        {
+            if (sp_Plot is null) return;
+            await FillDataPointsList();
+            PlotModel model = new();
+            // Create the OxyPlot graph for Salt Split
+            OxyPlot.Wpf.PlotView plot = new();
+            plot.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+            plot.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+
+            // Create new Line Series
+            LineSeries linePoints_Forward = new()
+            { StrokeThickness = 1, MarkerSize = 1, Title = "Vorwärts", Color = OxyPlot.OxyColors.Red };
+            // Add each point to the new series
+            linePoints_Forward.Points.Clear();
+            linePoints_Forward.Points.AddRange(PointsForward);
+            LineSeries linePoints_Backwards = new()
+            { StrokeThickness = 1, MarkerSize = 1, Title = "Rückwärts", Color = OxyPlot.OxyColors.Blue };
+            // Add each point to the new series
+            linePoints_Backwards.Points.Clear();
+            linePoints_Backwards.Points.AddRange(PointsBackward);
+
+            model.Axes.Add(GetXAxis());
+
+            model.Axes.Add(GetYAxis());
+
+            model.Series.Add(linePoints_Backwards);
+            model.Series.Add(linePoints_Forward);
+
+            plot.Model = model;
+            //plot.InvalidatePlot(true);
+            sp_Plot.Children.Clear();
+            sp_Plot.Children.Add(plot);
+        }
 
         private void DrawSpeedMeasurementTable()
         {
@@ -148,12 +254,110 @@ namespace TrainDatabase
             sp_Table.Children.Add(functionGrid);
         }
 
+        private async void EinmessenWindow_Closing(object sender, CancelEventArgs e)
+        {
+            IsDisposed = true;
+            await SetLocoDrive(0, false);
+        }
+
+        private async void EinmessenWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            DrawSpeedMeasurementTable();
+            await DrawSpeedDataPlot();
+        }
+
+        private async Task<SshCommand> ExecutePythonScriptAndGetResult(int itterations = 5)
+        {
+            return null;
+        }
+
+        private async Task FillDataPointsList() => await Task.Run(() =>
+        {
+            PointsBackward = new();
+            PointsForward = new();
+            for (int i = 2; i <= Z21Client.Z21Client.maxDccStep; i++)
+            {
+                if (TractionBackward[i] is not null)
+                    PointsBackward.Add(new(i, (double)Math.Round((TractionBackward[i] / 3.6m) ?? 0, 2)));
+            }
+            for (int i = 2; i <= Z21Client.Z21Client.maxDccStep; i++)
+            {
+                if (TractionForward[i] is not null)
+                    PointsForward.Add(new(i, (double)Math.Round((TractionForward[i] / 3.6m) ?? 0, 2)));
+            }
+        });
+
         private async Task GetSpeed(int speed, bool direction)
         {
-            decimal result = await GetTimeBetweenSensors(speed, direction);
-            decimal mps = Math.Round(((DistanceBetweenSensorsInMM / 1000.0m) / result) * 87.0m, 2);
+            decimal time = await GetTimeBetweenSensors(speed, direction) / 1000.0m;
+            decimal mps = Math.Round(((DistanceBetweenSensorsInMM / 1000.0m) / time) * 87.0m, 2);
             await SetTractionSpeed(speed, direction, mps);
-            Log($"Result:\n\tStepStep:\t'{speed}'\n\tDirection:\t'{direction}'\n\tmeasured in seconds:\t'{result}'\n\tDistance:\t{DistanceBetweenSensorsInMM}\n\tSpeed in m/s:\t{mps}\n");
+            Log($"Result:\n\tStepStep:\t'{speed}'\n\tDirection:\t'{direction}'\n\tmeasured in seconds:\t'{time}'\n\tDistance:\t{DistanceBetweenSensorsInMM}\n\tSpeed in m/s:\t{mps}\n");
+        }
+
+        private async Task<decimal> GetTimeBetweenSensors(int speed, bool direction)
+        {
+            try
+            {
+                if (IsDisposed)
+                    throw new OperationCanceledException();
+
+                using ArduinoSerialPort port = new(Settings.ArduinoComPort, Settings.ArduinoBaudrate ?? 9600);
+                await SetLocoDrive(speed, direction);
+                var data = await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
+                if (decimal.TryParse(data.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
+                    return result;
+                else
+                    throw new ApplicationException($"Serial bus data ('{data}') coul not be parsed as decimal!");
+            }
+            finally
+            {
+                await Task.Delay((int)new TimeSpan(0, 0, 2).TotalMilliseconds);
+                await SetLocoDrive(0, direction);
+            }
+        }
+
+        private LinearAxis GetXAxis()
+        {
+            OxyPlot.Axes.LinearAxis Xaxis = new();
+            Xaxis.Maximum = Z21Client.Z21Client.maxDccStep;
+            Xaxis.Minimum = Start_Measurement;
+            Xaxis.Position = OxyPlot.Axes.AxisPosition.Bottom;
+            Xaxis.Title = "Dcc Speed Step";
+            return Xaxis;
+        }
+
+        private void Initialize()
+        {
+            IsDisposed = false;
+            TabTraktionSettings.IsEnabled = false;
+            btnStart.IsEnabled = false;
+            btnStop.IsEnabled = true;
+            Log("Initialize");
+        }
+
+        private async void IntegerUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            DrawSpeedMeasurementTable();
+            await DrawSpeedDataPlot();
+        }
+
+        private void ManagementEventWatcher_EventArrived(object sender, EventArrivedEventArgs e) => OnPropertyChanged();
+
+        private void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
+        {
+            if (e?.Data?.Adresse?.Value == Vehicle?.Address)
+                LokData = e.Data;
+        }
+
+        private async Task ReturnHome()
+        {
+            using ArduinoSerialPort port = new(Settings.ArduinoComPort);
+            await SetLocoDrive(40, true);
+            await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
+            await SetLocoDrive(40, false);
+            await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
+            await SetLocoDrive(0, true);
         }
 
         /// <summary>
@@ -163,8 +367,6 @@ namespace TrainDatabase
         {
             try
             {
-                if (!SshClient.IsConnected)
-                    SshClient.Connect();
                 Log("Starting...");
                 bool lastStep = false;
                 bool direction = true;
@@ -187,7 +389,6 @@ namespace TrainDatabase
             finally
             {
                 await SetLocoDrive(0, true);
-                await KillPythonScript();
                 btnStart.IsEnabled = true;
                 btnStop.IsEnabled = false;
                 DrawSpeedMeasurementTable();
@@ -195,15 +396,6 @@ namespace TrainDatabase
                 TabTraktionSettings.IsEnabled = true;
             }
 
-        }
-
-        private async Task ReturnHome()
-        {
-            await SetLocoDrive(40, true);
-            await ExecutePythonScriptAndGetResult();
-            await SetLocoDrive(40, false);
-            await ExecutePythonScriptAndGetResult(1);
-            await SetLocoDrive(0, true);
         }
 
         private async Task SaveChanges()
@@ -219,61 +411,11 @@ namespace TrainDatabase
             Vehicle = temp;
         }
 
-        private async Task<decimal> GetTimeBetweenSensors(int speed, bool direction)
-        {
-            try
-            {
-                if (IsDisposed) throw new OperationCanceledException();
-                await KillPythonScript();
-                await SetLocoDrive(speed, direction);
-                Log($"{DateTime.Now:hh-mm-ss} Python script running...");
-                SshCommand result = await ExecutePythonScriptAndGetResult();
-                if (result.ExitStatus != 0) throw new ApplicationException($"Script am Pi ist unerwarted abgestürtzt. ()");
-                Log($"{DateTime.Now:hh-mm-ss} Python script complete...");
-                if (!decimal.TryParse(result.Result, out decimal mps)) throw new ApplicationException($"Wert vom Raspberry Pi '{result.Result}' konte nicht als decimal geparsed werden.");
-                await SetLocoDrive(0, direction);
-                await Task.Delay((int)new TimeSpan(0, 0, 2).TotalMilliseconds);
-                return mps;
-            }
-            finally
-            {
-                await KillPythonScript();
-            }
-        }
-
-        private async Task<SshCommand> ExecutePythonScriptAndGetResult(int itterations = 5)
-        {
-            SshCommand result = default!;
-            var task = Task.Run(() => { result = SshClient.RunCommand($"python /home/pi/Desktop/measure_speed.py {itterations}"); });
-            await Task.Run(() => task.Wait(new TimeSpan(0, 2, 0)));
-            return result;
-        }
-
-        private async Task KillPythonScript() => await Task.Run(() => SshClient.RunCommand("pkill -9 -f measure_speed.py"));
-
         private async Task SetLocoDrive(int speed, bool direction)
         {
             Log($"Speed: {speed} - Direction: {direction}");
             Controller.SetLocoDrive(new LokInfoData() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
             await CheckSpeed(speed, direction);
-        }
-
-        /// <summary>
-        /// Checks if the speed reported by the controller is the same as the one set by the  <see cref="SetLocoDrive(int, bool)"/> function.
-        /// If it is the same nothing happens, if it differs the <see cref="SetLocoDrive(int, bool)"/> function gets called again with the same parameters. Needed to midigate the package loss problem.
-        /// </summary>
-        /// <param name="speed"></param>
-        /// <param name="direction"></param>
-        /// <returns>Returns a <see cref="Task"/> that can be awaited.</returns>
-        /// <remarks>The Function waits 2 seconds before it checks if the speed matches.</remarks>
-        private async Task CheckSpeed(int speed, bool direction)
-        {
-            await Task.Delay(new TimeSpan(0, 0, 0, 1, 500));
-            if (!(speed == LokData.Speed && LokData.DrivingDirection == direction))
-            {
-                Log("Speed check failed. Trying again. ...");
-                await SetLocoDrive(speed, direction);
-            }
         }
 
         private async Task SetTractionSpeed(int speedStep, bool direction, decimal speed)
@@ -293,165 +435,11 @@ namespace TrainDatabase
             Log($"Loco drove {speed} m/s at dcc speed {speedStep} and direction {direction}.");
         }
 
-        private void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
+        private void SetupManagementEventWatcher()
         {
-            if (Vehicle is null) return;
-            if (e.Data.Adresse.Value == Vehicle.Address)
-            {
-                LokData = e.Data;
-            }
-        }
-
-        private async Task DrawSpeedDataPlot()
-        {
-            if (sp_Plot is null) return;
-            await FillDataPointsList();
-            PlotModel model = new();
-            // Create the OxyPlot graph for Salt Split
-            OxyPlot.Wpf.PlotView plot = new();
-            plot.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
-            plot.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-
-            // Create new Line Series
-            LineSeries linePoints_Forward = new()
-            { StrokeThickness = 1, MarkerSize = 1, Title = "Vorwärts", Color = OxyPlot.OxyColors.Red };
-            // Add each point to the new series
-            linePoints_Forward.Points.Clear();
-            linePoints_Forward.Points.AddRange(PointsForward);
-            LineSeries linePoints_Backwards = new()
-            { StrokeThickness = 1, MarkerSize = 1, Title = "Rückwärts", Color = OxyPlot.OxyColors.Blue };
-            // Add each point to the new series
-            linePoints_Backwards.Points.Clear();
-            linePoints_Backwards.Points.AddRange(PointsBackward);
-
-            model.Axes.Add(GetXAxis());
-
-            model.Axes.Add(GetYAxis());
-
-            model.Series.Add(linePoints_Backwards);
-            model.Series.Add(linePoints_Forward);
-
-            plot.Model = model;
-            //plot.InvalidatePlot(true);
-            sp_Plot.Children.Clear();
-            sp_Plot.Children.Add(plot);
-        }
-
-        private LinearAxis GetXAxis()
-        {
-            OxyPlot.Axes.LinearAxis Xaxis = new();
-            Xaxis.Maximum = Z21Client.Z21Client.maxDccStep;
-            Xaxis.Minimum = Start_Measurement;
-            Xaxis.Position = OxyPlot.Axes.AxisPosition.Bottom;
-            Xaxis.Title = "Dcc Speed Step";
-            return Xaxis;
-        }
-
-        private static LinearAxis GetYAxis()
-        {
-            OxyPlot.Axes.LinearAxis Yaxis = new();
-            Yaxis.Minimum = 0;
-            Yaxis.MinorStep = double.NaN;
-            Yaxis.Title = "km/h";
-            return Yaxis;
-        }
-
-        private void Initialize()
-        {
-            IsDisposed = false;
-            TabTraktionSettings.IsEnabled = false;
-            btnStart.IsEnabled = false;
-            btnStop.IsEnabled = true;
-            Log("Initialize");
-        }
-
-        private async void Deinitialize()
-        {
-            await KillPythonScript();
-            TabTraktionSettings.IsEnabled = true;
-            btnStart.IsEnabled = true;
-            btnStop.IsEnabled = false;
-        }
-
-        private async void BtnStartSpeedMeasurement_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (Vehicle is null) { return; }
-                Initialize();
-                TractionForward = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
-                TractionBackward = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
-                DrawSpeedMeasurementTable();
-                await DrawSpeedDataPlot();
-
-                Controller.SetTrackPowerON();
-                Controller.GetLocoInfo(new(Vehicle.Address));
-                await Task.Run(() => { SshClient.Connect(); });
-                PointsBackward = new();
-                PointsForward = new();
-                await Run();
-            }
-            catch (SshConnectionException) { MessageBox.Show($"Die ssh Verbindung zum Pi wurde terminiert!"); }
-            catch (System.Net.Sockets.SocketException) { MessageBox.Show($"Verbindung zum Raspberry Pi konnte nicht hergestellt werden."); }
-            catch (SshAuthenticationException) { MessageBox.Show($"Authentifizierung hat fehlgeschlagen."); }
-            catch (Exception ex)
-            {
-                Logger.Log($"", ex);
-                MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex.Message}");
-            }
-            finally
-            {
-                Deinitialize();
-            }
-        }
-
-        private async void BtnStopSpeedMeasurement_Click(object sender, RoutedEventArgs e)
-        {
-            IsDisposed = true;
-            await KillPythonScript();
-            this.Close();
-        }
-
-        private async void IntegerUpDown_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            DrawSpeedMeasurementTable();
-            await DrawSpeedDataPlot();
-        }
-
-        private static void Log(string message) => Console.WriteLine(message);
-
-        private async void EinmessenWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            DrawSpeedMeasurementTable();
-            await DrawSpeedDataPlot();
-        }
-
-        private async void CmbAllVehicles_Loaded(object sender, RoutedEventArgs e)
-        {
-            CmbAllVehicles.Items.Clear();
-            foreach (var vehicle in await Db.Vehicles.Where(e => e.Type == VehicleType.Lokomotive).OrderBy(e => e.Address).ToListAsync())
-            {
-                CmbAllVehicles.Items.Add(new ComboBoxItem() { Tag = vehicle, Content = $"({vehicle.Address:D3})  {(string.IsNullOrWhiteSpace(vehicle.Name) ? vehicle.FullName : vehicle.Name)}" });
-            }
-        }
-
-        private async void CmbAllVehicles_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TcMeasure.IsEnabled = CmbAllVehicles.SelectedItem is not Model.Vehicle;
-            if (CmbAllVehicles.SelectedItem is not ComboBoxItem cbi || cbi.Tag is not Vehicle vehicle) return;
-            Vehicle = vehicle;
-            TractionForward = vehicle.TractionForward;
-            TractionBackward = vehicle.TractionBackward;
-
-            DrawSpeedMeasurementTable();
-            await DrawSpeedDataPlot();
-        }
-
-        private async void EinmessenWindow_Closing(object sender, CancelEventArgs e)
-        {
-            SshClient.Disconnect();
-            IsDisposed = true;
-            await SetLocoDrive(0, false);
+            ManagementEventWatcher.Query = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent");
+            ManagementEventWatcher.EventArrived += new EventArrivedEventHandler(ManagementEventWatcher_EventArrived);
+            ManagementEventWatcher.Start();
         }
     }
 }
