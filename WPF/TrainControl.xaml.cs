@@ -61,7 +61,7 @@ namespace TrainDatabase
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
 
-                DoubleTractionVehicles.Add((Vehicle, (GetSortedSet(Vehicle.TractionForward), GetSortedSet(Vehicle.TractionBackward))));
+                MultiTractionList.Add((Vehicle, (GetSortedSet(Vehicle.TractionForward), GetSortedSet(Vehicle.TractionBackward))));
             }
             catch (Exception ex)
             {
@@ -162,7 +162,7 @@ namespace TrainDatabase
 
         private async Task DeterminSlowestVehicleInList() => await Task.Run(() =>
                 {
-                    var list = DoubleTractionVehicles.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.Traction.Forwards is not null && e.Traction.Backwards is not null).ToList();
+                    var list = MultiTractionList.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.Traction.Forwards is not null && e.Traction.Backwards is not null).ToList();
 
                     if (list.Any())
                         SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
@@ -214,19 +214,19 @@ namespace TrainDatabase
                 };
                 c.Unchecked += async (sender, e) =>
                 {
-                    DoubleTractionVehicles.RemoveAll(e => e.Vehicle.Id == (((sender as CheckBox)?.Tag as Vehicle)?.Id ?? -1));
+                    MultiTractionList.RemoveAll(e => e.Vehicle.Id == (((sender as CheckBox)?.Tag as Vehicle)?.Id ?? -1));
                     await DeterminSlowestVehicleInList();
                 };
                 c.Checked += async (sender, e) =>
                  {
-                     if (DoubleTractionVehicles.Count >= 140)
+                     if (MultiTractionList.Count >= 140)
                      {
                          MessageBox.Show("Mehr als 140 Traktionsfahrzeuge sind nicht möglich!", "Max Limit reached.", MessageBoxButton.OK, MessageBoxImage.Error);
                          return;
                      }
                      if (sender is CheckBox c && c.Tag is Vehicle v)
                      {
-                         DoubleTractionVehicles.Add((v, (GetSortedSet(v.TractionForward), GetSortedSet(v.TractionBackward))));
+                         MultiTractionList.Add((v, (GetSortedSet(v.TractionForward), GetSortedSet(v.TractionBackward))));
                          await DeterminSlowestVehicleInList();
                      }
                  };
@@ -238,7 +238,7 @@ namespace TrainDatabase
 
         private double GetSlowestVehicleSpeed(bool direction, int xValue)
         {
-            var (Id, Traction) = DoubleTractionVehicles.FirstOrDefault(e => e.Vehicle == SlowestVehicleInTractionList);
+            var (Id, Traction) = MultiTractionList.FirstOrDefault(e => e.Vehicle == SlowestVehicleInTractionList);
             return direction ? Traction.Forwards.GetYValue(xValue) : Traction.Forwards.GetYValue(xValue);
         }
 
@@ -267,9 +267,9 @@ namespace TrainDatabase
             bool direction = drivingDirection ??= LiveData.DrivingDirection;
             int speed = speedstep ?? Speed;
             List<LokInfoData> data = new();
-            var slowestVehicle = DoubleTractionVehicles.FirstOrDefault<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
+            var slowestVehicle = MultiTractionList.FirstOrDefault<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
             var yValue = GetSlowestVehicleSpeed(speed, direction, slowestVehicle);
-            foreach (var item in DoubleTractionVehicles.Where<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
+            foreach (var item in MultiTractionList.Where<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
             {
                 if (IsVehicleMeasured(item))
                 {
@@ -299,7 +299,7 @@ namespace TrainDatabase
 
             if (function.EnumType != FunctionType.None)
             {
-                var functions = DoubleTractionVehicles.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == function.EnumType && e.ButtonType == function.ButtonType).ToList();
+                var functions = MultiTractionList.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == function.EnumType && e.ButtonType == function.ButtonType).ToList();
 
                 List<(ToggleType toggle, Function Func)> list = new();
 

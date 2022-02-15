@@ -98,7 +98,7 @@ namespace TrainDatabase
             }
         }
 
-        public List<(Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction)> DoubleTractionVehicles { get; } = new();
+        public List<(Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction)> MultiTractionList { get; } = new();
 
         public static int MaxDccSpeed => Z21Client.Z21Client.maxDccStep;
 
