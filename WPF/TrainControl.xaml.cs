@@ -71,40 +71,6 @@ namespace TrainDatabase
             }
         }
 
-        public struct MultiTractionItem
-        {
-            public MultiTractionItem(Vehicle vehicle)
-            {
-                Vehicle = vehicle;
-                TractionForward = GetSortedSet(vehicle.TractionBackward) ?? new();
-                TractionBackward = GetSortedSet(vehicle.TractionBackward) ?? new();
-            }
-
-            public Vehicle Vehicle { get; }
-
-            public SortedSet<FunctionPoint> TractionForward { get; private set; }
-
-            public SortedSet<FunctionPoint> TractionBackward { get; private set; }
-
-            /// <summary>
-            /// Converts the paramter <paramref name="tractionArray"/> to a <see cref="LineSeries"/> object.
-            /// </summary>
-            /// <param name="tractionArray"></param>
-            /// <returns></returns>
-            private static SortedSet<FunctionPoint>? GetSortedSet(decimal?[] tractionArray)
-            {
-                if (tractionArray[MaxDccSpeed] is null)
-                    return null!;
-
-                SortedSet<FunctionPoint>? function = new();
-
-                for (int i = 0; i <= Z21Client.Z21Client.maxDccStep; i++)
-                    if (tractionArray[i] is not null)
-                        function.Add(new(i, (double)(tractionArray[i] ?? 0)));
-                return function;
-            }
-        }
-
         public void Dispose()
         {
             SetLocoDrive(inUse: false);
@@ -194,14 +160,14 @@ namespace TrainDatabase
         private void Controller_TrackPowerChanged(object? sender, TrackPowerEventArgs e) => TrackPower = e.TrackPower;
 
         private async Task DeterminSlowestVehicleInList() => await Task.Run(() =>
-                {
-                    var list = MultiTractionList.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.TractionForward.Any() && e.TractionBackward.Any()).ToList();
+        {
+            var list = MultiTractionList.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.TractionForward.Any() && e.TractionBackward.Any()).ToList();
 
-                    if (list.Any())
-                        SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
-                    else
-                        SlowestVehicleInTractionList = Vehicle;
-                });
+            if (list.Any())
+                SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
+            else
+                SlowestVehicleInTractionList = Vehicle;
+        });
 
         /// <summary>
         /// Functions draws every single Function of a vehicle for the user to click on. 
@@ -368,6 +334,37 @@ namespace TrainDatabase
             Speed = e.Delta < 0 ? Speed - 1 : Speed + 1;
             e.Handled = true;
             SliderLastused = DateTime.Now;
+        }
+
+        public struct MultiTractionItem
+        {
+            public MultiTractionItem(Vehicle vehicle)
+            {
+                Vehicle = vehicle;
+                TractionForward = GetSortedSet(vehicle.TractionBackward) ?? new();
+                TractionBackward = GetSortedSet(vehicle.TractionBackward) ?? new();
+            }
+
+            public SortedSet<FunctionPoint> TractionBackward { get; private set; }
+            public SortedSet<FunctionPoint> TractionForward { get; private set; }
+            public Vehicle Vehicle { get; }
+            /// <summary>
+            /// Converts the paramter <paramref name="tractionArray"/> to a <see cref="LineSeries"/> object.
+            /// </summary>
+            /// <param name="tractionArray"></param>
+            /// <returns></returns>
+            private static SortedSet<FunctionPoint>? GetSortedSet(decimal?[] tractionArray)
+            {
+                if (tractionArray[MaxDccSpeed] is null)
+                    return null!;
+
+                SortedSet<FunctionPoint>? function = new();
+
+                for (int i = 0; i <= Z21Client.Z21Client.maxDccStep; i++)
+                    if (tractionArray[i] is not null)
+                        function.Add(new(i, (double)(tractionArray[i] ?? 0)));
+                return function;
+            }
         }
     }
 }
