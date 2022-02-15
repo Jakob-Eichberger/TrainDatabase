@@ -62,13 +62,6 @@ namespace TrainDatabase
                 DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
 
                 DoubleTractionVehicles.Add((Vehicle, (GetSortedSet(Vehicle.TractionForward), GetSortedSet(Vehicle.TractionBackward))));
-
-                if (Vehicle.Type.IsLokomotive() && Settings.UsingJoyStick)
-                {
-                    Joystick = new(Guid.Empty);
-                    Joystick.OnValueUpdate += new EventHandler<JoyStickUpdateEventArgs>(OnJoyStickValueUpdate);
-                    functionToJoyStickDictionary = Settings.FunctionToJoyStickDictionary();
-                }
             }
             catch (Exception ex)
             {
@@ -249,58 +242,6 @@ namespace TrainDatabase
             return direction ? Traction.Forwards.GetYValue(xValue) : Traction.Forwards.GetYValue(xValue);
         }
 
-        private void OnJoyStickValueUpdate(object? sender, JoyStickUpdateEventArgs e)
-        {
-            try
-            {
-                if (IsActive)
-                {
-                    var i = e.joyStickOffset;
-                    var Function = functionToJoyStickDictionary.Where(f => f.Value.joyStick == e.joyStickOffset).FirstOrDefault();
-
-                    switch (Function.Key)
-                    {
-                        case FunctionType.Drive:
-                            SliderLastused = DateTime.Now;
-                            Speed = Z21Client.Z21Client.maxDccStep - (e.currentValue * Z21Client.Z21Client.maxDccStep / Function.Value.maxValue);
-                            break;
-                        case FunctionType.ChangeDirection:
-                            if (e.currentValue == e.maxValue)
-                                SwitchDirection();
-                            break;
-                        default:
-                            if (Function.Key == FunctionType.None) return;
-                            var function = DoubleTractionVehicles.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == Function.Key).ToList();
-                            if (function is null) return;
-                            List<(ToggleType toggle, Function Func)> list = new();
-                            foreach (var item in function)
-                            {
-                                switch (item.ButtonType)
-                                {
-                                    case ButtonType.Switch:
-                                        if (e.currentValue == Function.Value.maxValue)
-                                            list.Add((ToggleType.Toggle, item));
-                                        break;
-                                    case ButtonType.PushButton:
-                                        if (e.currentValue == Function.Value.maxValue)
-                                            list.Add((ToggleType.On, item));
-                                        if (e.currentValue == 0)
-                                            list.Add((ToggleType.Off, item));
-                                        break;
-                                    case ButtonType.Timer:
-                                        break;
-                                }
-                            }
-                            controller.SetLocoFunction(list);
-                            break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"{nameof(OnJoyStickValueUpdate)} failed! {ex}");
-            }
-        }
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))

@@ -148,7 +148,5 @@ namespace TrainDatabase
         public Vehicle SlowestVehicleInTractionList { get; set; }
 
         public new bool IsActive { get; set; } = false;
-
-        private JoyStick.JoyStick? Joystick { get; }
     }
 }
