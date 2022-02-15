@@ -61,7 +61,7 @@ namespace TrainDatabase
                 DrawAllFunctions();
                 DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
 
-                MultiTractionList.Add((Vehicle, (GetSortedSet(Vehicle.TractionForward), GetSortedSet(Vehicle.TractionBackward))));
+                MultiTractionList.Add(new MultiTractionItem(Vehicle));
             }
             catch (Exception ex)
             {
@@ -71,10 +71,43 @@ namespace TrainDatabase
             }
         }
 
+        public struct MultiTractionItem
+        {
+            public MultiTractionItem(Vehicle vehicle)
+            {
+                Vehicle = vehicle;
+                TractionForward = GetSortedSet(vehicle.TractionBackward) ?? new();
+                TractionBackward = GetSortedSet(vehicle.TractionBackward) ?? new();
+            }
+
+            public Vehicle Vehicle { get; }
+
+            public SortedSet<FunctionPoint> TractionForward { get; private set; }
+
+            public SortedSet<FunctionPoint> TractionBackward { get; private set; }
+
+            /// <summary>
+            /// Converts the paramter <paramref name="tractionArray"/> to a <see cref="LineSeries"/> object.
+            /// </summary>
+            /// <param name="tractionArray"></param>
+            /// <returns></returns>
+            private static SortedSet<FunctionPoint>? GetSortedSet(decimal?[] tractionArray)
+            {
+                if (tractionArray[MaxDccSpeed] is null)
+                    return null!;
+
+                SortedSet<FunctionPoint>? function = new();
+
+                for (int i = 0; i <= Z21Client.Z21Client.maxDccStep; i++)
+                    if (tractionArray[i] is not null)
+                        function.Add(new(i, (double)(tractionArray[i] ?? 0)));
+                return function;
+            }
+        }
+
         public void Dispose()
         {
             SetLocoDrive(inUse: false);
-            Joystick?.Dispose();
         }
 
         protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -106,15 +139,15 @@ namespace TrainDatabase
             Speed = (byte)speedstep
         };
 
-        private static double GetSlowestVehicleSpeed(int speedstep, bool direction, (Vehicle Vehicle, (SortedSet<FunctionPoint>? Forwards, SortedSet<FunctionPoint>? Backwards) Traction) Vehicle)
+        private static double GetSlowestVehicleSpeed(int speedstep, bool direction, MultiTractionItem traction)
         {
-            if (Vehicle.Traction.Forwards is null || Vehicle.Traction.Backwards is null)
+            if ((!traction.TractionForward.Any()) || (!traction.TractionForward.Any()))
                 return double.NaN;
 
-            if (!Vehicle.Vehicle.InvertTraction)
-                return direction ? Vehicle.Traction.Forwards.GetYValue(speedstep) : Vehicle.Traction.Backwards.GetYValue(speedstep);
+            if (!traction.Vehicle.InvertTraction)
+                return direction ? traction.TractionForward.GetYValue(speedstep) : traction.TractionBackward.GetYValue(speedstep);
             else
-                return direction ? Vehicle.Traction.Backwards.GetYValue(speedstep) : Vehicle.Traction.Forwards.GetYValue(speedstep);
+                return direction ? traction.TractionBackward.GetYValue(speedstep) : traction.TractionForward.GetYValue(speedstep);
         }
 
         /// <summary>
@@ -135,7 +168,7 @@ namespace TrainDatabase
             return function;
         }
 
-        private static bool IsVehicleMeasured((Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction) item) => item.Traction.Forwards is not null && item.Traction.Backwards is not null;
+        private static bool IsVehicleMeasured(MultiTractionItem item) => item.TractionForward.Any() && item.TractionBackward.Any();
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e) => SwitchDirection();
 
@@ -162,10 +195,10 @@ namespace TrainDatabase
 
         private async Task DeterminSlowestVehicleInList() => await Task.Run(() =>
                 {
-                    var list = MultiTractionList.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.Traction.Forwards is not null && e.Traction.Backwards is not null).ToList();
+                    var list = MultiTractionList.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.TractionForward.Any() && e.TractionBackward.Any()).ToList();
 
                     if (list.Any())
-                        SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.Traction.Forwards?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
+                        SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
                     else
                         SlowestVehicleInTractionList = Vehicle;
                 });
@@ -226,7 +259,7 @@ namespace TrainDatabase
                      }
                      if (sender is CheckBox c && c.Tag is Vehicle v)
                      {
-                         MultiTractionList.Add((v, (GetSortedSet(v.TractionForward), GetSortedSet(v.TractionBackward))));
+                         MultiTractionList.Add(new(v));
                          await DeterminSlowestVehicleInList();
                      }
                  };
@@ -238,8 +271,8 @@ namespace TrainDatabase
 
         private double GetSlowestVehicleSpeed(bool direction, int xValue)
         {
-            var (Id, Traction) = MultiTractionList.FirstOrDefault(e => e.Vehicle == SlowestVehicleInTractionList);
-            return direction ? Traction.Forwards.GetYValue(xValue) : Traction.Forwards.GetYValue(xValue);
+            var item = MultiTractionList.FirstOrDefault(e => e.Vehicle == SlowestVehicleInTractionList);
+            return direction ? item.TractionForward.GetYValue(xValue) : item.TractionForward.GetYValue(xValue);
         }
 
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
@@ -267,17 +300,17 @@ namespace TrainDatabase
             bool direction = drivingDirection ??= LiveData.DrivingDirection;
             int speed = speedstep ?? Speed;
             List<LokInfoData> data = new();
-            var slowestVehicle = MultiTractionList.FirstOrDefault<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
+            var slowestVehicle = MultiTractionList.FirstOrDefault(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
             var yValue = GetSlowestVehicleSpeed(speed, direction, slowestVehicle);
-            foreach (var item in MultiTractionList.Where<(Vehicle Vehicle, (SortedSet<FunctionPoint> Forwards, SortedSet<FunctionPoint> Backwards) Traction)>(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
+            foreach (var item in MultiTractionList.Where(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
             {
                 if (IsVehicleMeasured(item))
                 {
                     int dccSpeed;
                     if (!item.Vehicle.InvertTraction)
-                        dccSpeed = direction ? item.Traction.Forwards.GetXValue(yValue) : item.Traction.Backwards.GetXValue(yValue);
+                        dccSpeed = direction ? item.TractionForward.GetXValue(yValue) : item.TractionBackward.GetXValue(yValue);
                     else
-                        dccSpeed = direction ? item.Traction.Backwards.GetXValue(yValue) : item.Traction.Forwards.GetXValue(yValue);
+                        dccSpeed = direction ? item.TractionBackward.GetXValue(yValue) : item.TractionForward.GetXValue(yValue);
 
                     data.Add(GetLocoInfoData(dccSpeed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
                 }
