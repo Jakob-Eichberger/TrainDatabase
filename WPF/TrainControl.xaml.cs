@@ -116,24 +116,6 @@ namespace TrainDatabase
                 return direction ? traction.TractionBackward.GetYValue(speedstep) : traction.TractionForward.GetYValue(speedstep);
         }
 
-        /// <summary>
-        /// Converts the paramter <paramref name="tractionArray"/> to a <see cref="LineSeries"/> object.
-        /// </summary>
-        /// <param name="tractionArray"></param>
-        /// <returns></returns>
-        private static SortedSet<FunctionPoint>? GetSortedSet(decimal?[] tractionArray)
-        {
-            if (tractionArray[MaxDccSpeed] is null)
-                return null!;
-
-            SortedSet<FunctionPoint>? function = new();
-
-            for (int i = 0; i <= Z21Client.Z21Client.maxDccStep; i++)
-                if (tractionArray[i] is not null)
-                    function.Add(new(i, (double)(tractionArray[i] ?? 0)));
-            return function;
-        }
-
         private static bool IsVehicleMeasured(MultiTractionItem item) => item.TractionForward.Any() && item.TractionBackward.Any();
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e) => SwitchDirection();
