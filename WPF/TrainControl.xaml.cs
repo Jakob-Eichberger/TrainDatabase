@@ -217,6 +217,12 @@ namespace TrainDatabase
 
         private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
 
+        private double GetSlowestVehicleSpeed(bool direction, int xValue)
+        {
+            var item = MultiTractionList.FirstOrDefault(e => e.Vehicle == SlowestVehicleInTractionList);
+            return direction ? item.TractionForward.GetYValue(xValue) : item.TractionForward.GetYValue(xValue);
+        }
+
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
