@@ -346,8 +346,11 @@ namespace TrainDatabase
             }
 
             public SortedSet<FunctionPoint> TractionBackward { get; private set; }
+
             public SortedSet<FunctionPoint> TractionForward { get; private set; }
+
             public Vehicle Vehicle { get; }
+
             /// <summary>
             /// Converts the paramter <paramref name="tractionArray"/> to a <see cref="LineSeries"/> object.
             /// </summary>
