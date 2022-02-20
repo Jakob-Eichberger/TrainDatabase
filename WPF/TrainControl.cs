@@ -18,16 +18,27 @@ namespace TrainDatabase
     /// </summary>
     public partial class TrainControl
     {
-        public Database db = default!;
-        private Vehicle vehicle = default!;
         public Z21Client.Z21Client controller = default!;
-        private LokInfoData liveData = new();
-        private TrackPower trackPower;
-        private bool lastTrackPowerUpdateWasShort = false;
-        readonly Dictionary<FunctionType, (JoystickOffset joyStick, int maxValue)> functionToJoyStickDictionary = new();
-        private int speed = 0;
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public Database db = default!;
         public DateTime lastSpeedchange = DateTime.MinValue;
+        private bool lastTrackPowerUpdateWasShort = false;
+        private LokInfoData liveData = new();
+        private int speed = 0;
+        private TrackPower trackPower;
+        private Vehicle vehicle = default!;
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public static int MaxDccSpeed => Z21Client.Z21Client.maxDccStep;
+
+        public LokAdresse Adresse { get; set; } = default!;
+
+        /// <summary>
+        /// Returns a string that describes the current direction of travel. 
+        /// </summary>
+        public string GetDirectionString => LiveData.DrivingDirection ? "Vorwärts" : "Rückwärts";
+
+        public bool InUse { get; set; } = default!;
+
+        public new bool IsActive { get; set; } = false;
 
         /// <summary>
         /// Data directly from the Z21. Not Used to controll the vehicle. 
@@ -43,9 +54,22 @@ namespace TrainDatabase
             }
         }
 
-        public LokAdresse Adresse { get; set; } = default!;
+        public List<MultiTractionItem> MultiTractionList { get; } = new();
 
-        public bool InUse { get; set; } = default!;
+        /// <summary>
+        /// True if the speed controll slider is currently used by the user. 
+        /// </summary>
+        public bool SliderInUser { get; set; }
+
+        /// <summary>
+        /// The date and time the user last used the speed controll slider.
+        /// </summary>
+        public DateTime SliderLastused { get; set; }
+
+        /// <summary>
+        /// Holds the <see cref="Vehicle.Id"/> of the slowest Vehicle in the traktion list.
+        /// </summary>
+        public Vehicle SlowestVehicleInTractionList { get; set; }
 
         public int Speed
         {
@@ -64,25 +88,6 @@ namespace TrainDatabase
         }
 
         /// <summary>
-        /// True if the speed controll slider is currently used by the user. 
-        /// </summary>
-        public bool SliderInUser { get; set; }
-
-        /// <summary>
-        /// The date and time the user last used the speed controll slider.
-        /// </summary>
-        public DateTime SliderLastused { get; set; }
-
-        /// <summary>
-        /// The <see cref="Vehicle"/> the application is trying to controll
-        /// </summary>
-        public Vehicle Vehicle
-        {
-            get => vehicle;
-            set => vehicle = value;
-        }
-
-        /// <summary>
         /// Data from the Z21.
         /// </summary>
         public TrackPower TrackPower
@@ -97,14 +102,6 @@ namespace TrainDatabase
                 OnPropertyChanged();
             }
         }
-
-        public List<MultiTractionItem> MultiTractionList { get; } = new();
-
-        public static int MaxDccSpeed => Z21Client.Z21Client.maxDccStep;
-
-        public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
-
-        public Visibility VehicleTypeVisbility => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// True if the TrackPower is on. False otherwhise. Used to set the trackpower.
@@ -128,9 +125,17 @@ namespace TrainDatabase
         public string TrackPowerMessage => Enum.GetName(TrackPower)!;
 
         /// <summary>
-        /// Returns a string that describes the current direction of travel. 
+        /// The <see cref="Vehicle"/> the application is trying to controll
         /// </summary>
-        public string GetDirectionString { get => LiveData.DrivingDirection ? "Vorwärts" : "Rückwärts"; }
+        public Vehicle Vehicle
+        {
+            get => vehicle;
+            set => vehicle = value;
+        }
+
+        public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
+
+        public Visibility VehicleTypeVisbility => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
         /// List of all buttons on a grid which controll vehicle <see cref="Function"/>s.
@@ -141,12 +146,5 @@ namespace TrainDatabase
         /// List of all togglebuttons on a grid which controll vehicle <see cref="Function"/>s.
         /// </summary>
         private List<ToggleButton> FunctionToggleButtons { get; set; } = new();
-
-        /// <summary>
-        /// Holds the <see cref="Vehicle.Id"/> of the slowest Vehicle in the traktion list.
-        /// </summary>
-        public Vehicle SlowestVehicleInTractionList { get; set; }
-
-        public new bool IsActive { get; set; } = false;
     }
 }
