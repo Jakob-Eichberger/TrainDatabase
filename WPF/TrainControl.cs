@@ -31,11 +31,6 @@ namespace TrainDatabase
 
         public LokAdresse Adresse { get; set; } = default!;
 
-        /// <summary>
-        /// Returns a string that describes the current direction of travel. 
-        /// </summary>
-        public string GetDirectionString => LiveData.DrivingDirection ? "Vorwärts" : "Rückwärts";
-
         public bool InUse { get; set; } = default!;
 
         public new bool IsActive { get; set; } = false;
