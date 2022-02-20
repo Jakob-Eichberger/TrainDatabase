@@ -115,11 +115,6 @@ namespace TrainDatabase
         }
 
         /// <summary>
-        /// Gets a string describing the current track power mode. (Needed for UI)
-        /// </summary>
-        public string TrackPowerMessage => Enum.GetName(TrackPower)!;
-
-        /// <summary>
         /// The <see cref="Vehicle"/> the application is trying to controll
         /// </summary>
         public Vehicle Vehicle
