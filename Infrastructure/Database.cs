@@ -56,7 +56,7 @@ namespace Infrastructure
         {
             var value = Set<TEntity>().Remove(obj);
             SaveChanges();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
             return value;
         }
 
@@ -64,7 +64,7 @@ namespace Infrastructure
         {
             var value = Set<TEntity>().Remove(obj);
             await SaveChangesAsync();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
             return value;
         }
 
@@ -72,14 +72,14 @@ namespace Infrastructure
         {
             Set<TEntity>().RemoveRange(obj);
             SaveChanges();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
         }
 
         public override EntityEntry<TEntity> Update<TEntity>(TEntity obj) where TEntity : class
         {
             var result = Set<TEntity>().Update(obj);
             SaveChanges();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
             return result;
         }
 
@@ -87,7 +87,7 @@ namespace Infrastructure
         {
             var result = Set<TEntity>().Update(obj);
             await SaveChangesAsync();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
             return result;
         }
 
@@ -95,14 +95,14 @@ namespace Infrastructure
         {
             Set<TEntity>().UpdateRange(obj);
             SaveChanges();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
         }
 
         public async Task UpdateRangeAsync<TEntity>(List<TEntity> obj) where TEntity : class
         {
             Set<TEntity>().UpdateRange(obj);
             await SaveChangesAsync();
-            if (CollectionChanged is not null) CollectionChanged.Invoke(this, new EventArgs());
+            CollectionChanged?.Invoke(this, new EventArgs());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
