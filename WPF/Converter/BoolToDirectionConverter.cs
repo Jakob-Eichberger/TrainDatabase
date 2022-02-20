@@ -4,9 +4,6 @@ using System.Windows.Data;
 
 namespace WPF_Application.Converter
 {
-    /// <summary>
-    /// Converts a <see cref="bool"/> value to a string direction representation. 
-    /// </summary>
     public class BoolToDirectionConverter : IValueConverter
     {
         /// <summary>
