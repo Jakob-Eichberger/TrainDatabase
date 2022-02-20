@@ -9,6 +9,7 @@
         Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <converter:BoolToDirectionConverter x:Key="BoolToDirectionConverter"/>
+        <converter:TrackPowerToBoolConverter x:Key="TrackPowerToBoolConverter"/>
     </Window.Resources>
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
@@ -28,7 +29,7 @@
             <Label Content="/"/>
             <Label  Content="{Binding ElementName=Tc,Path=MaxDccSpeed}" HorizontalAlignment="Center"/>
         </DockPanel>
-        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPowerBoolean}" Content="{Binding ElementName=Tc,Path=TrackPower}" HorizontalAlignment="Right"/>
+        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPower,Converter={StaticResource TrackPowerToBoolConverter}}" Content="{Binding ElementName=Tc,Path=TrackPower}" HorizontalAlignment="Right"/>
         <TabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" >
             <TabItem Header="Funktionen">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" >

@@ -99,22 +99,6 @@ namespace TrainDatabase
         }
 
         /// <summary>
-        /// True if the TrackPower is on. False otherwhise. Used to set the trackpower.
-        /// </summary>
-        public bool TrackPowerBoolean
-        {
-            set
-            {
-                if (value)
-                    controller.SetTrackPowerON();
-                else
-                    controller.SetTrackPowerOFF();
-                OnPropertyChanged();
-            }
-            get => TrackPower.ToBoolean();
-        }
-
-        /// <summary>
         /// The <see cref="Vehicle"/> the application is trying to controll
         /// </summary>
         public Vehicle Vehicle
