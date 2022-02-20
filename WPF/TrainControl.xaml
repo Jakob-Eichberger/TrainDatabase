@@ -4,8 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrainDatabase"
+        xmlns:converter="clr-namespace:WPF_Application.Converter"
         mc:Ignorable="d"
         Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <converter:BoolToDirectionConverter x:Key="BoolToDirectionConverter"/>
+    </Window.Resources>
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ElementName=Tc,Path=VehicleTypeGridLength}" />
@@ -18,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Minimum="0" Maximum="{Binding ElementName=Tc,Path=MaxDccSpeed}" Value="{Binding ElementName=Tc,Path=Speed}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp" Margin="0,0,5,0"/>
-        <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=Tc,Path=GetDirectionString}" Click="BtnDirection_Click" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
+        <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=Tc,Path=LiveData.DrivingDirection, Converter={StaticResource BoolToDirectionConverter}}" Click="BtnDirection_Click" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
         <DockPanel Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" >
             <Label  Content="{Binding ElementName=Tc,Path=Speed}" HorizontalAlignment="Center"/>
             <Label Content="/"/>
