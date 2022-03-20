@@ -8,7 +8,7 @@ namespace TrainDatabase.Extensions
     {
         public static void SetJoyStick(this FunctionType e, JoystickOffset? joystick)
         {
-            Settings.Set(Enum.GetName(e)!, joystick is null ? null! : Enum.GetName((JoystickOffset)joystick)!);
+            Configuration.Set(Enum.GetName(e)!, joystick is null ? null! : Enum.GetName((JoystickOffset)joystick)!);
         }
     }
 }
