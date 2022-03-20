@@ -50,18 +50,18 @@ namespace TrainDatabase
         /// </summary>
         public decimal DistanceBetweenSensorsInMM
         {
-            get => Settings.GetDecimal(nameof(DistanceBetweenSensorsInMM)) ?? 1.0m;
-            set => Settings.Set(nameof(DistanceBetweenSensorsInMM), value.ToString());
+            get => Configuration.GetDecimal(nameof(DistanceBetweenSensorsInMM)) ?? 1.0m;
+            set => Configuration.Set(nameof(DistanceBetweenSensorsInMM), value.ToString());
         }
 
         public ManagementEventWatcher ManagementEventWatcher { get; } = new ManagementEventWatcher();
         public List<DataPoint> PointsBackward { get; private set; } = new();
         public List<DataPoint> PointsForward { get; private set; } = new();
-        public int Start_Measurement { get => Settings.GetInt(nameof(Start_Measurement)) ?? 2; set { Settings.Set(nameof(Start_Measurement), value.ToString()); } }
+        public int Start_Measurement { get => Configuration.GetInt(nameof(Start_Measurement)) ?? 2; set { Configuration.Set(nameof(Start_Measurement), value.ToString()); } }
         public int Step_Measurement
         {
-            get => Settings.GetInt(nameof(Step_Measurement)) ?? 1;
-            set { Settings.Set(nameof(Step_Measurement), value.ToString()); OnPropertyChanged(); }
+            get => Configuration.GetInt(nameof(Step_Measurement)) ?? 1;
+            set { Configuration.Set(nameof(Step_Measurement), value.ToString()); OnPropertyChanged(); }
         }
 
         private Z21Client.Z21Client Controller { get; } = default!;
@@ -296,7 +296,7 @@ namespace TrainDatabase
                 if (IsDisposed)
                     throw new OperationCanceledException();
 
-                using ArduinoSerialPort port = new(Settings.ArduinoComPort, Settings.ArduinoBaudrate ?? 9600);
+                using ArduinoSerialPort port = new(Configuration.ArduinoComPort, Configuration.ArduinoBaudrate ?? 9600);
                 await SetLocoDrive(speed, direction);
                 var data = await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
                 if (decimal.TryParse(data.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
@@ -346,7 +346,7 @@ namespace TrainDatabase
 
         private async Task ReturnHome()
         {
-            using ArduinoSerialPort port = new(Settings.ArduinoComPort);
+            using ArduinoSerialPort port = new(Configuration.ArduinoComPort);
             await SetLocoDrive(40, true);
             await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
             await SetLocoDrive(40, false);
