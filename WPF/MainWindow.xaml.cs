@@ -51,7 +51,7 @@ namespace Wpf_Application
                 DataContext = this;
                 InitializeComponent();
 
-                if (Settings.OpenDebugConsoleOnStart)
+                if (Configuration.OpenDebugConsoleOnStart)
                     ShowConsoleWindow();
                 DrawVehiclesIfAnyExist();
                 RemoveUnneededImages();
@@ -68,7 +68,7 @@ namespace Wpf_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private Z21Client? Client { get; } = new Z21Client(Settings.ControllerIP, Settings.ControllerPort);
+        private Z21Client? Client { get; } = new Z21Client(Configuration.ClientIP, Configuration.ClientPort);
 
         private System.Timers.Timer ResizeTimer { get; } = new System.Timers.Timer() { Enabled = false, Interval = new TimeSpan(0, 0, 0, 1).TotalMilliseconds, AutoReset = false };
 
@@ -146,7 +146,7 @@ namespace Wpf_Application
                 };
 
                 var mi = new VehicleMenuItem() { Header = "Fahrzeug steuern", Vehicle = item };
-                mi.Click += (a, b) => { OpenNewTrainControlWindow((a as VehicleMenuItem)?.Vehicle); };
+                mi.Click += (a, b) => OpenNewTrainControlWindow((a as VehicleMenuItem)?.Vehicle);
                 border.ContextMenu.Items.Add(mi);
 
                 border.MouseDown += Border_MouseDown;
