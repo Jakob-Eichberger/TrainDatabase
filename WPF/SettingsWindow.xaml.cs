@@ -22,13 +22,13 @@ namespace TrainDatabase
 
         public string ControllerIp
         {
-            get => Settings.ControllerIP.ToString();
+            get => Configuration.ClientIP.ToString();
             set
             {
                 try
                 {
                     ValueChanged = value != ControllerIp;
-                    Settings.ControllerIP = IPAddress.Parse(value);
+                    Configuration.ClientIP = IPAddress.Parse(value);
                 }
                 catch
                 {
@@ -40,13 +40,13 @@ namespace TrainDatabase
 
         public string ControllerPort
         {
-            get => Settings.ControllerPort.ToString();
+            get => Configuration.ClientPort.ToString();
             set
             {
                 try
                 {
                     ValueChanged = value != ControllerIp;
-                    Settings.ControllerPort = int.Parse(value);
+                    Configuration.ClientPort = int.Parse(value);
                 }
                 catch
                 {
@@ -60,20 +60,20 @@ namespace TrainDatabase
         {
             get
             {
-                return Settings.UsingJoyStick;
+                return Configuration.UsingJoyStick;
             }
             set
             {
                 //ValueChanged = UsingJoyStick != value;
-                Settings.UsingJoyStick = value;
+                Configuration.UsingJoyStick = value;
                 OnPropertyChanged();
             }
         }
 
         public bool OpenDebugConsoleOnStart
         {
-            get => Settings.OpenDebugConsoleOnStart;
-            set => Settings.OpenDebugConsoleOnStart = value;
+            get => Configuration.OpenDebugConsoleOnStart;
+            set => Configuration.OpenDebugConsoleOnStart = value;
         }
 
         public SettingsWindow()
@@ -85,7 +85,7 @@ namespace TrainDatabase
         private void DrawLokoFunctionEnumButtons()
         {
             SPLocoFunctions.Children.Clear();
-            var JoyStickFunctionDictionary = Settings.FunctionToJoyStickDictionary();
+            var JoyStickFunctionDictionary = Configuration.FunctionToJoyStickDictionary();
             Grid functionTypeGrid = new();
             functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -163,7 +163,7 @@ namespace TrainDatabase
 
         private void UseJoyStick_Click(object sender, RoutedEventArgs e)
         {
-            Settings.UsingJoyStick = (sender as CheckBox)?.IsChecked ?? false;
+            Configuration.UsingJoyStick = (sender as CheckBox)?.IsChecked ?? false;
         }
     }
 }
