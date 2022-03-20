@@ -24,7 +24,7 @@ namespace TrainDatabase.JoyStick
         {
             this.joystickGuid = joystickGuid;
             rate = _rate;
-            JoyStickMaxValue = Settings.GetJoyStickMaxValue();
+            JoyStickMaxValue = Configuration.GetJoyStickMaxValue();
             Guid guid = GetAllJoySticks().FirstOrDefault();
             if (guid != Guid.Empty)
             {
