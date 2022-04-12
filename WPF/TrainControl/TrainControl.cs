@@ -5,6 +5,7 @@ using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -120,5 +121,22 @@ namespace TrainDatabase
         /// List of all togglebuttons on a grid which controll vehicle <see cref="Function"/>s.
         /// </summary>
         private List<ToggleButton> FunctionToggleButtons { get; set; } = new();
+
+        /// <summary>
+        /// Creates a single instance of the <see cref="TrainControl"/> window.
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="client"></param>
+        /// <param name="db"></param>
+        public static void CreatTrainControlWindow(Vehicle vehicle, Z21Client.Z21Client client, Database db)
+        {
+            if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
+            {
+                trainControl.WindowState = WindowState.Normal;
+                trainControl.Activate();
+            }
+            else
+                new TrainControl(client, vehicle, db).Show();
+        }
     }
 }
