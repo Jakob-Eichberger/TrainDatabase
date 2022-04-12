@@ -146,7 +146,7 @@ namespace Importer
             }
             catch (Exception ex)
             {
-                Logger.Log($"Es ist ein import Fehler aufgetreten", ex);
+                Logger.LogError(ex, $"Es ist ein import Fehler aufgetreten");
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex?.Message}");
             }
             finally
