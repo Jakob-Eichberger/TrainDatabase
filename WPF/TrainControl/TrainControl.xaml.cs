@@ -66,7 +66,7 @@ namespace TrainDatabase
             catch (Exception ex)
             {
                 Close();
-                Logger.Log("Fehler beim öffnen des Controllers.", ex);
+                Logger.LogError(ex, "Fehler beim öffnen des Controllers.");
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -217,12 +217,6 @@ namespace TrainDatabase
 
         private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
 
-        private double GetSlowestVehicleSpeed(bool direction, int xValue)
-        {
-            var item = MultiTractionList.FirstOrDefault(e => e.Vehicle == SlowestVehicleInTractionList);
-            return direction ? item.TractionForward.GetYValue(xValue) : item.TractionForward.GetYValue(xValue);
-        }
-
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
@@ -299,6 +293,18 @@ namespace TrainDatabase
 
         private void SwitchDirection() => SetLocoDrive(drivingDirection: !LiveData.DrivingDirection);
 
+        private void TBRailPower_Click(object sender, RoutedEventArgs e)
+        {
+            if (TrackPower == TrackPower.ON)
+            {
+                controller.SetTrackPowerON();
+            }
+            else
+            {
+                controller.SetTrackPowerOFF();
+            }
+        }
+
         private void Tc_Activated(object sender, EventArgs e) => IsActive = true;
 
         private void Tc_Closing(object sender, CancelEventArgs e) => Dispose();
@@ -349,18 +355,6 @@ namespace TrainDatabase
                     if (tractionArray[i] is not null)
                         function.Add(new(i, (double)(tractionArray[i] ?? 0)));
                 return function;
-            }
-        }
-
-        private void TBRailPower_Click(object sender, RoutedEventArgs e)
-        {
-            if (TrackPower == TrackPower.ON)
-            {
-                controller.SetTrackPowerON();
-            }
-            else
-            {
-                controller.SetTrackPowerOFF();
             }
         }
     }
