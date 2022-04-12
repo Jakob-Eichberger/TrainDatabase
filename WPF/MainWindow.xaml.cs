@@ -253,30 +253,5 @@ namespace Wpf_Application
         }
 
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
-
-        #region Console
-        private const int SwHide = 0;
-
-        private const int SwShow = 5;
-
-        public static void ShowConsoleWindow()
-        {
-            var handle = GetConsoleWindow();
-
-            if (handle == IntPtr.Zero)
-                AllocConsole();
-            else
-                ShowWindow(handle, SwShow);
-        }
-
-        [DllImport(@"kernel32.dll", SetLastError = true)]
-        static extern bool AllocConsole();
-
-        [DllImport(@"kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
-
-        [DllImport(@"user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        #endregion
     }
 }
