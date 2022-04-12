@@ -91,7 +91,7 @@ namespace Wpf_Application
             if (e.ClickCount == 2 && sender is VehicleBorder border)
             {
                 await Task.Delay(150);
-                OpenNewTrainControlWindow(border.Vehicle);
+                TrainControl.CreatTrainControlWindow(border.Vehicle, Client, db);
             }
         }
 
@@ -146,7 +146,7 @@ namespace Wpf_Application
                     ContextMenu = new()
                 };
 
-                var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => OpenNewTrainControlWindow(a));
+                var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => TrainControl.CreatTrainControlWindow(a, Client, db));
                 border.ContextMenu.Items.Add(mi);
 
                 border.MouseDown += Border_MouseDown;
@@ -185,17 +185,6 @@ namespace Wpf_Application
                 ResizeTimer.Stop();
                 ResizeTimer.Start();
             }
-        }
-
-        private void OpenNewTrainControlWindow(Vehicle? vehicle)
-        {
-            if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
-            {
-                trainControl.WindowState = WindowState.Normal;
-                trainControl.Activate();
-            }
-            else
-                new TrainControl(Client, vehicle, db).Show();
         }
 
         private void OpenVehicleManagement_Click(object sender, RoutedEventArgs e)
