@@ -29,7 +29,7 @@
             <Label Content="/"/>
             <Label  Content="{Binding ElementName=Tc,Path=MaxDccSpeed}" HorizontalAlignment="Center"/>
         </DockPanel>
-        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPower,Converter={StaticResource TrackPowerToBoolConverter}}" Content="{Binding ElementName=Tc,Path=TrackPower}" HorizontalAlignment="Right"/>
+        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPower,Converter={StaticResource TrackPowerToBoolConverter}}" Content="{Binding ElementName=Tc,Path=TrackPower}" HorizontalAlignment="Right" Click="TBRailPower_Click"/>
         <TabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" >
             <TabItem Header="Funktionen">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" >
