@@ -71,6 +71,23 @@ namespace TrainDatabase
             }
         }
 
+        /// <summary>
+        /// Creates a single instance of the <see cref="TrainControl"/> window.
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="client"></param>
+        /// <param name="db"></param>
+        public static void CreatTrainControlWindow(Vehicle vehicle, Z21Client.Z21Client client, Database db)
+        {
+            if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
+            {
+                trainControl.WindowState = WindowState.Normal;
+                trainControl.Activate();
+            }
+            else
+                new TrainControl(client, vehicle, db).Show();
+        }
+
         public void Dispose()
         {
             SetLocoDrive(inUse: false);
