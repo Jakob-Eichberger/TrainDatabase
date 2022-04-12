@@ -351,5 +351,17 @@ namespace TrainDatabase
                 return function;
             }
         }
+
+        private void TBRailPower_Click(object sender, RoutedEventArgs e)
+        {
+            if (TrackPower == TrackPower.ON)
+            {
+                controller.SetTrackPowerON();
+            }
+            else
+            {
+                controller.SetTrackPowerOFF();
+            }
+        }
     }
 }
