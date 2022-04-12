@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TrainDatabase;
 using TrainDatabase.Z21Client;
+using WPF_Application;
 
 namespace Wpf_Application
 {
@@ -52,7 +53,7 @@ namespace Wpf_Application
                 InitializeComponent();
 
                 if (Configuration.OpenDebugConsoleOnStart)
-                    ShowConsoleWindow();
+                    new LogWindow().Show();
                 DrawVehiclesIfAnyExist();
                 RemoveUnneededImages();
                 db.CollectionChanged += (a, b) => Dispatcher.Invoke(() => Search());
@@ -61,7 +62,7 @@ namespace Wpf_Application
             catch (Exception e)
             {
                 Close();
-                Logger.Log($"Fehler beim start", e);
+                Logger.LogError(e, $"Fehler beim start");
                 MessageBox.Show($"{e}");
             }
         }
@@ -96,7 +97,7 @@ namespace Wpf_Application
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            Logger.Log("An unhandled exception occoured.", e.Exception);
+            Logger.LogError(e.Exception, "An unhandled exception occoured.");
             e.Handled = true;
             MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
@@ -145,8 +146,7 @@ namespace Wpf_Application
                     ContextMenu = new()
                 };
 
-                var mi = new VehicleMenuItem() { Header = "Fahrzeug steuern", Vehicle = item };
-                mi.Click += (a, b) => OpenNewTrainControlWindow((a as VehicleMenuItem)?.Vehicle);
+                var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => OpenNewTrainControlWindow(a));
                 border.ContextMenu.Items.Add(mi);
 
                 border.MouseDown += Border_MouseDown;
