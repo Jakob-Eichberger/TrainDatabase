@@ -88,7 +88,7 @@ namespace TrainDatabase
             return Yaxis;
         }
 
-        private static void Log(string message) => Console.WriteLine(message);
+        private static void Log(string message) => Logger.LogInformation(message);
 
         private async void BtnStartSpeedMeasurement_Click(object sender, RoutedEventArgs e)
         {
@@ -112,7 +112,7 @@ namespace TrainDatabase
             catch (SshAuthenticationException) { MessageBox.Show($"Authentifizierung hat fehlgeschlagen."); }
             catch (Exception ex)
             {
-                Logger.Log($"", ex);
+                Logger.LogError(ex, $"");
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex.Message}");
             }
             finally
