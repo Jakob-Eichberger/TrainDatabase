@@ -122,8 +122,6 @@
                     </DockPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Mehrfachtraktion" IsEnabled="False"/>
         </TabControl>
-
     </Grid>
 </Window>
