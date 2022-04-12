@@ -329,7 +329,7 @@ namespace TrainDatabase
             public MultiTractionItem(Vehicle vehicle)
             {
                 Vehicle = vehicle;
-                TractionForward = GetSortedSet(vehicle.TractionBackward) ?? new();
+                TractionForward = GetSortedSet(vehicle.TractionForward) ?? new();
                 TractionBackward = GetSortedSet(vehicle.TractionBackward) ?? new();
             }
 
