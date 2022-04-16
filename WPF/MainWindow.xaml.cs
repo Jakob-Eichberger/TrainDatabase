@@ -179,7 +179,7 @@ namespace Wpf_Application
             Client.LogOn();
         }
 
-        private void mw_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void Mw_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (IsActive && !tbSearch.IsFocused)
                 tbSearch.Focus();
