@@ -21,5 +21,7 @@ namespace Extensions
         public static long ToInt64(this string e) => Convert.ToInt64(Convert.ToInt32(string.IsNullOrEmpty(e) ? "0" : e));
 
         public static bool IsDecimal(this string e) => decimal.TryParse(e, out _);
+
+        public static bool IsInt(this string e) => int.TryParse(e, out _);
     }
 }
