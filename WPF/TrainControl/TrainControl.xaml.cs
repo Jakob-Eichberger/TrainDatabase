@@ -34,34 +34,13 @@ namespace TrainDatabase
         {
             try
             {
-                db = serviceProvider.GetService<Database>()!;
-                controller = serviceProvider.GetService<Z21Client.Z21Client>()!;
-
+                ServiceProvider = serviceProvider;
+                db = ServiceProvider.GetService<Database>()!;
+                controller = ServiceProvider.GetService<Z21Client.Z21Client>()!;
+                Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
                 DataContext = this;
                 InitializeComponent();
                 Activate();
-
-                Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
-
-                if (Vehicle is null)
-                    throw new NullReferenceException($"Vehilce with adress {_vehicle.Address} not found!");
-
-                Adresse = new(Vehicle.Address);
-                Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
-
-                SlowestVehicleInTractionList = Vehicle;
-
-                controller.LogOn();
-                controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
-                controller.TrackPowerChanged += Controller_TrackPowerChanged;
-                controller.OnStatusChanged += Controller_OnStatusChanged;
-                controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
-                controller.GetStatus();
-
-                DrawAllFunctions();
-                DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
-
-                MultiTractionList.Add(new MultiTractionItem(Vehicle));
             }
             catch (Exception ex)
             {
@@ -69,7 +48,26 @@ namespace TrainDatabase
                 Logger.LogError(ex, "Fehler beim öffnen des Controllers.");
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            ServiceProvider = serviceProvider;
+        }
+
+        private void TrainControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Adresse = new(Vehicle.Address);
+            Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+
+            SlowestVehicleInTractionList = Vehicle;
+
+            controller.LogOn();
+            controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
+            controller.TrackPowerChanged += Controller_TrackPowerChanged;
+            controller.OnStatusChanged += Controller_OnStatusChanged;
+            controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
+            controller.GetStatus();
+
+            DrawAllFunctions();
+            DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
+
+            MultiTractionList.Add(new MultiTractionItem(Vehicle));
         }
 
         /// <summary>
