@@ -36,7 +36,7 @@
                     <WrapPanel Name="FunctionGrid" />
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Doppeltraktion" Visibility="{Binding ElementName=Tc,Path=VehicleTypeVisbility}">
+            <TabItem Header="Doppeltraktion">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="AUTO"/>
