@@ -82,48 +82,50 @@ namespace TrainDatabase
             DrawLokoFunctionEnumButtons();
         }
 
+        [Obsolete]
         private void DrawLokoFunctionEnumButtons()
         {
-            SPLocoFunctions.Children.Clear();
-            var JoyStickFunctionDictionary = Configuration.FunctionToJoyStickDictionary();
-            Grid functionTypeGrid = new();
-            functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            foreach (var item in Enum.GetValues(typeof(FunctionType)))
-            {
-                if ((FunctionType)item != 0)
-                {
-                    functionTypeGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            //SPLocoFunctions.Children.Clear();
+            //var JoyStickFunctionDictionary = Configuration.FunctionToJoyStickDictionary();
+            //Grid functionTypeGrid = new();
+            //functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            //functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            //functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            //functionTypeGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                    Label enumLabel = new() { Content = Enum.GetName((FunctionType)item), Margin = new Thickness(0, 0, 20, 5) };
-                    Grid.SetColumn(enumLabel, 0);
-                    Grid.SetRow(enumLabel, functionTypeGrid.RowDefinitions.Count - 1);
-                    functionTypeGrid.Children.Add(enumLabel);
+            //foreach (var item in Enum.GetValues(typeof(FunctionType)))
+            //{
+            //    if ((FunctionType)item != 0)
+            //    {
+            //        functionTypeGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                    Label currentJoystickOffset = new() { Content = JoyStickFunctionDictionary.TryGetValue((FunctionType)item, out var v) ? Enum.GetName(v.joyStick) : "-", Margin = new Thickness(0, 0, 20, 5) };
-                    Grid.SetColumn(currentJoystickOffset, 1);
-                    Grid.SetRow(currentJoystickOffset, functionTypeGrid.RowDefinitions.Count - 1);
-                    functionTypeGrid.Children.Add(currentJoystickOffset);
+            //        Label enumLabel = new() { Content = Enum.GetName((FunctionType)item), Margin = new Thickness(0, 0, 20, 5) };
+            //        Grid.SetColumn(enumLabel, 0);
+            //        Grid.SetRow(enumLabel, functionTypeGrid.RowDefinitions.Count - 1);
+            //        functionTypeGrid.Children.Add(enumLabel);
 
-                    Button button = new() { Content = "Neu belegen.", Padding = new(5), Margin = new Thickness(0, 0, 20, 5), Tag = (FunctionType)item };
-                    button.Click += ButtonNeuBelegen_Click;
-                    Grid.SetColumn(button, 2);
-                    Grid.SetRow(button, functionTypeGrid.RowDefinitions.Count - 1);
-                    functionTypeGrid.Children.Add(button);
+            //        Label currentJoystickOffset = new() { Content = JoyStickFunctionDictionary.TryGetValue((FunctionType)item, out var v) ? Enum.GetName(v.joyStick) : "-", Margin = new Thickness(0, 0, 20, 5) };
+            //        Grid.SetColumn(currentJoystickOffset, 1);
+            //        Grid.SetRow(currentJoystickOffset, functionTypeGrid.RowDefinitions.Count - 1);
+            //        functionTypeGrid.Children.Add(currentJoystickOffset);
 
-                    Button button1 = new() { Content = "Zurücksetzen", Padding = new(5), Margin = new Thickness(0, 0, 20, 5), Tag = (FunctionType)item, IsEnabled = "-" != (string)currentJoystickOffset!.Content! };
-                    button1.Click += RemoveButtonFromFunction_Click;
-                    Grid.SetColumn(button1, 3);
-                    Grid.SetRow(button1, functionTypeGrid.RowDefinitions.Count - 1);
-                    functionTypeGrid.Children.Add(button1);
+            //        Button button = new() { Content = "Neu belegen.", Padding = new(5), Margin = new Thickness(0, 0, 20, 5), Tag = (FunctionType)item };
+            //        button.Click += ButtonNeuBelegen_Click;
+            //        Grid.SetColumn(button, 2);
+            //        Grid.SetRow(button, functionTypeGrid.RowDefinitions.Count - 1);
+            //        functionTypeGrid.Children.Add(button);
+
+            //        Button button1 = new() { Content = "Zurücksetzen", Padding = new(5), Margin = new Thickness(0, 0, 20, 5), Tag = (FunctionType)item, IsEnabled = "-" != (string)currentJoystickOffset!.Content! };
+            //        button1.Click += RemoveButtonFromFunction_Click;
+            //        Grid.SetColumn(button1, 3);
+            //        Grid.SetRow(button1, functionTypeGrid.RowDefinitions.Count - 1);
+            //        functionTypeGrid.Children.Add(button1);
 
 
-                }
-            }
-            SPLocoFunctions.Children.Add(functionTypeGrid);
+            //    }
+            //}
+            //SPLocoFunctions.Children.Add(functionTypeGrid);
         }
 
         private void ButtonNeuBelegen_Click(object? sender, EventArgs s)
