@@ -1,6 +1,7 @@
 ﻿using Helper;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Model;
 using System;
 using System.Collections.Generic;
@@ -28,12 +29,17 @@ namespace Wpf_Application
     {
         private static readonly Mutex mutex = new(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
 
-        private readonly Database db = new();
-
-        public MainWindow()
+        public MainWindow(IServiceProvider serviceProvider)
         {
             try
             {
+                DataContext = this;
+                InitializeComponent();
+
+                ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+                Db = ServiceProvider.GetService<Database>()!;
+                Client = ServiceProvider.GetService<Z21Client>()!;
+
                 if (!mutex.WaitOne(TimeSpan.Zero, true))
                 {
                     MessageBox.Show("Achtung mehr als eine Instanz der Software kann nicht geöffnet werden!");
@@ -42,22 +48,6 @@ namespace Wpf_Application
                 }
                 Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
                 ResizeTimer.Elapsed += ResizeTimer_Elapsed;
-#if RELEASE
-                if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
-                {
-                    Application.Current.Shutdown();
-                    return;
-                }
-#endif
-                DataContext = this;
-                InitializeComponent();
-
-                if (Configuration.OpenDebugConsoleOnStart)
-                    new LogWindow().Show();
-                DrawVehiclesIfAnyExist();
-                RemoveUnneededImages();
-                db.CollectionChanged += (a, b) => Dispatcher.Invoke(() => Search());
-                Client.LogOn();
             }
             catch (Exception e)
             {
@@ -69,7 +59,11 @@ namespace Wpf_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private Z21Client? Client { get; } = new Z21Client(Configuration.ClientIP, Configuration.ClientPort);
+        public IServiceProvider ServiceProvider { get; } = default!;
+
+        private Z21Client Client { get; } = default!;
+
+        private Database Db { get; } = default!;
 
         private System.Timers.Timer ResizeTimer { get; } = new System.Timers.Timer() { Enabled = false, Interval = new TimeSpan(0, 0, 0, 1).TotalMilliseconds, AutoReset = false };
 
@@ -91,7 +85,7 @@ namespace Wpf_Application
             if (e.ClickCount == 2 && sender is VehicleBorder border)
             {
                 await Task.Delay(150);
-                TrainControl.CreatTrainControlWindow(border.Vehicle, Client, db);
+                TrainControl.CreatTrainControlWindow(border.Vehicle, Client, Db);
             }
         }
 
@@ -102,7 +96,7 @@ namespace Wpf_Application
             MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
 
-        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(db).ShowDialog();
+        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(Db).ShowDialog();
 
         private void DrawVehicles(IEnumerable<Vehicle> list)
         {
@@ -146,7 +140,7 @@ namespace Wpf_Application
                     ContextMenu = new()
                 };
 
-                var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => TrainControl.CreatTrainControlWindow(a, Client, db));
+                var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => TrainControl.CreatTrainControlWindow(a, Client, Db));
                 border.ContextMenu.Items.Add(mi);
 
                 border.MouseDown += Border_MouseDown;
@@ -156,18 +150,33 @@ namespace Wpf_Application
 
         private void DrawVehiclesIfAnyExist()
         {
-            db.Database.EnsureCreated();
-            if (!db.Vehicles.Any() && MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                new Importer.Z21Import(db).ShowDialog();
+            Db.Database.EnsureCreated();
+            if (!Db.Vehicles.Any() && MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
+                new Importer.Z21Import(Db).ShowDialog();
             Search();
         }
 
-        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(db, Client).Show();
+        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(Db, Client).Show();
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
             Client?.LogOFF();
             Application.Current.Shutdown();
+        }
+
+        private void Mw_Loaded(object sender, RoutedEventArgs e)
+        {
+#if RELEASE
+                if (MessageBoxResult.No == MessageBox.Show("Achtung! Es handelt sich bei der Software um eine Alpha version! Es können und werden Bugs auftreten, wenn Sie auf JA drücken, stimmen Sie zu, dass der Entwickler für keinerlei Schäden, die durch die Verwendung der Software entstehen könnten, haftbar ist!", "Haftungsausschluss", MessageBoxButton.YesNo, MessageBoxImage.Information))
+                {
+                    Application.Current.Shutdown();
+                    return;
+                }
+#endif
+            DrawVehiclesIfAnyExist();
+            RemoveUnneededImages();
+            Db.CollectionChanged += (a, b) => Dispatcher.Invoke(() => Search());
+            Client.LogOn();
         }
 
         private void mw_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -195,14 +204,14 @@ namespace Wpf_Application
                 vehicleManagement.Activate();
             }
             else
-                new VehicleManagement(db).Show();
+                new VehicleManagement(Db).Show();
         }
 
         private void RemoveUnneededImages() => Task.Run(() =>
         {
             try
             {
-                var images = db.Vehicles.Select(e => e.ImageName).ToList();
+                var images = Db.Vehicles.Select(e => e.ImageName).ToList();
                 string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
                 Directory.CreateDirectory(directory);
                 foreach (var item in Directory.GetFiles($"{directory}\\"))
@@ -224,7 +233,7 @@ namespace Wpf_Application
 
         private void Search()
         {
-            var vehicles = db.Vehicles.Include(e => e.Category).Where(e => e.IsActive).ToList();
+            var vehicles = Db.Vehicles.Include(e => e.Category).Where(e => e.IsActive).ToList();
             foreach (var item in tbSearch.Text.Split(" ", StringSplitOptions.RemoveEmptyEntries))
                 vehicles = vehicles.Where(i => i.IsActive && $"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}".ToLower().Contains(item.ToLower().Trim())).ToList();
             DrawVehicles(vehicles);
