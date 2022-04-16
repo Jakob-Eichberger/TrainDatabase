@@ -330,7 +330,7 @@ namespace TrainDatabase
             SliderLastused = DateTime.Now;
         }
 
-        private void TrainControl_Loaded(object sender, RoutedEventArgs e)
+        private async void TrainControl_Loaded(object sender, RoutedEventArgs e)
         {
             Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
 
@@ -346,14 +346,16 @@ namespace TrainDatabase
             DrawAllFunctions();
             SearchTractionVehicles();
             UpdateMultiTractionList();
+            await DeterminSlowestVehicleInList();
 
-            Db.ChangeTracker.StateChanged += (a, b) =>
+            Db.ChangeTracker.StateChanged += async (a, b) =>
             {
                 Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == Vehicle.Id)!;
                 Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
                 DrawAllFunctions();
                 SearchTractionVehicles();
                 UpdateMultiTractionList();
+                await DeterminSlowestVehicleInList();
             };
         }
 
