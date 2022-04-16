@@ -34,6 +34,12 @@ namespace Wpf_Application
         {
             try
             {
+                using (var db = new Database())
+                {
+                    //db.Database.EnsureDeleted();
+                    db.Database.EnsureCreated();
+                }
+
                 if (Configuration.OpenDebugConsoleOnStart)
                     serviceProvider.GetService<LogWindow>()!.Show();
 
