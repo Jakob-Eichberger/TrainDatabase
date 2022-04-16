@@ -36,7 +36,7 @@
                     <WrapPanel Name="FunctionGrid" />
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Doppeltraktion">
+            <TabItem Header="Multitraktion">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="AUTO"/>
