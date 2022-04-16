@@ -150,7 +150,6 @@ namespace Wpf_Application
 
         private void DrawVehiclesIfAnyExist()
         {
-            Db.Database.EnsureCreated();
             if (!Db.Vehicles.Any() && MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
                 new Importer.Z21Import(Db).ShowDialog();
             Search();
