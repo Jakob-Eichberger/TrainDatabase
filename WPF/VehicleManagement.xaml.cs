@@ -1,6 +1,7 @@
 ﻿using Extensions;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Model;
 using Renci.SshNet.Common;
@@ -38,18 +39,13 @@ namespace TrainDatabase
         public bool FunctionSelected => SelectedFunction is not null;
 
         public ObservableCollection<Vehicle> Vehicles { get; private set; } = new();
+        public IServiceProvider ServiceProvider { get; }
 
-        public VehicleManagement(Database db)
+        public VehicleManagement(IServiceProvider serviceProvider)
         {
-            Db = db;
+            Db = serviceProvider.GetService<Database>()!;
             Init();
-        }
-
-        public VehicleManagement(Database db, Vehicle vehicle)
-        {
-            Db = db;
-            Init();
-            DgVehicles.SelectedItem = vehicle;
+            ServiceProvider = serviceProvider;
         }
 
         private async void Init()
