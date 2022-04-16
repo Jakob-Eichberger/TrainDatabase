@@ -221,7 +221,9 @@ namespace TrainDatabase
 
         private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
 
-        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e) => SearchTractionVehicles();
+
+        private void SearchTractionVehicles()
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
                 DrawAllVehicles(Db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
@@ -342,7 +344,7 @@ namespace TrainDatabase
             controller.GetStatus();
 
             DrawAllFunctions();
-            DrawAllVehicles(Db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
+            SearchTractionVehicles();
 
             UpdateMultiTractionList();
 
@@ -351,7 +353,7 @@ namespace TrainDatabase
                 Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == Vehicle.Id)!;
                 Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
                 DrawAllFunctions();
-                DrawAllVehicles(Db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
+                SearchTractionVehicles();
                 UpdateMultiTractionList();
             };
         }
