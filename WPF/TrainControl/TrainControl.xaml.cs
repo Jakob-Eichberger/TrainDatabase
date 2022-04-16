@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
 using OxyPlot.Series;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,16 +29,15 @@ namespace TrainDatabase
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
-        public IServiceProvider ServiceProvider { get; } = default!;
-
         public TrainControl(IServiceProvider serviceProvider, Vehicle _vehicle)
         {
             try
             {
                 ServiceProvider = serviceProvider;
-                db = ServiceProvider.GetService<Database>()!;
+                Db = ServiceProvider.GetService<Database>()!;
+                VehicleService = ServiceProvider.GetService<VehicleService>()!;
                 controller = ServiceProvider.GetService<Z21Client.Z21Client>()!;
-                Vehicle = db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
+                Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
                 DataContext = this;
                 InitializeComponent();
                 Activate();
@@ -50,25 +50,7 @@ namespace TrainDatabase
             }
         }
 
-        private void TrainControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            Adresse = new(Vehicle.Address);
-            Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
-
-            SlowestVehicleInTractionList = Vehicle;
-
-            controller.LogOn();
-            controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
-            controller.TrackPowerChanged += Controller_TrackPowerChanged;
-            controller.OnStatusChanged += Controller_OnStatusChanged;
-            controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
-            controller.GetStatus();
-
-            DrawAllFunctions();
-            DrawAllVehicles(db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
-
-            MultiTractionList.Add(new MultiTractionItem(Vehicle));
-        }
+        public IServiceProvider ServiceProvider { get; } = default!;
 
         /// <summary>
         /// Creates a single instance of the <see cref="TrainControl"/> window.
@@ -207,11 +189,16 @@ namespace TrainDatabase
                 {
                     Content = vehicle.Name,
                     Tag = vehicle,
-                    Margin = new Thickness(5)
+                    Margin = new Thickness(5),
+                    IsChecked = Vehicle.TractionVehicleIds.Any(e => e == vehicle.Id)
                 };
                 c.Unchecked += async (sender, e) =>
                 {
-                    MultiTractionList.RemoveAll(e => e.Vehicle.Id == (((sender as CheckBox)?.Tag as Vehicle)?.Id ?? -1));
+                    if ((sender as CheckBox)?.Tag is Vehicle vehicle)
+                    {
+                        VehicleService.RemoveTractionVehilce(vehicle, Vehicle);
+                        MultiTractionList.RemoveAll(e => e.Vehicle.Id == vehicle.Id);
+                    }
                     await DeterminSlowestVehicleInList();
                 };
                 c.Checked += async (sender, e) =>
@@ -223,6 +210,7 @@ namespace TrainDatabase
                      }
                      if (sender is CheckBox c && c.Tag is Vehicle v)
                      {
+                         VehicleService.AddTractionVehilce(v, Vehicle);
                          MultiTractionList.Add(new(v));
                          await DeterminSlowestVehicleInList();
                      }
@@ -236,9 +224,9 @@ namespace TrainDatabase
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+                DrawAllVehicles(Db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             else
-                DrawAllVehicles(db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
+                DrawAllVehicles(Db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
         }
 
         /// <summary>
@@ -340,13 +328,48 @@ namespace TrainDatabase
             SliderLastused = DateTime.Now;
         }
 
+        private void TrainControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+
+            SlowestVehicleInTractionList = Vehicle;
+
+            controller.LogOn();
+            controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
+            controller.TrackPowerChanged += Controller_TrackPowerChanged;
+            controller.OnStatusChanged += Controller_OnStatusChanged;
+            controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
+            controller.GetStatus();
+
+            DrawAllFunctions();
+            DrawAllVehicles(Db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
+
+            UpdateMultiTractionList();
+
+            Db.ChangeTracker.StateChanged += (a, b) =>
+            {
+                Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == Vehicle.Id)!;
+                Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+                DrawAllFunctions();
+                DrawAllVehicles(Db.Vehicles.ToList().Where(m => m.Id != Vehicle.Id));
+                UpdateMultiTractionList();
+            };
+        }
+
+        private void UpdateMultiTractionList()
+        {
+            MultiTractionList.Clear();
+            MultiTractionList.AddRange(Vehicle.TractionVehicleIds.Select(e => new MultiTractionItem(Db.Vehicles.FirstOrDefault(f => f.Id == e)!)).Where(e => e.Vehicle is not null));
+            MultiTractionList.Add(new(Vehicle));
+        }
+
         public struct MultiTractionItem
         {
             public MultiTractionItem(Vehicle vehicle)
             {
                 Vehicle = vehicle;
-                TractionForward = GetSortedSet(vehicle.TractionForward) ?? new();
-                TractionBackward = GetSortedSet(vehicle.TractionBackward) ?? new();
+                TractionForward = GetSortedSet(vehicle?.TractionForward!) ?? new();
+                TractionBackward = GetSortedSet(vehicle?.TractionBackward!) ?? new();
             }
 
             public SortedSet<FunctionPoint> TractionBackward { get; private set; }
@@ -362,7 +385,7 @@ namespace TrainDatabase
             /// <returns></returns>
             private static SortedSet<FunctionPoint>? GetSortedSet(decimal?[] tractionArray)
             {
-                if (tractionArray[MaxDccSpeed] is null)
+                if (tractionArray is null || tractionArray[MaxDccSpeed] is null)
                     return null!;
 
                 SortedSet<FunctionPoint>? function = new();
