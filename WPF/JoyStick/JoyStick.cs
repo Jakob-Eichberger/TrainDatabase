@@ -22,17 +22,18 @@ namespace TrainDatabase.JoyStick
 
         public JoyStick(Guid joystickGuid, int _rate = 1)
         {
-            this.joystickGuid = joystickGuid;
-            rate = _rate;
-            JoyStickMaxValue = Configuration.GetJoyStickMaxValue();
-            Guid guid = GetAllJoySticks().FirstOrDefault();
-            if (guid != Guid.Empty)
-            {
-                Joystick = new Joystick(new DirectInput(), guid);
-                Joystick.Properties.BufferSize = 128;
-                Joystick.Acquire();
-                Run();
-            }
+            throw new NotImplementedException();    
+            //this.joystickGuid = joystickGuid;
+            //rate = _rate;
+            //JoyStickMaxValue = Configuration.GetJoyStickMaxValue();
+            //Guid guid = GetAllJoySticks().FirstOrDefault();
+            //if (guid != Guid.Empty)
+            //{
+            //    Joystick = new Joystick(new DirectInput(), guid);
+            //    Joystick.Properties.BufferSize = 128;
+            //    Joystick.Acquire();
+            //    Run();
+            //}
         }
 
         /// <summary>
