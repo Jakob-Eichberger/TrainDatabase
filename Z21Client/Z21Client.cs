@@ -30,12 +30,12 @@ namespace TrainDatabase.Z21Client
     {
         public const int maxDccStep = 127;
 
-        public Z21Client(IPAddress address, int port = 21105) : base(port)
+        public Z21Client() : base()
         {
             try
             {
-                Address = address;
-                Port = port;
+                Address = Configuration.ClientIP;
+                Port = Configuration.ClientPort;
                 Connect(Address, Port);
                 BeginReceive(new AsyncCallback(Empfang), null);
                 Logger.LogInformation($"Z21 initialisiert.");
