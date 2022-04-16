@@ -201,7 +201,6 @@ namespace TrainDatabase
                         if ((sender as CheckBox)?.Tag is Vehicle vehicle)
                         {
                             VehicleService.RemoveTractionVehilce(vehicle, Vehicle);
-                            MultiTractionList.RemoveAll(e => e.Vehicle.Id == vehicle.Id);
                         }
                         await DeterminSlowestVehicleInList();
                     };
@@ -215,7 +214,6 @@ namespace TrainDatabase
                         if (sender is CheckBox c && c.Tag is Vehicle v)
                         {
                             VehicleService.AddTractionVehilce(v, Vehicle);
-                            MultiTractionList.Add(new(v));
                             await DeterminSlowestVehicleInList();
                         }
                     };
