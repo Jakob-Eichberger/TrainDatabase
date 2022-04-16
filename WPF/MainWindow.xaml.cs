@@ -85,7 +85,7 @@ namespace Wpf_Application
             if (e.ClickCount == 2 && sender is VehicleBorder border)
             {
                 await Task.Delay(150);
-                TrainControl.CreatTrainControlWindow(border.Vehicle, Client, Db);
+                TrainControl.CreatTrainControlWindow(ServiceProvider, border.Vehicle);
             }
         }
 
@@ -140,7 +140,7 @@ namespace Wpf_Application
                     ContextMenu = new()
                 };
 
-                var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => TrainControl.CreatTrainControlWindow(a, Client, Db));
+                var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => TrainControl.CreatTrainControlWindow(ServiceProvider, a));
                 border.ContextMenu.Items.Add(mi);
 
                 border.MouseDown += Border_MouseDown;
@@ -204,7 +204,7 @@ namespace Wpf_Application
                 vehicleManagement.Activate();
             }
             else
-                new VehicleManagement(Db).Show();
+                new VehicleManagement(ServiceProvider).Show();
         }
 
         private void RemoveUnneededImages() => Task.Run(() =>
