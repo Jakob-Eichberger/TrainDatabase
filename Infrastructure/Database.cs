@@ -116,6 +116,7 @@ namespace Infrastructure
             var converter = new ValueConverter<decimal?[], string>(v => string.Join(";", v), v => v.Split(";", StringSplitOptions.None).Select(val => val.IsDecimal() ? decimal.Parse(val) : (decimal?)null).ToArray());
             modelBuilder.Entity<Vehicle>().Property(e => e.TractionForward).HasConversion(converter);
             modelBuilder.Entity<Vehicle>().Property(e => e.TractionBackward).HasConversion(converter);
+            modelBuilder.Entity<Vehicle>().Property(e => e.TractionVehicleIds).HasConversion(new ValueConverter<List<int>, string>(v => string.Join(";", v.Distinct()), v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).Select(val => val.IsInt() ? int.Parse(val) : int.MinValue).Distinct().ToList()));
             OnModelCreatingPartial(modelBuilder);
         }
 
