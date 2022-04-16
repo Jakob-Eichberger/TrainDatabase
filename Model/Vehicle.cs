@@ -85,6 +85,8 @@ namespace Model
 
         public decimal?[] TractionBackward { get; set; } = new decimal?[127 + 1];
 
+        public List<int> TractionVehicleIds { get; set; } = new();
+
         public int CompareTo(object obj) => Id.CompareTo(obj);
 
         public bool Equals(Vehicle other) => Id == other?.Id;
