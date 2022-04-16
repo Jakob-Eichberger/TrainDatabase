@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Model;
 using Renci.SshNet.Common;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,11 +40,13 @@ namespace TrainDatabase
         public bool FunctionSelected => SelectedFunction is not null;
 
         public ObservableCollection<Vehicle> Vehicles { get; private set; } = new();
+
         public IServiceProvider ServiceProvider { get; }
 
         public VehicleManagement(IServiceProvider serviceProvider)
         {
             Db = serviceProvider.GetService<Database>()!;
+
             Init();
             ServiceProvider = serviceProvider;
         }
