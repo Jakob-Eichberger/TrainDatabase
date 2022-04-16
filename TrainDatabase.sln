@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31112.23
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32408.312
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPF Application", "WPF\WPF Application.csproj", "{AEB176C2-14E7-488C-BB3A-1BA664BB049B}"
 EndProject
@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helper", "Helper\Helper.csproj", "{3E4A6837-231D-403B-8EA4-AF61C231E777}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{AF9EA895-1225-4EE6-994F-35E45CCF007D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{AF9EA895-1225-4EE6-994F-35E45CCF007D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions", "Extensions\Extensions.csproj", "{C835F402-5C60-402C-9201-708A12E0D5F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extensions", "Extensions\Extensions.csproj", "{C835F402-5C60-402C-9201-708A12E0D5F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{FFB906C8-22B9-4374-A70B-BD649F9330D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{C835F402-5C60-402C-9201-708A12E0D5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C835F402-5C60-402C-9201-708A12E0D5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C835F402-5C60-402C-9201-708A12E0D5F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFB906C8-22B9-4374-A70B-BD649F9330D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFB906C8-22B9-4374-A70B-BD649F9330D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFB906C8-22B9-4374-A70B-BD649F9330D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFB906C8-22B9-4374-A70B-BD649F9330D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
