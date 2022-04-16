@@ -345,7 +345,6 @@ namespace TrainDatabase
 
             DrawAllFunctions();
             SearchTractionVehicles();
-
             UpdateMultiTractionList();
 
             Db.ChangeTracker.StateChanged += (a, b) =>
