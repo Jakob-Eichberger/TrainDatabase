@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using Helper;
 using SharpDX.DirectInput;
 using System;
 

@@ -5,7 +5,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Net;
 
-namespace TrainDatabase
+namespace Helper
 {
     public static class Configuration
     {
@@ -108,7 +108,7 @@ namespace TrainDatabase
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string? Get(string key, string? @default = null) => ConfigurationManager.AppSettings[key] ?? @default;
+        public static string Get(string key, string @default = null) => ConfigurationManager.AppSettings[key] ?? @default;
 
         /// <summary>
         /// Tries to get the value for the key as a <see cref="bool"/>.
