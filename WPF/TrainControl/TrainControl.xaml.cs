@@ -2,6 +2,7 @@
 using Helper;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Model;
 using OxyPlot.Series;
 using System;
@@ -27,15 +28,14 @@ namespace TrainDatabase
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
-        public TrainControl(Z21Client.Z21Client _controller, Vehicle _vehicle, Database _db)
+        public IServiceProvider ServiceProvider { get; } = default!;
+
+        public TrainControl(IServiceProvider serviceProvider, Vehicle _vehicle)
         {
             try
             {
-                if (_controller is null || _vehicle is null || _db is null)
-                    throw new NullReferenceException($"Parameter {nameof(_controller)} ist null!");
-
-                db = _db;
-                controller = _controller;
+                db = serviceProvider.GetService<Database>()!;
+                controller = serviceProvider.GetService<Z21Client.Z21Client>()!;
 
                 DataContext = this;
                 InitializeComponent();
@@ -69,6 +69,7 @@ namespace TrainDatabase
                 Logger.LogError(ex, "Fehler beim öffnen des Controllers.");
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            ServiceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -77,7 +78,7 @@ namespace TrainDatabase
         /// <param name="vehicle"></param>
         /// <param name="client"></param>
         /// <param name="db"></param>
-        public static void CreatTrainControlWindow(Vehicle vehicle, Z21Client.Z21Client client, Database db)
+        public static void CreatTrainControlWindow(IServiceProvider serviceProvider, Vehicle vehicle)
         {
             if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
             {
@@ -85,7 +86,7 @@ namespace TrainDatabase
                 trainControl.Activate();
             }
             else
-                new TrainControl(client, vehicle, db).Show();
+                new TrainControl(serviceProvider, vehicle).Show();
         }
 
         public void Dispose()
