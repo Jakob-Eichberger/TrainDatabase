@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TrainDatabase"
         xmlns:converter="clr-namespace:WPF_Application.Converter"
         mc:Ignorable="d"
-        Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen">
+        Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen" Loaded="TrainControl_Loaded" >
     <Window.Resources>
         <converter:BoolToDirectionConverter x:Key="BoolToDirectionConverter"/>
         <converter:TrackPowerToBoolConverter x:Key="TrackPowerToBoolConverter"/>
