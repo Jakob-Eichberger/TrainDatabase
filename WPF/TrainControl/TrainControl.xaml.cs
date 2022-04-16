@@ -176,46 +176,51 @@ namespace TrainDatabase
             }
         }
 
-        /// <summary>
-        /// Draws every vehicle in a list as a checkbox
-        /// </summary>
-        /// <param name="vehicles"></param>
         private void DrawAllVehicles(IEnumerable<Vehicle> vehicles)
         {
-            SPVehilces.Children.Clear();
-            foreach (var vehicle in vehicles.Where(e => e.Id != Vehicle.Id))
+            if (vehicles.Any(e => e.TractionVehicleIds.Any(f => f == Vehicle.Id)))
             {
-                CheckBox c = new()
+                AddListToStackPanel(vehicles.Where(f => Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
+                SPVehilces.Children.Add(new Separator());
+            }
+            AddListToStackPanel(vehicles.Where(f => !Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
+
+            void AddListToStackPanel(IEnumerable<Vehicle> vehicles)
+            {
+                foreach (var vehicle in vehicles.Where(e => e.Id != Vehicle.Id))
                 {
-                    Content = vehicle.Name,
-                    Tag = vehicle,
-                    Margin = new Thickness(5),
-                    IsChecked = Vehicle.TractionVehicleIds.Any(e => e == vehicle.Id)
-                };
-                c.Unchecked += async (sender, e) =>
-                {
-                    if ((sender as CheckBox)?.Tag is Vehicle vehicle)
+                    CheckBox c = new()
                     {
-                        VehicleService.RemoveTractionVehilce(vehicle, Vehicle);
-                        MultiTractionList.RemoveAll(e => e.Vehicle.Id == vehicle.Id);
-                    }
-                    await DeterminSlowestVehicleInList();
-                };
-                c.Checked += async (sender, e) =>
-                 {
-                     if (MultiTractionList.Count >= 140)
-                     {
-                         MessageBox.Show("Mehr als 140 Traktionsfahrzeuge sind nicht möglich!", "Max Limit reached.", MessageBoxButton.OK, MessageBoxImage.Error);
-                         return;
-                     }
-                     if (sender is CheckBox c && c.Tag is Vehicle v)
-                     {
-                         VehicleService.AddTractionVehilce(v, Vehicle);
-                         MultiTractionList.Add(new(v));
-                         await DeterminSlowestVehicleInList();
-                     }
-                 };
-                SPVehilces.Children.Add(c);
+                        Content = vehicle.Name,
+                        Tag = vehicle,
+                        Margin = new Thickness(5),
+                        IsChecked = Vehicle.TractionVehicleIds.Any(e => e == vehicle.Id)
+                    };
+                    c.Unchecked += async (sender, e) =>
+                    {
+                        if ((sender as CheckBox)?.Tag is Vehicle vehicle)
+                        {
+                            VehicleService.RemoveTractionVehilce(vehicle, Vehicle);
+                            MultiTractionList.RemoveAll(e => e.Vehicle.Id == vehicle.Id);
+                        }
+                        await DeterminSlowestVehicleInList();
+                    };
+                    c.Checked += async (sender, e) =>
+                    {
+                        if (MultiTractionList.Count >= 140)
+                        {
+                            MessageBox.Show("Mehr als 140 Traktionsfahrzeuge sind nicht möglich!", "Max Limit reached.", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        if (sender is CheckBox c && c.Tag is Vehicle v)
+                        {
+                            VehicleService.AddTractionVehilce(v, Vehicle);
+                            MultiTractionList.Add(new(v));
+                            await DeterminSlowestVehicleInList();
+                        }
+                    };
+                    SPVehilces.Children.Add(c);
+                }
             }
         }
 
@@ -225,10 +230,15 @@ namespace TrainDatabase
 
         private void SearchTractionVehicles()
         {
+            SPVehilces.Children.Clear();
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
+            {
                 DrawAllVehicles(Db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+            }
             else
+            {
                 DrawAllVehicles(Db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
+            }
         }
 
         /// <summary>
