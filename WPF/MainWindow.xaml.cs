@@ -185,7 +185,7 @@ namespace Wpf_Application
                 tbSearch.Focus();
         }
 
-        private void mw_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void Mw_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (!ResizeTimer.Enabled)
                 ResizeTimer.Start();
