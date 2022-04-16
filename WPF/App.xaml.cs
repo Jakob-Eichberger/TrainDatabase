@@ -1,6 +1,7 @@
 ﻿using Helper;
 using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Service;
 using System;
 using System.Windows;
 using TrainDatabase.Z21Client;
@@ -28,27 +29,21 @@ namespace Wpf_Application
             services.AddSingleton<Z21Client>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<LogWindow>();
+            services.AddSingleton<VehicleService>();
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            try
+            using (var db = new Database())
             {
-                using (var db = new Database())
-                {
-                    //db.Database.EnsureDeleted();
-                    db.Database.EnsureCreated();
-                }
-
-                if (Configuration.OpenDebugConsoleOnStart)
-                    serviceProvider.GetService<LogWindow>()!.Show();
-
-                serviceProvider.GetService<MainWindow>()!.Show();
+                //db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Application failed to start. {ex.Message}");
-            }
+
+            if (Configuration.OpenDebugConsoleOnStart)
+                serviceProvider.GetService<LogWindow>()!.Show();
+
+            serviceProvider.GetService<MainWindow>()!.Show();
         }
     }
 }
