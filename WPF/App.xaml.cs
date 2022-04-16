@@ -28,7 +28,6 @@ namespace Wpf_Application
             services.AddSingleton<Z21Client>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<LogWindow>();
-            //services.AddSingleton<ServiceProvider>();
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
