@@ -1,6 +1,7 @@
 ﻿using Extensions;
 using Infrastructure;
 using Model;
+using Service;
 using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,6 @@ namespace TrainDatabase
     public partial class TrainControl
     {
         public Z21Client.Z21Client controller = default!;
-        public Database db = default!;
         public DateTime lastSpeedchange = DateTime.MinValue;
         private bool lastTrackPowerUpdateWasShort = false;
         private LokInfoData liveData = new();
@@ -28,9 +28,12 @@ namespace TrainDatabase
         private TrackPower trackPower;
         private Vehicle vehicle = default!;
         public event PropertyChangedEventHandler? PropertyChanged;
+
         public static int MaxDccSpeed => Z21Client.Z21Client.maxDccStep;
 
-        public LokAdresse Adresse { get; set; } = default!;
+        public LokAdresse Adresse => new(Vehicle.Address);
+
+        public Database Db { get; } = default!;
 
         public bool InUse { get; set; } = default!;
 
@@ -65,7 +68,7 @@ namespace TrainDatabase
         /// <summary>
         /// Holds the <see cref="Vehicle.Id"/> of the slowest Vehicle in the traktion list.
         /// </summary>
-        public Vehicle SlowestVehicleInTractionList { get; set; } 
+        public Vehicle SlowestVehicleInTractionList { get; set; }
 
         public int Speed
         {
@@ -107,6 +110,8 @@ namespace TrainDatabase
             get => vehicle;
             set => vehicle = value;
         }
+
+        public VehicleService VehicleService { get; } = default!;
 
         public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
 
