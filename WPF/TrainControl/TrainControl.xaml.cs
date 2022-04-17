@@ -178,13 +178,16 @@ namespace TrainDatabase
 
         private void DrawAllVehicles(IEnumerable<Vehicle> vehicles)
         {
-            if (vehicles.Any(e => e.TractionVehicleIds.Any(f => f == Vehicle.Id)))
+            var tractionVehicles = vehicles.Where(f => Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position).ToList();
+            TIMultiTraction.Header = $"Mehrfachtraktion ({tractionVehicles.Count})";
+            
+            if (tractionVehicles.Any())
             {
-                AddListToStackPanel(vehicles.Where(f => Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
+                AddListToStackPanel(tractionVehicles);
                 SPVehilces.Children.Add(new Separator());
             }
             AddListToStackPanel(vehicles.Where(f => !Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
-
+            
             void AddListToStackPanel(IEnumerable<Vehicle> vehicles)
             {
                 foreach (var vehicle in vehicles.Where(e => e.Id != Vehicle.Id))
