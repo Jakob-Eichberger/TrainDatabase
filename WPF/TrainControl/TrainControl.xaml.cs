@@ -344,7 +344,6 @@ namespace TrainDatabase
 
             SlowestVehicleInTractionList = Vehicle;
 
-            controller.LogOn();
             controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
             controller.TrackPowerChanged += Controller_TrackPowerChanged;
             controller.OnStatusChanged += Controller_OnStatusChanged;
