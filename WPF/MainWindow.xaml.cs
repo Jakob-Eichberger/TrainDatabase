@@ -159,7 +159,6 @@ namespace Wpf_Application
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
-            Client?.LogOFF();
             Application.Current.Shutdown();
         }
 
