@@ -169,7 +169,7 @@ namespace Importer
                     Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
                     ButtonType = (ButtonType)reader.GetString(2).ToInt32(),
                     Name = ParseFunctionName(reader.GetString(3).IsNullOrWhiteSpace() ? reader.GetString(6) : reader.GetString(3)),
-                    Time = reader.GetString(4).ToDecimal(),
+                    Time = (int)reader.GetString(4).ToDecimal(),
                     Position = reader.GetString(5).ToInt32(),
                     ImageName = reader.GetString(6),
                     FunctionIndex = reader.GetString(7).ToInt32(),
