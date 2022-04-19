@@ -165,12 +165,26 @@ namespace TrainDatabase
                         FunctionToggleButtons.Add(tb);
                         FunctionGrid.Children.Add(tb);
                         break;
-                    default:
+                    case ButtonType.PushButton:
                         Button btn = GetButton<Button>(item);
                         btn.PreviewMouseDown += (sender, e) => SetLocoFunction(ToggleType.On, ((e.Source as Button)?.Tag as Function)!);
                         btn.PreviewMouseUp += (sender, e) => SetLocoFunction(ToggleType.Off, ((e.Source as Button)?.Tag as Function)!); ;
                         FunctionButtons.Add(btn);
                         FunctionGrid.Children.Add(btn);
+                        break;
+                    case ButtonType.Timer:
+                        Button btnt = GetButton<Button>(item);
+                        btnt.Click += async (sender, e) =>
+                        {
+                            btnt.IsEnabled = false;
+                            Function func = ((e.Source as Button)?.Tag! as Function)!;
+                            SetLocoFunction(ToggleType.On, func!);
+                            await Task.Delay(new TimeSpan(0, 0, func.Time));
+                            SetLocoFunction(ToggleType.Off, func!);
+                            btnt.IsEnabled = true;
+                        };
+                        FunctionButtons.Add(btnt);
+                        FunctionGrid.Children.Add(btnt);
                         break;
                 }
             }
@@ -180,14 +194,14 @@ namespace TrainDatabase
         {
             var tractionVehicles = vehicles.Where(f => Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position).ToList();
             TIMultiTraction.Header = $"Mehrfachtraktion ({tractionVehicles.Count})";
-            
+
             if (tractionVehicles.Any())
             {
                 AddListToStackPanel(tractionVehicles);
                 SPVehilces.Children.Add(new Separator());
             }
             AddListToStackPanel(vehicles.Where(f => !Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
-            
+
             void AddListToStackPanel(IEnumerable<Vehicle> vehicles)
             {
                 foreach (var vehicle in vehicles.Where(e => e.Id != Vehicle.Id))
@@ -347,6 +361,7 @@ namespace TrainDatabase
 
             SlowestVehicleInTractionList = Vehicle;
 
+            controller.LogOn();
             controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
             controller.TrackPowerChanged += Controller_TrackPowerChanged;
             controller.OnStatusChanged += Controller_OnStatusChanged;
