@@ -20,18 +20,8 @@ namespace Infrastructure
 
         public event EventHandler CollectionChanged;
 
-        public virtual DbSet<Category> Categories => Set<Category>();
-
-        public virtual DbSet<DcFunction> DcFunctions => Set<DcFunction>();
-
         public virtual DbSet<Function> Functions => Set<Function>();
-
-        public virtual DbSet<LayoutDatum> LayoutData => Set<LayoutDatum>();
-
-        public virtual DbSet<TractionList> TractionLists => Set<TractionList>();
-
-        public virtual DbSet<TrainList> TrainLists => Set<TrainList>();
-
+        
         public virtual DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
         public override EntityEntry<TEntity> Add<TEntity>(TEntity obj) where TEntity : class

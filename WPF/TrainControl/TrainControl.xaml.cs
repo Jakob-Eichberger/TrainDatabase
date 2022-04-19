@@ -248,11 +248,11 @@ namespace TrainDatabase
             SPVehilces.Children.Clear();
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
             {
-                DrawAllVehicles(Db.Vehicles.Include(e => e.Category).Where(i => (i.Address + i.ArticleNumber + i.Category.Name + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+                DrawAllVehicles(Db.Vehicles.Where(i => (i.Address + i.ArticleNumber + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             }
             else
             {
-                DrawAllVehicles(Db.Vehicles.Include(e => e.Category).OrderBy(e => e.Position));
+                DrawAllVehicles(Db.Vehicles.OrderBy(e => e.Position));
             }
         }
 

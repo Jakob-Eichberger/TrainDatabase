@@ -73,8 +73,6 @@ namespace Model
 
         public bool? Crane { get; set; } = false;
 
-        public Category Category { get; set; } = default!;
-
         public int CategoryId { get; set; }
 
         public Epoch Epoche { get; set; } = Epoch.@default;
