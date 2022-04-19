@@ -16,7 +16,7 @@ namespace Model
 
         public string Name { get; set; }
 
-        public decimal Time { get; set; }
+        public int Time { get; set; }
 
         public int Position { get; set; }
 
