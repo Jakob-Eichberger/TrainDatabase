@@ -26,25 +26,6 @@ using TrainDatabase.Z21Client.Events;
 
 namespace TrainDatabase.Z21Client
 {
-
-    public enum LanCode
-    {
-        ///<summary>
-        ///Keine Features gesperrt
-        ///</summary>
-        Z21NoLock = 0x00,
-
-        ///<summary>
-        ///„z21 start”: Fahren und Schalten per LAN gesperrt
-        ///</summary>
-        z21StartLocked = 0x01,
-
-        ///<summary>
-        /// „z21 start”: alle Feature-Sperren aufgehoben
-        ///</summary>
-        z21StartUnlocked = 0x02
-    }
-
     public class Z21Client : UdpClient
     {
         public const int maxDccStep = 127;
