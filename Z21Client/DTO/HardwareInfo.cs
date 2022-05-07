@@ -12,7 +12,7 @@
  * 
  */
 
-using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Z21Client.Enums;
 
 namespace TrainDatabase.Z21Client.DTO
 {
