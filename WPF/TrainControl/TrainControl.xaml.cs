@@ -19,7 +19,7 @@ using System.Windows.Media;
 using TrainDatabase.Extensions;
 using TrainDatabase.JoyStick;
 using TrainDatabase.Z21Client.DTO;
-using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Z21Client.Enums;
 using TrainDatabase.Z21Client.Events;
 
 namespace TrainDatabase
