@@ -21,11 +21,30 @@ using System.Net;
 using System.Net.Sockets;
 using System.Timers;
 using TrainDatabase.Z21Client.DTO;
-using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Z21Client.Enums;
 using TrainDatabase.Z21Client.Events;
 
 namespace TrainDatabase.Z21Client
 {
+
+    public enum LanCode
+    {
+        ///<summary>
+        ///Keine Features gesperrt
+        ///</summary>
+        Z21NoLock = 0x00,
+
+        ///<summary>
+        ///„z21 start”: Fahren und Schalten per LAN gesperrt
+        ///</summary>
+        z21StartLocked = 0x01,
+
+        ///<summary>
+        /// „z21 start”: alle Feature-Sperren aufgehoben
+        ///</summary>
+        z21StartUnlocked = 0x02
+    }
+
     public class Z21Client : UdpClient
     {
         public const int maxDccStep = 127;
@@ -51,6 +70,8 @@ namespace TrainDatabase.Z21Client
 
         public event EventHandler<HardwareInfoEventArgs> OnGetHardwareInfo = default!;
 
+        public event EventHandler<LanCode> OnGetLanCode = default!;
+
         public event EventHandler<GetLocoInfoEventArgs> OnGetLocoInfo = default!;
 
         public event EventHandler<GetSerialNumberEventArgs> OnGetSerialNumber = default!;
@@ -66,7 +87,7 @@ namespace TrainDatabase.Z21Client
         public event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;
 
         public event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
-
+       
         public IPAddress Address { get; }
 
         public int Port { get; }
@@ -102,6 +123,17 @@ namespace TrainDatabase.Z21Client
             bytes[2] = 0x1A;
             bytes[3] = 0;
             Logger.LogInformation($"GET HWINFO " + GetByteString(bytes));
+            Senden(bytes);
+        }
+
+        public void GetLanCode()
+        {
+            byte[] bytes = new byte[4];
+            bytes[0] = 0x04;
+            bytes[1] = 0x00;
+            bytes[2] = 0x18;
+            bytes[3] = 0x00;
+            Logger.LogInformation($"GET LAN CODE " + GetByteString(bytes));
             Senden(bytes);
         }
 
@@ -267,6 +299,102 @@ namespace TrainDatabase.Z21Client
             Senden(bytes);
         }
 
+        private static string GetByteString(byte[] bytes)
+        {
+            string s = "";
+            foreach (byte b in bytes)
+            {
+                s += b.ToString("X") + ",";
+            }
+            return s;
+        }
+
+        private static TrackPower GetCentralStateData(byte[] received)
+        {
+            TrackPower state = TrackPower.ON;
+            bool isEmergencyStop = (received[6] & 0x01) == 0x01;
+            bool isTrackVoltageOff = (received[6] & 0x02) == 0x02;
+            bool isShortCircuit = (received[6] & 0x04) == 0x04;
+            bool isProgrammingModeActive = (received[6] & 0x20) == 0x20;
+            if (isEmergencyStop || isTrackVoltageOff)
+                state = TrackPower.OFF;
+            else if (isShortCircuit)
+                state = TrackPower.Short;
+            else if (isProgrammingModeActive)
+                state = TrackPower.Programing;
+            Logger.LogInformation($"LAN_X_STATUS_CHANGED: {GetByteString(received)}\n \t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}\n");
+            return state;
+        }
+
+        private static byte[] GetLocoDriveByteArray(LokInfoData data)
+        {
+            if (data.DrivingDirection) data.Speed |= 0x080;
+            byte[] bytes = new byte[10];
+            bytes[0] = 0x0A;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0xE4;
+            bytes[5] = 0x13; //  = 128 Fahrstufen
+            bytes[6] = data.Adresse.ValueBytes.Adr_MSB;
+            bytes[7] = data.Adresse.ValueBytes.Adr_LSB;
+            bytes[8] = (byte)data.Speed;
+            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
+            Logger.LogInformation($"SET LOCO DRIVE: \n\tAdresse:'{data.Adresse.Value:D3}' \n\tDirection: '{data.DrivingDirection}'\t \n\tSpeed:'{data.Speed:D3}' \n\tByteString: '{GetByteString(bytes)}'");
+            return bytes;
+        }
+
+        private static byte[] GetLocoFunctionByteArray(LokAdresse adresse, Function function, ToggleType toggelType)
+        {
+            byte[] bytes = new byte[10];
+            bytes[0] = 0x0A;
+            bytes[1] = 0;
+            bytes[2] = 0x40;
+            bytes[3] = 0;
+            bytes[4] = 0xE4;
+            bytes[5] = 0xF8;
+            bytes[6] = adresse.ValueBytes.Adr_MSB;
+            bytes[7] = adresse.ValueBytes.Adr_LSB;
+            bytes[8] = (byte)function.FunctionIndex;
+
+            var bitarray = new BitArray(new byte[] { bytes[8] });
+            switch (toggelType)
+            {
+                case ToggleType.Off:
+                    break;
+                case ToggleType.On:
+                    bitarray.Set(6, true);
+                    break;
+                case ToggleType.Toggle:
+                    bitarray.Set(7, true);
+                    break;
+            }
+            bitarray.CopyTo(bytes, 8);
+            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
+            Logger.LogInformation($"SET LOCO FUNCTION {GetByteString(bytes)}  ({adresse} - index: {function.FunctionIndex} - {toggelType})");
+            return bytes;
+        }
+
+        private static SystemStateData GetSystemStateData(byte[] received)
+        {
+            SystemStateData statedata = new SystemStateData();
+            statedata.MainCurrent = (received[4] << 8) + received[5];
+            statedata.ProgCurrent = (received[6] << 8) + received[7];
+            statedata.FilteredMainCurrent = (received[8] << 8) + received[9];
+            statedata.Temperature = (received[10] << 8) + received[11];
+            statedata.SupplyVoltage = (received[12] << 8) + received[13];
+            statedata.VCCVoltage = (received[14] << 8) + received[15];
+            statedata.ClientData.EmergencyStop = (received[16] & 0x01) == 0x01;
+            statedata.ClientData.TrackVoltageOff = (received[16] & 0x02) == 0x02;
+            statedata.ClientData.ShortCircuit = (received[16] & 0x04) == 0x04;
+            statedata.ClientData.ProgrammingModeActive = (received[16] & 0x20) == 0x20;
+            statedata.ClientData.HighTemperature = (received[17] & 0x01) == 0x01;
+            statedata.ClientData.PowerLost = (received[17] & 0x02) == 0x02;
+            statedata.ClientData.ShortCircuitExternal = (received[17] & 0x04) == 0x04;
+            statedata.ClientData.ShortCircuitInternal = (received[17] & 0x08) == 0x08;
+            return statedata;
+        }
+
         private void CutTelegramm(byte[] bytes)
         {
             if (bytes == null) return;
@@ -339,7 +467,17 @@ namespace TrainDatabase.Z21Client
                     Logger.LogInformation($"GET SERIAL NUMBER " + GetByteString(received));
                     i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
                     OnGetSerialNumber?.Invoke(this, new GetSerialNumberEventArgs(i));
-
+                    break;
+                case 0x18:
+                    if (Enum.IsDefined(typeof(LanCode), received[4]))
+                    {
+                        Logger.LogInformation($"GET LAN CODE " + GetByteString(received));
+                        OnGetLanCode?.Invoke(this, (LanCode)received[4]);
+                    }
+                    else
+                    {
+                        Logger.LogInformation($"RECEIVED INVALID LAN CODE {GetByteString(received)}");
+                    }
                     break;
                 case 0x40:
                     switch (received[4])
@@ -457,102 +595,6 @@ namespace TrainDatabase.Z21Client
                     Logger.LogInformation($"Unbekanntes Telegramm " + GetByteString(received));
                     break;
             }
-        }
-
-        private static string GetByteString(byte[] bytes)
-        {
-            string s = "";
-            foreach (byte b in bytes)
-            {
-                s += b.ToString("X") + ",";
-            }
-            return s;
-        }
-
-        private static TrackPower GetCentralStateData(byte[] received)
-        {
-            TrackPower state = TrackPower.ON;
-            bool isEmergencyStop = (received[6] & 0x01) == 0x01;
-            bool isTrackVoltageOff = (received[6] & 0x02) == 0x02;
-            bool isShortCircuit = (received[6] & 0x04) == 0x04;
-            bool isProgrammingModeActive = (received[6] & 0x20) == 0x20;
-            if (isEmergencyStop || isTrackVoltageOff)
-                state = TrackPower.OFF;
-            else if (isShortCircuit)
-                state = TrackPower.Short;
-            else if (isProgrammingModeActive)
-                state = TrackPower.Programing;
-            Logger.LogInformation($"LAN_X_STATUS_CHANGED: {GetByteString(received)}\n \t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}\n");
-            return state;
-        }
-
-        private static byte[] GetLocoDriveByteArray(LokInfoData data)
-        {
-            if (data.DrivingDirection) data.Speed |= 0x080;
-            byte[] bytes = new byte[10];
-            bytes[0] = 0x0A;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0xE4;
-            bytes[5] = 0x13; //  = 128 Fahrstufen
-            bytes[6] = data.Adresse.ValueBytes.Adr_MSB;
-            bytes[7] = data.Adresse.ValueBytes.Adr_LSB;
-            bytes[8] = (byte)data.Speed;
-            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Logger.LogInformation($"SET LOCO DRIVE: \n\tAdresse:'{data.Adresse.Value:D3}' \n\tDirection: '{data.DrivingDirection}'\t \n\tSpeed:'{data.Speed:D3}' \n\tByteString: '{GetByteString(bytes)}'");
-            return bytes;
-        }
-
-        private static byte[] GetLocoFunctionByteArray(LokAdresse adresse, Function function, ToggleType toggelType)
-        {
-            byte[] bytes = new byte[10];
-            bytes[0] = 0x0A;
-            bytes[1] = 0;
-            bytes[2] = 0x40;
-            bytes[3] = 0;
-            bytes[4] = 0xE4;
-            bytes[5] = 0xF8;
-            bytes[6] = adresse.ValueBytes.Adr_MSB;
-            bytes[7] = adresse.ValueBytes.Adr_LSB;
-            bytes[8] = (byte)function.FunctionIndex;
-
-            var bitarray = new BitArray(new byte[] { bytes[8] });
-            switch (toggelType)
-            {
-                case ToggleType.Off:
-                    break;
-                case ToggleType.On:
-                    bitarray.Set(6, true);
-                    break;
-                case ToggleType.Toggle:
-                    bitarray.Set(7, true);
-                    break;
-            }
-            bitarray.CopyTo(bytes, 8);
-            bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Logger.LogInformation($"SET LOCO FUNCTION {GetByteString(bytes)}  ({adresse} - index: {function.FunctionIndex} - {toggelType})");
-            return bytes;
-        }
-
-        private static SystemStateData GetSystemStateData(byte[] received)
-        {
-            SystemStateData statedata = new SystemStateData();
-            statedata.MainCurrent = (received[4] << 8) + received[5];
-            statedata.ProgCurrent = (received[6] << 8) + received[7];
-            statedata.FilteredMainCurrent = (received[8] << 8) + received[9];
-            statedata.Temperature = (received[10] << 8) + received[11];
-            statedata.SupplyVoltage = (received[12] << 8) + received[13];
-            statedata.VCCVoltage = (received[14] << 8) + received[15];
-            statedata.ClientData.EmergencyStop = (received[16] & 0x01) == 0x01;
-            statedata.ClientData.TrackVoltageOff = (received[16] & 0x02) == 0x02;
-            statedata.ClientData.ShortCircuit = (received[16] & 0x04) == 0x04;
-            statedata.ClientData.ProgrammingModeActive = (received[16] & 0x20) == 0x20;
-            statedata.ClientData.HighTemperature = (received[17] & 0x01) == 0x01;
-            statedata.ClientData.PowerLost = (received[17] & 0x02) == 0x02;
-            statedata.ClientData.ShortCircuitExternal = (received[17] & 0x04) == 0x04;
-            statedata.ClientData.ShortCircuitInternal = (received[17] & 0x08) == 0x08;
-            return statedata;
         }
 
         private async void Senden(byte[] bytes)
