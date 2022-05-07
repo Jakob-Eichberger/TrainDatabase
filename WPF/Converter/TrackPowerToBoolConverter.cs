@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using TrainDatabase.Z21Client.Enum;
+using TrainDatabase.Z21Client.Enums;
 
 namespace WPF_Application.Converter
 {
