@@ -36,7 +36,7 @@ namespace Wpf_Application
         {
             using (var db = new Database())
             {
-                db.Database.EnsureDeleted();
+                //db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
             }
 
