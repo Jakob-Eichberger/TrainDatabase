@@ -10,13 +10,13 @@ namespace Helper
 
         public static void LogError(Exception exception, string message)
         {
-            OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs($"{message}", MessageTypeEnum.Error, exception));
+            OnMessageLogged?.Invoke($"{exception}", new MessageLoggedEventArgs($"{message}", MessageTypeEnum.Error));
             LogToFile(message, exception);
         }
 
-        public static void LogInformation(string message, object value = null) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, MessageTypeEnum.Information, value));
+        public static void LogInformation(string message) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, MessageTypeEnum.Information));
 
-        public static void LogWarning(string message, object value = null) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, MessageTypeEnum.Warning, value));
+        public static void LogWarning(string message) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, MessageTypeEnum.Warning));
 
         private static void LogToFile(string message, Exception exception)
         {

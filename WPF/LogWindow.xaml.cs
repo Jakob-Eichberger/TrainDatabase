@@ -34,7 +34,9 @@ namespace WPF_Application
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public Queue<string> Items { get; } = new();
+        public string Text { get; set; } = "";
+
+        private Queue<string> Messages { get; } = new();
 
         public void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 
@@ -42,15 +44,15 @@ namespace WPF_Application
         {
             Dispatcher.Invoke(() =>
             {
-                Items.Enqueue($"{e.DateTime:dd/MM/yy hh:mm:ss} - {e.Message}");
+                Messages.Enqueue($"{e.DateTime:dd/MM/yy hh:mm:ss} - {e.Message?.Replace("\n","\n\t  ")}");
 
-                while (Items.Count > 500)
+                while (Messages.Count > 100)
                 {
-                    Items.Dequeue();
+                    Messages.Dequeue();
                 }
-
+                Text = string.Join("\n", Messages);
+                
                 OnPropertyChanged();
-                Lv.Items.Refresh();
                 Sv?.ScrollToBottom();
             });
         }
@@ -59,25 +61,6 @@ namespace WPF_Application
         {
             e.Cancel = true;
             WindowState = WindowState.Minimized;
-        }
-    }
-
-    public class QueueLogItem : StackPanel
-    {
-        public QueueLogItem(MessageLoggedEventArgs item)
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch;
-            Orientation = Orientation.Horizontal;
-            Item = item;
-            Loaded += QueueLogItem_Loaded;
-        }
-
-        public MessageLoggedEventArgs Item { get; }
-
-        private void QueueLogItem_Loaded(object sender, RoutedEventArgs e)
-        {
-            Children.Add(new Label() { Content = Item.DateTime.ToString("dd/MM/yy hh:mm:ss") });
-            Children.Add(new Label() { Content = $"{Item.Message}\n" });
         }
     }
 }
