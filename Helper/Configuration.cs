@@ -81,6 +81,11 @@ namespace Helper
         }
 
         /// <summary>
+        /// Returns the location of the vehicle image folder.
+        /// </summary>
+        public static string VehicleImagesFileLocation => System.IO.Path.Combine(new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TrainDb", "Data", "VehicleImage" });
+
+        /// <summary>
         /// Sets a value for a key.
         /// </summary>
         /// <param name="key"></param>
