@@ -265,7 +265,7 @@ namespace TrainDatabase
         /// <param name="inUse"></param>
         private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
-            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(100))
+            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(0,0,0,0,500))
                 return;
             else
                 lastSpeedchange = DateTime.Now;
@@ -361,12 +361,14 @@ namespace TrainDatabase
 
             SlowestVehicleInTractionList = Vehicle;
 
-            controller.LogOn();
             controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
             controller.TrackPowerChanged += Controller_TrackPowerChanged;
             controller.OnStatusChanged += Controller_OnStatusChanged;
-            controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
+            controller.LogOn();
+            await Task.Delay(new TimeSpan(0,0,0,0,500));
             controller.GetStatus();
+            await Task.Delay(new TimeSpan(0,0,0,0,500));
+            controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
 
             DrawAllFunctions();
             SearchTractionVehicles();
