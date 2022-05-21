@@ -112,7 +112,7 @@ namespace Wpf_Application
                     Background = Brushes.White,
                 };
 
-                var path = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage\\{item?.ImageName}";
+                var path = $"{Configuration.VehicleImagesFileLocation}\\{item?.ImageName}";
                 if (File.Exists(path))
                 {
                     sp.Children.Add(new Image()
@@ -209,7 +209,7 @@ namespace Wpf_Application
             try
             {
                 var images = Db.Vehicles.Select(e => e.ImageName).ToList();
-                string directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                string directory = Configuration.VehicleImagesFileLocation;
                 Directory.CreateDirectory(directory);
                 foreach (var item in Directory.GetFiles($"{directory}\\"))
                     if (!images.Any(e => e == Path.GetFileName(item)))
