@@ -265,7 +265,7 @@ namespace TrainDatabase
         /// <param name="inUse"></param>
         private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
-            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(0,0,0,0,500))
+            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(0, 0, 0, 0, 500))
                 return;
             else
                 lastSpeedchange = DateTime.Now;
@@ -315,7 +315,7 @@ namespace TrainDatabase
                 controller.SetLocoFunction(list);
             }
             else
-                controller.SetLocoFunction(new((int)vehicle.Address), function, type);
+                controller.SetLocoFunction(function, type);
         }
 
         private void SliderSpeed_PreviewMouseDown(object sender, MouseButtonEventArgs e) => SliderInUser = true;

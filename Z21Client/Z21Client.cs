@@ -216,9 +216,9 @@ namespace TrainDatabase.Z21Client
 
         public void SetLocoDrive(LokInfoData data) => Senden(GetLocoDriveByteArray(data));
 
-        public void SetLocoFunction(LokAdresse adresse, FunctionModel function, ToggleType toggelType)
+        public void SetLocoFunction(FunctionModel function, ToggleType toggelType)
         {
-            byte[] bytes = GetLocoFunctionByteArray(adresse, function, toggelType);
+            byte[] bytes = GetLocoFunctionByteArray(new LokAdresse((int)function.Vehicle.Address), function, toggelType);
             Senden(bytes);
         }
 
