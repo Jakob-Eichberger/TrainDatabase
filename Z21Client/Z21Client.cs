@@ -41,9 +41,9 @@ namespace TrainDatabase.Z21Client
                 Port = Configuration.ClientPort;
                 Connect(Address, Port);
                 BeginReceive(new AsyncCallback(Empfang), null);
-                Logger.LogInformation($"Z21 initialisiert.");
                 RenewClientSubscription.Elapsed += (a, b) => GetStatus();
                 LogOn();
+                Logger.LogInformation($"Z21 initialisiert.");
             }
             catch (Exception ex)
             {
@@ -107,7 +107,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0;
             bytes[2] = 0x1A;
             bytes[3] = 0;
-            Logger.LogByteArray($"GET HWINFO ", bytes);
+            Logger.LogByteArray($"GET HWINFO", bytes);
             Senden(bytes);
         }
 
@@ -118,7 +118,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0x00;
             bytes[2] = 0x18;
             bytes[3] = 0x00;
-            Logger.LogByteArray($"GET LAN CODE ", bytes);
+            Logger.LogByteArray($"GET LAN CODE", bytes);
             Senden(bytes);
         }
 
@@ -135,7 +135,7 @@ namespace TrainDatabase.Z21Client
             bytes[6] = adresse.ValueBytes.Adr_MSB;
             bytes[7] = adresse.ValueBytes.Adr_LSB;
             bytes[8] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7]);
-            Logger.LogByteArray($"LAN X GET LOCO INFO  (#{adresse.Value})", bytes);
+            Logger.LogByteArray($"GET LOCO INFO  (#{adresse.Value})", bytes);
             Senden(bytes);
         }
 
@@ -146,7 +146,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0;
             bytes[2] = 0x10;
             bytes[3] = 0;
-            Logger.LogByteArray($"GET SERIAL NUMBER ", bytes);
+            Logger.LogByteArray($"GET SERIAL NUMBER", bytes);
             Senden(bytes);
         }
 
@@ -160,7 +160,7 @@ namespace TrainDatabase.Z21Client
             bytes[4] = 0x21;
             bytes[5] = 0x24;
             bytes[6] = 0x05;
-            Logger.LogByteArray($"GET STATUS ", bytes);
+            Logger.LogByteArray($"GET STATUS", bytes);
             Senden(bytes);
         }
 
@@ -175,7 +175,7 @@ namespace TrainDatabase.Z21Client
             bytes[5] = 0x21;
             //bytes[6] = 0x47;   // = XOR-Byte  selbst ausgerechnet, in der LAN-Doku steht 0 ?!
             bytes[6] = 0;
-            Logger.LogByteArray($"GET VERSION ", bytes);
+            Logger.LogByteArray($"GET VERSION", bytes);
             Senden(bytes);
         }
 
@@ -202,7 +202,7 @@ namespace TrainDatabase.Z21Client
             bytes[5] = flags[1];
             bytes[6] = flags[2];
             bytes[7] = flags[3];
-            Logger.LogByteArray($"SET BROADCASTFLAGS ", bytes);
+            Logger.LogByteArray($"SET BROADCASTFLAGS", bytes);
             Senden(bytes);
         }
 
@@ -242,7 +242,7 @@ namespace TrainDatabase.Z21Client
             bytes[3] = 0;
             bytes[4] = 0x80;
             bytes[5] = 0x80;
-            Logger.LogByteArray($"SET STOP ", bytes);
+            Logger.LogByteArray($"SET STOP", bytes);
             Senden(bytes);
         }
 
@@ -257,7 +257,7 @@ namespace TrainDatabase.Z21Client
             bytes[5] = 0x80;
             bytes[6] = 0xA1;
             Senden(bytes);
-            Logger.LogByteArray($"SET TRACK POWER OFF ", bytes);
+            Logger.LogByteArray($"SET TRACK POWER OFF", bytes);
         }
 
         public void SetTrackPowerON()
@@ -270,7 +270,7 @@ namespace TrainDatabase.Z21Client
             bytes[4] = 0x21;
             bytes[5] = 0x81;
             bytes[6] = 0xA0;
-            Logger.LogByteArray($"SET TRACK POWER ON ", bytes);
+            Logger.LogByteArray($"SET TRACK POWER ON", bytes);
             Senden(bytes);
         }
 
@@ -281,7 +281,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0;
             bytes[2] = 0x85;
             bytes[3] = 0;
-            Logger.LogByteArray($"SYSTEMSTATE GETDATA ", bytes);
+            Logger.LogByteArray($"SYSTEMSTATE GETDATA", bytes);
             Senden(bytes);
         }
 
@@ -298,7 +298,7 @@ namespace TrainDatabase.Z21Client
                 state = TrackPower.Short;
             else if (isProgrammingModeActive)
                 state = TrackPower.Programing;
-            Logger.LogByteArray($"LAN_X_STATUS_CHANGED \n\t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}", received);
+            Logger.LogByteArray($"STATUS CHANGED \n\t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}", received);
             return state;
         }
 
@@ -512,14 +512,18 @@ namespace TrainDatabase.Z21Client
                             break;
                         case 0xEF:           //  LAN X LOCO INFO  4.4 (22)
 
-                            ValueBytesStruct vbs = new();
-                            vbs.Adr_MSB = received[5];
-                            vbs.Adr_LSB = received[6];
-                            LokInfoData infodata = new();
-                            infodata.Adresse = new LokAdresse(vbs);
-                            infodata.InUse = (received[7] & 8) == 8;
-                            infodata.Speed = (byte)(received[8] & 0x7F);
-                            infodata.DrivingDirection = (received[8] & 0x80) == 0x80;
+                            ValueBytesStruct vbs = new()
+                            {
+                                Adr_MSB = received[5],
+                                Adr_LSB = received[6]
+                            };
+                            LokInfoData infodata = new()
+                            {
+                                Adresse = new LokAdresse(vbs),
+                                InUse = (received[7] & 8) == 8,
+                                Speed = (byte)(received[8] & 0x7F),
+                                DrivingDirection = (received[8] & 0x80) == 0x80
+                            };
                             int functionIndexCount = 5;
                             for (int index = 9; index < received.Length && index <= 12; index++)
                             {
