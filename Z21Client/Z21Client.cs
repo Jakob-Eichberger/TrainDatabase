@@ -17,6 +17,7 @@ using Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Timers;
@@ -30,16 +31,19 @@ namespace TrainDatabase.Z21Client
     {
         public const int maxDccStep = 127;
 
-        public Z21Client() : base()
+        public Z21Client() : base(Configuration.ClientPort)
         {
             try
             {
+                if (OperatingSystem.IsWindows())
+                    AllowNatTraversal(true);
                 Address = Configuration.ClientIP;
                 Port = Configuration.ClientPort;
                 Connect(Address, Port);
                 BeginReceive(new AsyncCallback(Empfang), null);
                 Logger.LogInformation($"Z21 initialisiert.");
                 RenewClientSubscription.Elapsed += (a, b) => GetStatus();
+                LogOn();
             }
             catch (Exception ex)
             {
@@ -68,7 +72,7 @@ namespace TrainDatabase.Z21Client
         public event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;
 
         public event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
-       
+
         public IPAddress Address { get; }
 
         public int Port { get; }
@@ -92,7 +96,7 @@ namespace TrainDatabase.Z21Client
             bytes[4] = 0xF1;
             bytes[5] = 0x0A;
             bytes[6] = 0xFB;
-            Logger.LogInformation($"GET FIRMWARE VERSION " + GetByteString(bytes));
+            Logger.LogByteArray($"GET FIRMWARE VERSION", bytes);
             Senden(bytes);
         }
 
@@ -103,7 +107,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0;
             bytes[2] = 0x1A;
             bytes[3] = 0;
-            Logger.LogInformation($"GET HWINFO " + GetByteString(bytes));
+            Logger.LogByteArray($"GET HWINFO ", bytes);
             Senden(bytes);
         }
 
@@ -114,7 +118,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0x00;
             bytes[2] = 0x18;
             bytes[3] = 0x00;
-            Logger.LogInformation($"GET LAN CODE " + GetByteString(bytes));
+            Logger.LogByteArray($"GET LAN CODE ", bytes);
             Senden(bytes);
         }
 
@@ -131,7 +135,7 @@ namespace TrainDatabase.Z21Client
             bytes[6] = adresse.ValueBytes.Adr_MSB;
             bytes[7] = adresse.ValueBytes.Adr_LSB;
             bytes[8] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7]);
-            Logger.LogInformation("LAN X GET LOCO INFO " + GetByteString(bytes) + " (#" + adresse.Value.ToString() + ")");
+            Logger.LogByteArray($"LAN X GET LOCO INFO  (#{adresse.Value})", bytes);
             Senden(bytes);
         }
 
@@ -142,7 +146,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0;
             bytes[2] = 0x10;
             bytes[3] = 0;
-            Logger.LogInformation($"GET SERIAL NUMBER " + GetByteString(bytes));
+            Logger.LogByteArray($"GET SERIAL NUMBER ", bytes);
             Senden(bytes);
         }
 
@@ -156,7 +160,7 @@ namespace TrainDatabase.Z21Client
             bytes[4] = 0x21;
             bytes[5] = 0x24;
             bytes[6] = 0x05;
-            Logger.LogInformation($"GET STATUS " + GetByteString(bytes));
+            Logger.LogByteArray($"GET STATUS ", bytes);
             Senden(bytes);
         }
 
@@ -171,7 +175,7 @@ namespace TrainDatabase.Z21Client
             bytes[5] = 0x21;
             //bytes[6] = 0x47;   // = XOR-Byte  selbst ausgerechnet, in der LAN-Doku steht 0 ?!
             bytes[6] = 0;
-            Logger.LogInformation($"GET VERSION " + GetByteString(bytes));
+            Logger.LogByteArray($"GET VERSION ", bytes);
             Senden(bytes);
         }
 
@@ -182,6 +186,7 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0x00;
             bytes[2] = 0x30;
             bytes[3] = 0x00;
+            Logger.LogByteArray("LOG OFF", bytes);
             Senden(bytes);
         }
 
@@ -197,7 +202,7 @@ namespace TrainDatabase.Z21Client
             bytes[5] = flags[1];
             bytes[6] = flags[2];
             bytes[7] = flags[3];
-            Logger.LogInformation($"SET BROADCASTFLAGS " + GetByteString(bytes));
+            Logger.LogByteArray($"SET BROADCASTFLAGS ", bytes);
             Senden(bytes);
         }
 
@@ -237,7 +242,7 @@ namespace TrainDatabase.Z21Client
             bytes[3] = 0;
             bytes[4] = 0x80;
             bytes[5] = 0x80;
-            Logger.LogInformation($"SET STOP " + GetByteString(bytes));
+            Logger.LogByteArray($"SET STOP ", bytes);
             Senden(bytes);
         }
 
@@ -252,7 +257,7 @@ namespace TrainDatabase.Z21Client
             bytes[5] = 0x80;
             bytes[6] = 0xA1;
             Senden(bytes);
-            Logger.LogInformation($"SET TRACK POWER OFF " + GetByteString(bytes));
+            Logger.LogByteArray($"SET TRACK POWER OFF ", bytes);
         }
 
         public void SetTrackPowerON()
@@ -265,7 +270,7 @@ namespace TrainDatabase.Z21Client
             bytes[4] = 0x21;
             bytes[5] = 0x81;
             bytes[6] = 0xA0;
-            Logger.LogInformation($"SET TRACK POWER ON " + GetByteString(bytes));
+            Logger.LogByteArray($"SET TRACK POWER ON ", bytes);
             Senden(bytes);
         }
 
@@ -276,19 +281,11 @@ namespace TrainDatabase.Z21Client
             bytes[1] = 0;
             bytes[2] = 0x85;
             bytes[3] = 0;
-            Logger.LogInformation($"SYSTEMSTATE GETDATA " + GetByteString(bytes));
+            Logger.LogByteArray($"SYSTEMSTATE GETDATA ", bytes);
             Senden(bytes);
         }
 
-        private static string GetByteString(byte[] bytes)
-        {
-            string s = "";
-            foreach (byte b in bytes)
-            {
-                s += b.ToString("X") + ",";
-            }
-            return s;
-        }
+        private static string GetByteString(byte[] bytes) => string.Join("", bytes.Select(e => $"{e:D2} "));
 
         private static TrackPower GetCentralStateData(byte[] received)
         {
@@ -303,7 +300,7 @@ namespace TrainDatabase.Z21Client
                 state = TrackPower.Short;
             else if (isProgrammingModeActive)
                 state = TrackPower.Programing;
-            Logger.LogInformation($"LAN_X_STATUS_CHANGED: {GetByteString(received)}\n \t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}\n");
+            Logger.LogByteArray($"LAN_X_STATUS_CHANGED \n\t{nameof(isEmergencyStop)}: {isEmergencyStop}\n\t{nameof(isTrackVoltageOff)}: {isTrackVoltageOff}\n\t{nameof(isShortCircuit)}: {isShortCircuit}\n\t{nameof(isProgrammingModeActive)}: {isProgrammingModeActive}", received);
             return state;
         }
 
@@ -321,7 +318,7 @@ namespace TrainDatabase.Z21Client
             bytes[7] = data.Adresse.ValueBytes.Adr_LSB;
             bytes[8] = (byte)data.Speed;
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Logger.LogInformation($"SET LOCO DRIVE: \n\tAdresse:'{data.Adresse.Value:D3}' \n\tDirection: '{data.DrivingDirection}'\t \n\tSpeed:'{data.Speed:D3}' \n\tByteString: '{GetByteString(bytes)}'");
+            Logger.LogByteArray($"SET LOCO DRIVE: \n\tAdresse:'{data.Adresse.Value:D3}' \n\tDirection: '{data.DrivingDirection}'\t \n\tSpeed:'{data.Speed:D3}'", bytes);
             return bytes;
         }
 
@@ -352,7 +349,7 @@ namespace TrainDatabase.Z21Client
             }
             bitarray.CopyTo(bytes, 8);
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Logger.LogInformation($"SET LOCO FUNCTION {GetByteString(bytes)}  ({adresse} - index: {function.FunctionIndex} - {toggelType})");
+            Logger.LogByteArray($"SET LOCO FUNCTION ({adresse} - index: {function.FunctionIndex} - {toggelType})", bytes);
             return bytes;
         }
 
@@ -395,7 +392,7 @@ namespace TrainDatabase.Z21Client
                 else
                 {
                     z = max;
-                    Logger.LogInformation($"> Fehlerhaftes Telegramm.");
+                    Logger.LogByteArray($"Fehlerhaftes Telegramm.", bytes);
                 }
             }
 
@@ -409,6 +406,7 @@ namespace TrainDatabase.Z21Client
                 byte[] received = EndReceive(res, ref RemoteIpEndPoint!);
                 BeginReceive(new AsyncCallback(Empfang), null);
                 if (OnReceive != null) OnReceive(this, new DataEventArgs(received));
+                Logger.LogByteArray("Received", received);
                 CutTelegramm(received);
             }
             catch (Exception ex)
@@ -430,7 +428,7 @@ namespace TrainDatabase.Z21Client
             switch (received[2])
             {
                 case 0x1A:
-                    Logger.LogInformation($"GET HWINFO " + GetByteString(received));
+                    Logger.LogByteArray($"GET HWINFO ", received);
                     HardwareTyp hardwareTyp;
                     i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
                     j = (received[11] << 24) + (received[10] << 16) + (received[9] << 8) + received[8];
@@ -445,19 +443,19 @@ namespace TrainDatabase.Z21Client
                     OnGetHardwareInfo?.Invoke(this, new HardwareInfoEventArgs(new HardwareInfo(hardwareTyp, j)));
                     break;
                 case 0x10:
-                    Logger.LogInformation($"GET SERIAL NUMBER " + GetByteString(received));
+                    Logger.LogByteArray($"GET SERIAL NUMBER ", received);
                     i = (received[7] << 24) + (received[6] << 16) + (received[5] << 8) + received[4];
                     OnGetSerialNumber?.Invoke(this, new GetSerialNumberEventArgs(i));
                     break;
                 case 0x18:
                     if (Enum.IsDefined(typeof(LanCode), received[4]))
                     {
-                        Logger.LogInformation($"GET LAN CODE " + GetByteString(received));
+                        Logger.LogByteArray($"GET LAN CODE ", received);
                         OnGetLanCode?.Invoke(this, (LanCode)received[4]);
                     }
                     else
                     {
-                        Logger.LogInformation($"RECEIVED INVALID LAN CODE {GetByteString(received)}");
+                        Logger.LogByteArray($"RECEIVED INVALID LAN CODE", received);
                     }
                     break;
                 case 0x40:
@@ -467,35 +465,34 @@ namespace TrainDatabase.Z21Client
                             switch (received[5])
                             {
                                 case 0x00:
-                                    Logger.LogInformation($"TRACK POWER OFF " + GetByteString(received));
+                                    Logger.LogByteArray($"TRACK POWER OFF ", received);
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.OFF));
                                     break;
                                 case 0x01:
-                                    Logger.LogInformation($"TRACK POWER ON " + GetByteString(received));
+                                    Logger.LogByteArray($"TRACK POWER ON ", received);
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.ON));
                                     break;
                                 case 0x02:
-                                    Logger.LogInformation($"PROGRAMMING MODE " + GetByteString(received));
+                                    Logger.LogByteArray($"PROGRAMMING MODE ", received);
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.Programing));
                                     break;
                                 case 0x08:
-                                    Logger.LogInformation($"TRACK SHORT CIRCUIT " + GetByteString(received));
+                                    Logger.LogByteArray($"TRACK SHORT CIRCUIT ", received);
                                     TrackPowerChanged?.Invoke(this, new(TrackPower.Short));
                                     break;
                                 default:
-                                    Logger.LogInformation($"Unbekanntes X-Bus-Telegramm Header 61" + GetByteString(received));
+                                    Logger.LogByteArray($"Unbekanntes X-Bus-Telegramm Header 61", received);
                                     break;
                             }
                             break;
                         case 0x62:           //  LAN X STATUS CHANGED  2.12 (13)
-                            Logger.LogInformation($"STATUS CHANGED " + GetByteString(received));
                             OnStatusChanged?.Invoke(this, new StateEventArgs(GetCentralStateData(received)));
                             break;
                         case 0x63:
                             switch (received[5])
                             {
                                 case 0x21:           //  LAN X GET VERSION  2.3 (10)
-                                    Logger.LogInformation($"GET VERSION " + GetByteString(received));
+                                    Logger.LogByteArray($"GET VERSION ", received);
                                     var versionTyp = received[7] switch
                                     {
                                         0x00 => VersionTyp.None,
@@ -506,13 +503,13 @@ namespace TrainDatabase.Z21Client
                                     OnGetVersion?.Invoke(this, new VersionInfoEventArgs(new VersionInfo(received[6], versionTyp)));
                                     break;
                                 default:
-                                    Logger.LogInformation($"Unbekanntes X-Bus-Telegramm Header 63" + GetByteString(received));
+                                    Logger.LogByteArray($"Unbekanntes X-Bus-Telegramm Header 63", received);
                                     break;
                             }
                             break;
 
                         case 0x81:           //  LAN X BC STOPPED  2.14 (14)
-                            Logger.LogInformation($"BC STOPPED " + GetByteString(received));
+                            Logger.LogByteArray($"BC STOPPED ", received);
                             OnStopped?.Invoke(this, new EventArgs());
                             break;
                         case 0xEF:           //  LAN X LOCO INFO  4.4 (22)
@@ -547,33 +544,33 @@ namespace TrainDatabase.Z21Client
                                 }
                             }
                             OnGetLocoInfo?.Invoke(this, new GetLocoInfoEventArgs(infodata));
-                            Logger.LogInformation($"GET LOCO DRIVE: \n\tAdresse:'{infodata.Adresse.Value:D3}' \n\tDirection: '{infodata.DrivingDirection}'\n\tSpeed:'{infodata.Speed:D3}' \n\tByteString: '{GetByteString(received)}'");
+                            Logger.LogByteArray($"GET LOCO DRIVE: \n\tAdresse:'{infodata.Adresse.Value:D3}' \n\tDirection: '{infodata.DrivingDirection}'\n\tSpeed:'{infodata.Speed:D3}'", received);
                             break;
                         case 0xF3:
                             switch (received[5])
                             {
                                 case 0x0A:
-                                    Logger.LogInformation($"GET FIRMWARE VERSION " + GetByteString(received));
+                                    Logger.LogByteArray($"GET FIRMWARE VERSION ", received);
                                     OnGetFirmwareVersion?.Invoke(this, new FirmwareVersionInfoEventArgs(new FirmwareVersionInfo(received[6], received[7])));
                                     // Achtung: die z21 bringt die Minor-Angabe hexadezimal !!!!!!!!    z.B. Firmware 1.23 = Minor 34
                                     break;
                                 default:
-                                    Logger.LogInformation($"Unbekanntes X-Bus-Telegramm Header F3" + GetByteString(received));
+                                    Logger.LogByteArray($"Unbekanntes X-Bus-Telegramm Header F3", received);
                                     break;
                             }
                             break;
                         default:
-                            Logger.LogInformation($"Unbekanntes X-Bus-Telegramm " + GetByteString(received));
+                            Logger.LogByteArray($"Unbekanntes X-Bus-Telegramm ", received);
                             break;
                     }
                     break;
                 case 0x84:            // LAN SYSTEMSTATE DATACHANGED    2.18 (16)
-                    Logger.LogInformation($"LAN SYSTEMSTATE DATACHANGED " + GetByteString(received));
+                    Logger.LogByteArray($"LAN SYSTEMSTATE DATACHANGED ", received);
                     SystemStateData systemStateData = GetSystemStateData(received);
                     OnSystemStateDataChanged?.Invoke(this, new SystemStateEventArgs(systemStateData));
                     break;
                 default:
-                    Logger.LogInformation($"Unbekanntes Telegramm " + GetByteString(received));
+                    Logger.LogByteArray($"Unbekanntes Telegramm ", received);
                     break;
             }
         }
