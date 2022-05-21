@@ -7,7 +7,7 @@ using System.Net;
 
 namespace Model
 {
-    public partial class Vehicle : IEquatable<Vehicle>, IComparable
+    public partial class VehicleModel : IEquatable<VehicleModel>, IComparable
     {
         public int Id { get; set; }
 
@@ -77,7 +77,7 @@ namespace Model
 
         public Epoch Epoche { get; set; } = Epoch.@default;
 
-        public List<Function> Functions { get; set; } = new();
+        public List<FunctionModel> Functions { get; set; } = new();
 
         public decimal?[] TractionForward { get; set; } = new decimal?[127 + 1];
 
@@ -87,7 +87,7 @@ namespace Model
 
         public int CompareTo(object obj) => Id.CompareTo(obj);
 
-        public bool Equals(Vehicle other) => Id == other?.Id;
+        public bool Equals(VehicleModel other) => Id == other?.Id;
 
         /// <summary>
         /// Gets the real world speed for a given speed step and direction

@@ -98,7 +98,7 @@ namespace Wpf_Application
 
         private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(Db).ShowDialog();
 
-        private void DrawVehicles(IEnumerable<Vehicle> list)
+        private void DrawVehicles(IEnumerable<VehicleModel> list)
         {
             VehicleGrid.Children.Clear();
             foreach (var item in list.OrderBy(e => e.Position))

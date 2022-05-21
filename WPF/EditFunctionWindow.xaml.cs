@@ -19,9 +19,9 @@ namespace TrainDatabase
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private Function function = new();
+        private FunctionModel function = new();
 
-        public Function Function
+        public FunctionModel Function
         {
             get => function; set
             {
@@ -30,7 +30,7 @@ namespace TrainDatabase
             }
         }
 
-        public EditFunctionWindow(Database _db, Function function)
+        public EditFunctionWindow(Database _db, FunctionModel function)
         {
             DataContext = this;
             InitializeComponent();

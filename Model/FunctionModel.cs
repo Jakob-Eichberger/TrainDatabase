@@ -2,11 +2,11 @@
 
 namespace Model
 {
-    public partial class Function
+    public partial class FunctionModel
     {
         public int Id { get; set; }
 
-        public Vehicle Vehicle { get; set; }
+        public VehicleModel Vehicle { get; set; }
 
         public int VehicleId { get; set; }
 
@@ -30,7 +30,7 @@ namespace Model
 
         public FunctionType EnumType { get; set; }
 
-        public override bool Equals(object obj) => obj is Function function && Id == function?.Id;
+        public override bool Equals(object obj) => obj is FunctionModel function && Id == function?.Id;
 
         public override string ToString() =>
             $"Name: \t{Name}\n" +

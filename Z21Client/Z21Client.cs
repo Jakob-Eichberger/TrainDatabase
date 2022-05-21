@@ -216,18 +216,18 @@ namespace TrainDatabase.Z21Client
 
         public void SetLocoDrive(LokInfoData data) => Senden(GetLocoDriveByteArray(data));
 
-        public void SetLocoFunction(LokAdresse adresse, Function function, ToggleType toggelType)
+        public void SetLocoFunction(LokAdresse adresse, FunctionModel function, ToggleType toggelType)
         {
             byte[] bytes = GetLocoFunctionByteArray(adresse, function, toggelType);
             Senden(bytes);
         }
 
-        public void SetLocoFunction(List<(ToggleType toggle, Function Func)> data)
+        public void SetLocoFunction(List<(ToggleType toggle, FunctionModel Func)> data)
         {
             var array = new byte[10 * data.Count];
             for (int i = 0, currentIndex = 0; i < data.Count; i++, currentIndex += 10)
             {
-                (ToggleType toggleType, Function function) = data[i];
+                (ToggleType toggleType, FunctionModel function) = data[i];
                 Array.Copy(GetLocoFunctionByteArray(new(function.Vehicle.Address), function, toggleType), 0, array, currentIndex, 10);
             }
             Senden(array);
@@ -320,7 +320,7 @@ namespace TrainDatabase.Z21Client
             return bytes;
         }
 
-        private static byte[] GetLocoFunctionByteArray(LokAdresse adresse, Function function, ToggleType toggelType)
+        private static byte[] GetLocoFunctionByteArray(LokAdresse adresse, FunctionModel function, ToggleType toggelType)
         {
             byte[] bytes = new byte[10];
             bytes[0] = 0x0A;

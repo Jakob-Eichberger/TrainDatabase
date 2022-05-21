@@ -7,14 +7,14 @@ namespace TrainDatabase.Extensions
     public static class IEnumerableExtensions
     {
         /// <summary>
-        /// Swaps the position of two vehicles. Uses the <see cref="Vehicle.Position"/> property.
+        /// Swaps the position of two vehicles. Uses the <see cref="VehicleModel.Position"/> property.
         /// </summary>
         /// <param name="moveUp">True if the position of the <paramref name="vehicle"/> should be moved up.</param>
         /// <param name="vehicle"></param>
-        public static void Swap(this IEnumerable<Vehicle> vehicles, Vehicle vehicle, bool moveUp)
+        public static void Swap(this IEnumerable<VehicleModel> vehicles, VehicleModel vehicle, bool moveUp)
         {
             var pos = vehicle.Position;
-            Vehicle vehicle2 = default!;
+            VehicleModel vehicle2 = default!;
 
             if (moveUp)
                 vehicle2 = vehicles.OrderBy(e => e.Position).SkipWhile(e => e.Position <= pos).FirstOrDefault()!;
@@ -30,12 +30,12 @@ namespace TrainDatabase.Extensions
         }
 
         /// <summary>
-        /// Swaps the position of two functions. Uses the <see cref="Function.Position"/> property.
+        /// Swaps the position of two functions. Uses the <see cref="FunctionModel.Position"/> property.
         /// </summary>
         /// <param name="functions"></param>
         /// <param name="Id2"></param>
         /// <param name="id2"></param>
-        public static void Swap(this IEnumerable<Function> functions, int id1, bool moveUp)
+        public static void Swap(this IEnumerable<FunctionModel> functions, int id1, bool moveUp)
         {
 
         }

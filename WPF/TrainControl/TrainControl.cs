@@ -26,7 +26,7 @@ namespace TrainDatabase
         private LokInfoData liveData = new();
         private int speed = 0;
         private TrackPower trackPower;
-        private Vehicle vehicle = default!;
+        private VehicleModel vehicle = default!;
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public static int MaxDccSpeed => Z21Client.Z21Client.maxDccStep;
@@ -66,9 +66,9 @@ namespace TrainDatabase
         public DateTime SliderLastused { get; set; }
 
         /// <summary>
-        /// Holds the <see cref="Vehicle.Id"/> of the slowest Vehicle in the traktion list.
+        /// Holds the <see cref="VehicleModel.Id"/> of the slowest Vehicle in the traktion list.
         /// </summary>
-        public Vehicle SlowestVehicleInTractionList { get; set; }
+        public VehicleModel SlowestVehicleInTractionList { get; set; }
 
         public int Speed
         {
@@ -105,7 +105,7 @@ namespace TrainDatabase
         /// <summary>
         /// The <see cref="Vehicle"/> the application is trying to controll
         /// </summary>
-        public Vehicle Vehicle
+        public VehicleModel Vehicle
         {
             get => vehicle;
             set => vehicle = value;
@@ -118,12 +118,12 @@ namespace TrainDatabase
         public Visibility VehicleTypeVisbility => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
 
         /// <summary>
-        /// List of all buttons on a grid which controll vehicle <see cref="Function"/>s.
+        /// List of all buttons on a grid which controll vehicle <see cref="FunctionModel"/>s.
         /// </summary>
         private List<Button> FunctionButtons { get; set; } = new();
 
         /// <summary>
-        /// List of all togglebuttons on a grid which controll vehicle <see cref="Function"/>s.
+        /// List of all togglebuttons on a grid which controll vehicle <see cref="FunctionModel"/>s.
         /// </summary>
         private List<ToggleButton> FunctionToggleButtons { get; set; } = new();
     }

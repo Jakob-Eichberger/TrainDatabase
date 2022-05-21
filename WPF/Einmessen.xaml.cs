@@ -26,7 +26,7 @@ namespace TrainDatabase
     /// </summary>
     public partial class Einmessen : Window, INotifyPropertyChanged
     {
-        private Vehicle _vehicle = default!;
+        private VehicleModel _vehicle = default!;
         private bool IsDisposed = false;
         public Einmessen(Database db, Z21Client.Z21Client controller)
         {
@@ -69,7 +69,7 @@ namespace TrainDatabase
         private LokInfoData LokData { get; set; } = new();
         private decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
         private decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
-        private Vehicle Vehicle
+        private VehicleModel Vehicle
         {
             get => _vehicle; set
             {
@@ -156,8 +156,8 @@ namespace TrainDatabase
 
         private async void CmbAllVehicles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            TcMeasure.IsEnabled = CmbAllVehicles.SelectedItem is not Model.Vehicle;
-            if (CmbAllVehicles.SelectedItem is not ComboBoxItem cbi || cbi.Tag is not Vehicle vehicle) return;
+            TcMeasure.IsEnabled = CmbAllVehicles.SelectedItem is not Model.VehicleModel;
+            if (CmbAllVehicles.SelectedItem is not ComboBoxItem cbi || cbi.Tag is not VehicleModel vehicle) return;
             Vehicle = vehicle;
             TractionForward = vehicle.TractionForward;
             TractionBackward = vehicle.TractionBackward;

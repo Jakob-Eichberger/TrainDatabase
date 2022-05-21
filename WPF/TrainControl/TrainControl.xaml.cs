@@ -29,7 +29,7 @@ namespace TrainDatabase
     /// </summary>
     public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
     {
-        public TrainControl(IServiceProvider serviceProvider, Vehicle _vehicle)
+        public TrainControl(IServiceProvider serviceProvider, VehicleModel _vehicle)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace TrainDatabase
         /// <param name="vehicle"></param>
         /// <param name="client"></param>
         /// <param name="db"></param>
-        public static void CreatTrainControlWindow(IServiceProvider serviceProvider, Vehicle vehicle)
+        public static void CreatTrainControlWindow(IServiceProvider serviceProvider, VehicleModel vehicle)
         {
             if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
             {
@@ -77,12 +77,12 @@ namespace TrainDatabase
         protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
-        /// Returns a new instance of <typeparamref name="T"/>, which is configured to controll a <see cref="Function"/>.
+        /// Returns a new instance of <typeparamref name="T"/>, which is configured to controll a <see cref="FunctionModel"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="item"></param>
         /// <returns></returns>
-        private static T GetButton<T>(Function item) where T : ButtonBase, new() => new T()
+        private static T GetButton<T>(FunctionModel item) where T : ButtonBase, new() => new T()
         {
             Height = 50,
             Width = 90,
@@ -95,7 +95,7 @@ namespace TrainDatabase
             BorderThickness = new(1)
         };
 
-        private static LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, Vehicle Vehicle) => new()
+        private static LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, VehicleModel Vehicle) => new()
         {
             Adresse = new(Vehicle.Address),
             DrivingDirection = direction,
@@ -127,7 +127,7 @@ namespace TrainDatabase
                 {
                     await Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        var x = FunctionToggleButtons.FirstOrDefault(e => (e?.Tag as Function)?.FunctionIndex == functionIndex);
+                        var x = FunctionToggleButtons.FirstOrDefault(e => (e?.Tag as FunctionModel)?.FunctionIndex == functionIndex);
                         if (x is not null)
                             x.IsChecked = state;
                     }));
@@ -161,14 +161,14 @@ namespace TrainDatabase
                 {
                     case ButtonType.Switch:
                         ToggleButton tb = GetButton<ToggleButton>(item);
-                        tb.Click += (sender, e) => SetLocoFunction(((sender as ToggleButton)!.IsChecked ?? false) ? ToggleType.On : ToggleType.Off, ((e.Source as ToggleButton)!.Tag as Function)!);
+                        tb.Click += (sender, e) => SetLocoFunction(((sender as ToggleButton)!.IsChecked ?? false) ? ToggleType.On : ToggleType.Off, ((e.Source as ToggleButton)!.Tag as FunctionModel)!);
                         FunctionToggleButtons.Add(tb);
                         FunctionGrid.Children.Add(tb);
                         break;
                     case ButtonType.PushButton:
                         Button btn = GetButton<Button>(item);
-                        btn.PreviewMouseDown += (sender, e) => SetLocoFunction(ToggleType.On, ((e.Source as Button)?.Tag as Function)!);
-                        btn.PreviewMouseUp += (sender, e) => SetLocoFunction(ToggleType.Off, ((e.Source as Button)?.Tag as Function)!); ;
+                        btn.PreviewMouseDown += (sender, e) => SetLocoFunction(ToggleType.On, ((e.Source as Button)?.Tag as FunctionModel)!);
+                        btn.PreviewMouseUp += (sender, e) => SetLocoFunction(ToggleType.Off, ((e.Source as Button)?.Tag as FunctionModel)!); ;
                         FunctionButtons.Add(btn);
                         FunctionGrid.Children.Add(btn);
                         break;
@@ -177,7 +177,7 @@ namespace TrainDatabase
                         btnt.Click += async (sender, e) =>
                         {
                             btnt.IsEnabled = false;
-                            Function func = ((e.Source as Button)?.Tag! as Function)!;
+                            FunctionModel func = ((e.Source as Button)?.Tag! as FunctionModel)!;
                             SetLocoFunction(ToggleType.On, func!);
                             await Task.Delay(new TimeSpan(0, 0, func.Time));
                             SetLocoFunction(ToggleType.Off, func!);
@@ -190,7 +190,7 @@ namespace TrainDatabase
             }
         }
 
-        private void DrawAllVehicles(IEnumerable<Vehicle> vehicles)
+        private void DrawAllVehicles(IEnumerable<VehicleModel> vehicles)
         {
             var tractionVehicles = vehicles.Where(f => Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position).ToList();
             TIMultiTraction.Header = $"Mehrfachtraktion ({tractionVehicles.Count})";
@@ -202,7 +202,7 @@ namespace TrainDatabase
             }
             AddListToStackPanel(vehicles.Where(f => !Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
 
-            void AddListToStackPanel(IEnumerable<Vehicle> vehicles)
+            void AddListToStackPanel(IEnumerable<VehicleModel> vehicles)
             {
                 foreach (var vehicle in vehicles.Where(e => e.Id != Vehicle.Id))
                 {
@@ -215,7 +215,7 @@ namespace TrainDatabase
                     };
                     c.Unchecked += async (sender, e) =>
                     {
-                        if ((sender as CheckBox)?.Tag is Vehicle vehicle)
+                        if ((sender as CheckBox)?.Tag is VehicleModel vehicle)
                         {
                             VehicleService.RemoveTractionVehilce(vehicle, Vehicle);
                         }
@@ -228,7 +228,7 @@ namespace TrainDatabase
                             MessageBox.Show("Mehr als 140 Traktionsfahrzeuge sind nicht möglich!", "Max Limit reached.", MessageBoxButton.OK, MessageBoxImage.Error);
                             return;
                         }
-                        if (sender is CheckBox c && c.Tag is Vehicle v)
+                        if (sender is CheckBox c && c.Tag is VehicleModel v)
                         {
                             VehicleService.AddTractionVehilce(v, Vehicle);
                             await DeterminSlowestVehicleInList();
@@ -239,7 +239,7 @@ namespace TrainDatabase
             }
         }
 
-        private bool GetDrivingDirection(Vehicle vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
+        private bool GetDrivingDirection(VehicleModel vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
 
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e) => SearchTractionVehicles();
 
@@ -300,14 +300,14 @@ namespace TrainDatabase
         /// <param name="type"></param>
         /// <param name="function"></param>
         /// <param name="locoAdress"></param>
-        private void SetLocoFunction(ToggleType type, Function function)
+        private void SetLocoFunction(ToggleType type, FunctionModel function)
         {
 
             if (function.EnumType != FunctionType.None)
             {
                 var functions = MultiTractionList.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == function.EnumType && e.ButtonType == function.ButtonType).ToList();
 
-                List<(ToggleType toggle, Function Func)> list = new();
+                List<(ToggleType toggle, FunctionModel Func)> list = new();
 
                 foreach (var item in functions)
                     list.Add((type, item));
@@ -393,7 +393,7 @@ namespace TrainDatabase
 
         public struct MultiTractionItem
         {
-            public MultiTractionItem(Vehicle vehicle)
+            public MultiTractionItem(VehicleModel vehicle)
             {
                 Vehicle = vehicle;
                 TractionForward = GetSortedSet(vehicle?.TractionForward!) ?? new();
@@ -404,7 +404,7 @@ namespace TrainDatabase
 
             public SortedSet<FunctionPoint> TractionForward { get; private set; }
 
-            public Vehicle Vehicle { get; }
+            public VehicleModel Vehicle { get; }
 
             /// <summary>
             /// Converts the paramter <paramref name="tractionArray"/> to a <see cref="LineSeries"/> object.

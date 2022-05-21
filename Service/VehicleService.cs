@@ -11,7 +11,7 @@ namespace Service
             Db = db;
         }
         public Database Db { get; set; }
-        public void AddTractionVehilce(Vehicle vehicle1, Vehicle vehicle2)
+        public void AddTractionVehilce(VehicleModel vehicle1, VehicleModel vehicle2)
         {
             vehicle1.TractionVehicleIds.Add(vehicle2.Id);
             vehicle2.TractionVehicleIds.Add(vehicle1.Id);
@@ -19,7 +19,7 @@ namespace Service
             Db.Update(vehicle2);
         }
 
-        public void RemoveTractionVehilce(Vehicle vehicle1, Vehicle vehicle2)
+        public void RemoveTractionVehilce(VehicleModel vehicle1, VehicleModel vehicle2)
         {
             vehicle1.TractionVehicleIds.Remove(vehicle2.Id);
             vehicle2.TractionVehicleIds.Remove(vehicle1.Id);

@@ -19,7 +19,7 @@ namespace TrainDatabase.Z21Client.DTO
     public class LokInfoData
     {
         /// <summary>
-        /// int -> <see cref="Function.FunctionIndex"/> |
+        /// int -> <see cref="FunctionModel.FunctionIndex"/> |
         /// bool -> TRUE: ON, FALSE, OFF
         /// </summary>
         public List<(int functionIndex, bool state)> Functions = new();

@@ -6,13 +6,13 @@ namespace Wpf_Application
 {
     public class VehicleMenuItem : MenuItem
     {
-        public VehicleMenuItem(Vehicle vehicle, string content, Action<Vehicle> onClick)
+        public VehicleMenuItem(VehicleModel vehicle, string content, Action<VehicleModel> onClick)
         {
             Vehicle = vehicle;
             Header = content;
             Click += (a, b) => onClick(Vehicle);
         }
 
-        public Vehicle Vehicle { get; set; } = default!;
+        public VehicleModel Vehicle { get; set; } = default!;
     }
 }

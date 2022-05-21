@@ -163,7 +163,7 @@ namespace Importer
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                Function func = new()
+                FunctionModel func = new()
                 {
                     Id = reader.GetString(0).ToInt32(),
                     Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
@@ -194,7 +194,7 @@ namespace Importer
 
             while (reader.Read())
             {
-                db.Add(new Vehicle()
+                db.Add(new VehicleModel()
                 {
                     Id = reader.GetString(0).ToInt32(),
                     Name = reader.GetString(1),

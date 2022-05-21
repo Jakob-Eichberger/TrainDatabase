@@ -21,9 +21,9 @@ namespace Infrastructure
 
         public event EventHandler CollectionChanged;
 
-        public virtual DbSet<Function> Functions => Set<Function>();
+        public virtual DbSet<FunctionModel> Functions => Set<FunctionModel>();
 
-        public virtual DbSet<Vehicle> Vehicles => Set<Vehicle>();
+        public virtual DbSet<VehicleModel> Vehicles => Set<VehicleModel>();
 
         public override EntityEntry<TEntity> Add<TEntity>(TEntity obj) where TEntity : class
         {
@@ -107,9 +107,9 @@ namespace Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var converter = new ValueConverter<decimal?[], string>(v => string.Join(";", v), v => v.Split(";", StringSplitOptions.None).Select(val => val.IsDecimal() ? decimal.Parse(val) : (decimal?)null).ToArray());
-            modelBuilder.Entity<Vehicle>().Property(e => e.TractionForward).HasConversion(converter);
-            modelBuilder.Entity<Vehicle>().Property(e => e.TractionBackward).HasConversion(converter);
-            modelBuilder.Entity<Vehicle>().Property(e => e.TractionVehicleIds).HasConversion(new ValueConverter<List<int>, string>(v => string.Join(";", v.Distinct()), v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).Select(val => val.IsInt() ? int.Parse(val) : int.MinValue).Distinct().ToList()));
+            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionForward).HasConversion(converter);
+            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionBackward).HasConversion(converter);
+            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionVehicleIds).HasConversion(new ValueConverter<List<int>, string>(v => string.Join(";", v.Distinct()), v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).Select(val => val.IsInt() ? int.Parse(val) : int.MinValue).Distinct().ToList()));
             OnModelCreatingPartial(modelBuilder);
         }
 

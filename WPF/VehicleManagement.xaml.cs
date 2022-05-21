@@ -29,17 +29,17 @@ namespace TrainDatabase
 
         public Database Db { get; }
 
-        public ObservableCollection<Function> SelectedVehicleFunctions { get; set; } = new();
+        public ObservableCollection<FunctionModel> SelectedVehicleFunctions { get; set; } = new();
 
-        public Function? SelectedFunction { get; set; } = default!;
+        public FunctionModel? SelectedFunction { get; set; } = default!;
 
-        public Vehicle? SelectedVehicle { get; set; } = default!;
+        public VehicleModel? SelectedVehicle { get; set; } = default!;
 
         public bool VehicleSelected => SelectedVehicle is not null;
 
         public bool FunctionSelected => SelectedFunction is not null;
 
-        public ObservableCollection<Vehicle> Vehicles { get; private set; } = new();
+        public ObservableCollection<VehicleModel> Vehicles { get; private set; } = new();
 
         public IServiceProvider ServiceProvider { get; }
 
@@ -66,7 +66,7 @@ namespace TrainDatabase
             try
             {
                 BtnNew.IsEnabled = false;
-                await Db.AddAsync(new Vehicle() { Position = Db.Vehicles.Any() ? Db.Vehicles.Max(e => e.Position) + 1 : 1 });
+                await Db.AddAsync(new VehicleModel() { Position = Db.Vehicles.Any() ? Db.Vehicles.Max(e => e.Position) + 1 : 1 });
                 await ReloadVehicles();
             }
             finally
@@ -80,7 +80,7 @@ namespace TrainDatabase
             try
             {
                 BtnDeleteVehicle.IsEnabled = false;
-                if (DgVehicles.SelectedItem is not Vehicle vehicle) return;
+                if (DgVehicles.SelectedItem is not VehicleModel vehicle) return;
                 if (MessageBoxResult.No == MessageBox.Show($"Möchten Sie das Fahrzeug '{(vehicle.Name.IsNullOrWhiteSpace() ? vehicle.FullName : vehicle.Name)}' wirklich löschen?", "Fahrzeug löschen", MessageBoxButton.YesNo)) return;
                 Db.RemoveRange(Db.Functions.Include(e => e.Vehicle).Where(e => e.Vehicle.Id == vehicle.Id));
                 Db.Remove(vehicle);
@@ -103,7 +103,7 @@ namespace TrainDatabase
             if (SelectedVehicle is null)
                 return;
 
-            await Db.AddAsync(new Function() { Vehicle = SelectedVehicle, IsActive = true, ShowFunctionNumber = true, Position = SelectedVehicle.Functions.Any() ? SelectedVehicle.Functions.Max(e => e.Position) : 1 + 1 });
+            await Db.AddAsync(new FunctionModel() { Vehicle = SelectedVehicle, IsActive = true, ShowFunctionNumber = true, Position = SelectedVehicle.Functions.Any() ? SelectedVehicle.Functions.Max(e => e.Position) : 1 + 1 });
             await ReloadVehicles();
         }
 
@@ -145,7 +145,7 @@ namespace TrainDatabase
             await Db.SaveChangesAsync();
             SelectedVehicleFunctions.Clear();
 
-            foreach (var function in SelectedVehicle?.Functions.OrderBy(e => e.Position).ToList() ?? new List<Function>())
+            foreach (var function in SelectedVehicle?.Functions.OrderBy(e => e.Position).ToList() ?? new List<FunctionModel>())
                 SelectedVehicleFunctions.Add(function);
 
             OnPropertyChanged();
