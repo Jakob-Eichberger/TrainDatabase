@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace Infrastructure
         public event EventHandler CollectionChanged;
 
         public virtual DbSet<Function> Functions => Set<Function>();
-        
+
         public virtual DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
         public override EntityEntry<TEntity> Add<TEntity>(TEntity obj) where TEntity : class
@@ -97,8 +98,10 @@ namespace Infrastructure
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var path = Path.Combine(new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TrainDb", "Loco.sqlite" });
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlite("Data Source=Loco.sqlite");
+                optionsBuilder.UseSqlite($"Data Source={path}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
