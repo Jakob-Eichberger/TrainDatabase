@@ -110,7 +110,7 @@ namespace Importer
 
         private void GetDirectories(out string vehicleDirectory, out string tempDirectory, out string zipFileLocation)
         {
-            vehicleDirectory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+            vehicleDirectory = Configuration.VehicleImagesFileLocation;
             tempDirectory = $"{Directory.GetCurrentDirectory()}\\Temp";
             zipFileLocation = new StringBuilder(Path).Replace(".z21", ".zip").ToString();
         }
