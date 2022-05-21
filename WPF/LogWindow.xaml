@@ -7,6 +7,6 @@
         mc:Ignorable="d"
      Title="Log"  Height="450" Width="800" WindowStyle="ToolWindow" Name="MainWindow" Closing="MainWindow_Closing">
     <ScrollViewer Name="Sv" VerticalScrollBarVisibility="Visible" Margin="5">
-        <TextBlock Text="{Binding ElementName=MainWindow,Path=Text, Mode=OneWay}"></TextBlock>
+        <TextBlock Text="{Binding ElementName=MainWindow,Path=Text, Mode=OneWay}" FontFamily="Consolas"></TextBlock>
     </ScrollViewer>
 </Window>
