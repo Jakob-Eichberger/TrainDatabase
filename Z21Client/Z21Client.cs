@@ -581,7 +581,7 @@ namespace TrainDatabase.Z21Client
         {
             try
             {
-                await SendAsync(bytes, bytes.GetLength(0));
+                await SendAsync(bytes, bytes?.GetLength(0));
             }
             catch (ArgumentNullException ex)
             {
