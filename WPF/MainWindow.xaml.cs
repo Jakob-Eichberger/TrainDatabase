@@ -174,7 +174,6 @@ namespace Wpf_Application
             DrawVehiclesIfAnyExist();
             RemoveUnneededImages();
             Db.CollectionChanged += (a, b) => Dispatcher.Invoke(() => Search());
-            Client.LogOn();
         }
 
         private void Mw_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
