@@ -365,9 +365,7 @@ namespace TrainDatabase
             controller.TrackPowerChanged += Controller_TrackPowerChanged;
             controller.OnStatusChanged += Controller_OnStatusChanged;
             controller.LogOn();
-            await Task.Delay(new TimeSpan(0,0,0,0,500));
             controller.GetStatus();
-            await Task.Delay(new TimeSpan(0,0,0,0,500));
             controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
 
             DrawAllFunctions();
