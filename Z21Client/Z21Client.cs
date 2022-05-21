@@ -285,8 +285,6 @@ namespace TrainDatabase.Z21Client
             Senden(bytes);
         }
 
-        private static string GetByteString(byte[] bytes) => string.Join("", bytes.Select(e => $"{e:D2} "));
-
         private static TrackPower GetCentralStateData(byte[] received)
         {
             TrackPower state = TrackPower.ON;
@@ -405,8 +403,7 @@ namespace TrainDatabase.Z21Client
                 IPEndPoint RemoteIpEndPoint = null!;
                 byte[] received = EndReceive(res, ref RemoteIpEndPoint!);
                 BeginReceive(new AsyncCallback(Empfang), null);
-                if (OnReceive != null) OnReceive(this, new DataEventArgs(received));
-                Logger.LogByteArray("Received", received);
+                OnReceive?.Invoke(this, new DataEventArgs(received));
                 CutTelegramm(received);
             }
             catch (Exception ex)
@@ -418,6 +415,7 @@ namespace TrainDatabase.Z21Client
         private void EndConnect(IAsyncResult res)
         {
             Logger.LogInformation($"Reconnection abgeschlossen");
+            LogOFF();
             Client.EndConnect(res);
         }
 
