@@ -364,9 +364,11 @@ namespace TrainDatabase
             controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
             controller.TrackPowerChanged += Controller_TrackPowerChanged;
             controller.OnStatusChanged += Controller_OnStatusChanged;
-            controller.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => IsEnabled = controller.ClientReachable);
+            controller.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => { IsEnabled = controller.ClientReachable; controller.GetLocoInfo(new LokAdresse(Vehicle.Address)); });
             controller.GetStatus();
             controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
+            
+            IsEnabled = controller.ClientReachable;
 
             DrawAllFunctions();
             SearchTractionVehicles();
