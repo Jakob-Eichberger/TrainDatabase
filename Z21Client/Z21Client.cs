@@ -40,14 +40,20 @@ namespace TrainDatabase.Z21Client
         {
             get => clientReachable; private set
             {
-                if (!clientReachable && value)
+                var clientReachabletemp = clientReachable;
+                clientReachable = value;
+
+                if (!clientReachabletemp && value)
                 {
                     Logger.LogInformation("Ping - Client reachable");
                     LogOn();
+                    ClientReachabilityChanged?.Invoke(this, null);
                 }
-                if (clientReachable && !value)
+                if (clientReachabletemp && !value)
+                {
                     Logger.LogInformation("Ping - Client unreachable");
-                clientReachable = value;
+                    ClientReachabilityChanged?.Invoke(this, null);
+                }
             }
         }
 
@@ -109,6 +115,8 @@ namespace TrainDatabase.Z21Client
         public event EventHandler<SystemStateEventArgs> OnSystemStateDataChanged = default!;
 
         public event EventHandler<TrackPowerEventArgs> TrackPowerChanged = default!;
+
+        public event EventHandler ClientReachabilityChanged = default!;
 
         public IPAddress Address { get; }
 
