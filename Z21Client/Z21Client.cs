@@ -47,6 +47,7 @@ namespace TrainDatabase.Z21Client
                 {
                     Logger.LogInformation("Ping - Client reachable");
                     LogOn();
+                    GetStatus();
                     ClientReachabilityChanged?.Invoke(this, null);
                 }
                 if (clientReachabletemp && !value)
