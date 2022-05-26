@@ -34,6 +34,7 @@ namespace Importer
             db = _db;
         }
 
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public string Path { get; set; } = "";
@@ -159,23 +160,23 @@ namespace Importer
         private void ImportFunctions(SqliteConnection connection)
         {
             var command = connection.CreateCommand();
-            command.CommandText = @"SELECT id, vehicle_id, button_type, shortcut, time, position, image_name, function, show_function_number, is_configured  FROM functions;";
+            command.CommandText = @"SELECT * FROM functions;";
             using var reader = command.ExecuteReader();
             while (reader.Read())
             {
                 FunctionModel func = new()
                 {
-                    Id = reader.GetString(0).ToInt32(),
-                    Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(1).ToInt32()),
-                    ButtonType = (ButtonType)reader.GetString(2).ToInt32(),
-                    Name = ParseFunctionName(reader.GetString(3).IsNullOrWhiteSpace() ? reader.GetString(6) : reader.GetString(3)),
-                    Time = (int)reader.GetString(4).ToDecimal(),
-                    Position = reader.GetString(5).ToInt32(),
-                    ImageName = reader.GetString(6),
-                    FunctionIndex = reader.GetString(7).ToInt32(),
-                    ShowFunctionNumber = reader.GetString(8).ToBoolean(),
-                    IsConfigured = reader.GetString(9).ToBoolean(),
-                    EnumType = GetFunctionType(reader.GetString(6))
+                    Id = reader.GetString(reader.GetOrdinal("id")).ToInt32(),
+                    Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(reader.GetOrdinal("vehicle_id")).ToInt32()),
+                    ButtonType = (ButtonType)reader.GetString(reader.GetOrdinal("button_type")).ToInt32(),
+                    Name = ParseFunctionName(reader.GetString(reader.GetOrdinal("shortcut")).IsNullOrWhiteSpace() ? reader.GetString(reader.GetOrdinal("image_name")) : reader.GetString(reader.GetOrdinal("shortcut"))),
+                    Time = (int)reader.GetString(reader.GetOrdinal("time")).ToDecimal(),
+                    Position = reader.GetString(reader.GetOrdinal("position")).ToInt32(),
+                    ImageName = reader.GetString(reader.GetOrdinal("image_name")),
+                    FunctionIndex = reader.GetString(reader.GetOrdinal("function")).ToInt32(),
+                    ShowFunctionNumber = reader.GetString(reader.GetOrdinal("show_function_number")).ToBoolean(),
+                    IsConfigured = reader.GetString(reader.GetOrdinal("is_configured")).ToBoolean(),
+                    EnumType = GetFunctionType(reader.GetString(reader.GetOrdinal("image_name")))
                 };
 
                 if (func.Name != "Empty")
@@ -189,42 +190,42 @@ namespace Importer
         private void ImportVehicles(SqliteConnection connection)
         {
             var command = connection.CreateCommand();
-            command.CommandText = @"SELECT id, name, image_name, type, max_speed, address, active, position, drivers_cab ,full_name, speed_display, railway,buffer_lenght,model_buffer_lenght,service_weight,model_weight,rmin,article_number,decoder_type,owner,build_year,owning_since,traction_direction,description,dummy,ip,video,crane,direct_steering FROM vehicles";
+            command.CommandText = @"SELECT * FROM vehicles";
             using var reader = command.ExecuteReader();
 
             while (reader.Read())
             {
                 db.Add(new VehicleModel()
                 {
-                    Id = reader.GetString(0).ToInt32(),
-                    Name = reader.GetString(1),
-                    ImageName = reader.GetString(2),
-                    Type = (VehicleType)reader.GetString(3).ToInt32(),
-                    MaxSpeed = reader.GetString(4).ToInt64(),
-                    Address = reader.GetString(5).ToInt64(),
-                    IsActive = reader.GetString(6).ToBoolean(),
-                    Position = reader.GetString(7).ToInt64(),
-                    DriversCab = reader.GetString(8),
-                    FullName = reader.GetString(9),
-                    SpeedDisplay = reader.GetString(10).ToInt64(),
-                    Railway = reader.GetString(11),
-                    BufferLenght = reader.GetString(12).ToInt64(),
-                    ModelBufferLenght = reader.GetString(13).ToInt64(),
-                    ServiceWeight = reader.GetString(14).ToInt64(),
-                    ModelWeight = reader.GetString(15).ToInt64(),
-                    Rmin = reader.GetString(16).ToInt64(),
-                    ArticleNumber = reader.GetString(17),
-                    DecoderType = reader.GetString(18),
-                    Owner = reader.GetString(19),
-                    BuildYear = reader.GetString(20),
-                    OwningSince = reader.GetString(21),
-                    InvertTraction = reader.GetString(22).ToBoolean(),
-                    Description = reader.GetString(23),
-                    Dummy = reader.GetString(24).ToBoolean(),
-                    Ip = IPAddress.Parse(reader.GetString(25)),
-                    Video = reader.GetString(26).ToInt64(),
-                    Crane = reader.GetString(27).ToBoolean(),
-                    DirectSteering = reader.GetString(28).ToInt64(),
+                    Id = reader.GetString(reader.GetOrdinal("id")).ToInt32(),
+                    Name = reader.GetString(reader.GetOrdinal("name")),
+                    ImageName = reader.GetString(reader.GetOrdinal("image_name")),
+                    Type = (VehicleType)reader.GetString(reader.GetOrdinal("type")).ToInt32(),
+                    MaxSpeed = reader.GetString(reader.GetOrdinal("max_speed")).ToInt64(),
+                    Address = reader.GetString(reader.GetOrdinal("address")).ToInt64(),
+                    IsActive = reader.GetString(reader.GetOrdinal("active")).ToBoolean(),
+                    Position = reader.GetString(reader.GetOrdinal("position")).ToInt64(),
+                    DriversCab = reader.GetString(reader.GetOrdinal("drivers_cab")),
+                    FullName = reader.GetString(reader.GetOrdinal("full_name")),
+                    SpeedDisplay = reader.GetString(reader.GetOrdinal("speed_display")).ToInt64(),
+                    Railway = reader.GetString(reader.GetOrdinal("railway")),
+                    BufferLenght = reader.GetString(reader.GetOrdinal("buffer_lenght")).ToInt64(),
+                    ModelBufferLenght = reader.GetString(reader.GetOrdinal("model_buffer_lenght")).ToInt64(),
+                    ServiceWeight = reader.GetString(reader.GetOrdinal("service_weight")).ToInt64(),
+                    ModelWeight = reader.GetString(reader.GetOrdinal("model_weight")).ToInt64(),
+                    Rmin = reader.GetString(reader.GetOrdinal("rmin")).ToInt64(),
+                    ArticleNumber = reader.GetString(reader.GetOrdinal("article_number")),
+                    DecoderType = reader.GetString(reader.GetOrdinal("decoder_type")),
+                    Owner = reader.GetString(reader.GetOrdinal("owner")),
+                    BuildYear = reader.GetString(reader.GetOrdinal("build_year")),
+                    OwningSince = reader.GetString(reader.GetOrdinal("owning_since")),
+                    InvertTraction = reader.GetString(reader.GetOrdinal("traction_direction")).ToBoolean(),
+                    Description = reader.GetString(reader.GetOrdinal("description")),
+                    Dummy = reader.GetString(reader.GetOrdinal("dummy")).ToBoolean(),
+                    Ip = IPAddress.Parse(reader.GetString(reader.GetOrdinal("ip"))),
+                    Video = reader.GetString(reader.GetOrdinal("video")).ToInt64(),
+                    Crane = reader.GetString(reader.GetOrdinal("crane")).ToBoolean(),
+                    DirectSteering = reader.GetString(reader.GetOrdinal("direct_steering")).ToInt64(),
                 });
             }
             db.SaveChanges();
