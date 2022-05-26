@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using System.Timers;
 using TrainDatabase.Z21Client.DTO;
 using TrainDatabase.Z21Client.Enums;
@@ -30,6 +31,25 @@ namespace TrainDatabase.Z21Client
     public class Z21Client : UdpClient
     {
         public const int maxDccStep = 127;
+        private bool clientReachable = false;
+
+        /// <summary>
+        /// True if the z21 client is reachable via icmb ping.. False if notreachable.
+        /// </summary>
+        public bool ClientReachable
+        {
+            get => clientReachable; private set
+            {
+                if (!clientReachable && value)
+                {
+                    Logger.LogInformation("Ping - Client reachable");
+                    LogOn();
+                }
+                if (clientReachable && !value)
+                    Logger.LogInformation("Ping - Client unreachable");
+                clientReachable = value;
+            }
+        }
 
         public Z21Client() : base(Configuration.ClientPort)
         {
@@ -42,7 +62,24 @@ namespace TrainDatabase.Z21Client
                 Connect(Address, Port);
                 BeginReceive(new AsyncCallback(Empfang), null);
                 RenewClientSubscription.Elapsed += (a, b) => GetStatus();
-                LogOn();
+                PingClient.Elapsed += async (a, b) =>
+                {
+                    PingClient.Enabled = false;
+                    try
+                    {
+                        ClientReachable = await Ping();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Error while pinging client.");
+                    }
+                    finally
+                    {
+                        PingClient.Enabled = true;
+                    }
+                };
+
+                _ = Task.Run(async () => ClientReachable = await Ping());
                 Logger.LogInformation($"Z21 initialisiert.");
             }
             catch (Exception ex)
@@ -78,6 +115,8 @@ namespace TrainDatabase.Z21Client
         public int Port { get; }
 
         private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
+
+        private Timer PingClient { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 5).TotalMilliseconds, };
 
         public new void Dispose()
         {
@@ -204,6 +243,17 @@ namespace TrainDatabase.Z21Client
             bytes[7] = flags[3];
             Logger.LogByteArray($"SET BROADCASTFLAGS", bytes);
             Senden(bytes);
+        }
+
+        /// <summary>
+        /// Pings the client. 
+        /// </summary>
+        /// <returns>Returns true if the client is reachable. False if an error occurs. </returns>
+        public static async Task<bool> Ping()
+        {
+            var ping = new System.Net.NetworkInformation.Ping();
+            var result = await ping.SendPingAsync(Configuration.ClientIP);
+            return result.Status == System.Net.NetworkInformation.IPStatus.Success;
         }
 
         public void SetLocoDrive(List<LokInfoData> data)
