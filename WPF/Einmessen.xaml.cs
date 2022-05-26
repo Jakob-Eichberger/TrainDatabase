@@ -50,7 +50,7 @@ namespace TrainDatabase
         /// </summary>
         public decimal DistanceBetweenSensorsInMM
         {
-            get => Configuration.GetDecimal(nameof(DistanceBetweenSensorsInMM)) ?? 1.0m;
+            get => Configuration.GetDecimal(nameof(DistanceBetweenSensorsInMM)) ?? 200.0m;
             set => Configuration.Set(nameof(DistanceBetweenSensorsInMM), value.ToString());
         }
 
@@ -127,23 +127,6 @@ namespace TrainDatabase
             this.Close();
         }
 
-        /// <summary>
-        /// Checks if the speed reported by the controller is the same as the one set by the  <see cref="SetLocoDrive(int, bool)"/> function.
-        /// If it is the same nothing happens, if it differs the <see cref="SetLocoDrive(int, bool)"/> function gets called again with the same parameters. Needed to midigate the package loss problem.
-        /// </summary>
-        /// <param name="speed"></param>
-        /// <param name="direction"></param>
-        /// <returns>Returns a <see cref="Task"/> that can be awaited.</returns>
-        /// <remarks>The Function waits 2 seconds before it checks if the speed matches.</remarks>
-        private async Task CheckSpeed(int speed, bool direction)
-        {
-            await Task.Delay(new TimeSpan(0, 0, 0, 1, 500));
-            if (!(speed == LokData.Speed && LokData.DrivingDirection == direction))
-            {
-                Log("Speed check failed. Trying again. ...");
-                await SetLocoDrive(speed, direction);
-            }
-        }
 
         private async void CmbAllVehicles_Loaded(object sender, RoutedEventArgs e)
         {
@@ -248,10 +231,10 @@ namespace TrainDatabase
             sp_Table.Children.Add(functionGrid);
         }
 
-        private async void EinmessenWindow_Closing(object sender, CancelEventArgs e)
+        private void EinmessenWindow_Closing(object sender, CancelEventArgs e)
         {
             IsDisposed = true;
-            await SetLocoDrive(0, false);
+            SetLocoDrive(0, false);
         }
 
         private async void EinmessenWindow_Loaded(object sender, RoutedEventArgs e)
@@ -297,7 +280,7 @@ namespace TrainDatabase
                     throw new OperationCanceledException();
 
                 using ArduinoSerialPort port = new(Configuration.ArduinoComPort, Configuration.ArduinoBaudrate ?? 9600);
-                await SetLocoDrive(speed, direction);
+                SetLocoDrive(speed, direction);
                 var data = await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
                 if (decimal.TryParse(data.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal result))
                     return result;
@@ -307,7 +290,7 @@ namespace TrainDatabase
             finally
             {
                 await Task.Delay((int)new TimeSpan(0, 0, 2).TotalMilliseconds);
-                await SetLocoDrive(0, direction);
+                SetLocoDrive(0, direction);
             }
         }
 
@@ -347,11 +330,11 @@ namespace TrainDatabase
         private async Task ReturnHome()
         {
             using ArduinoSerialPort port = new(Configuration.ArduinoComPort);
-            await SetLocoDrive(40, true);
+            SetLocoDrive(40, true);
             await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
-            await SetLocoDrive(40, false);
+            SetLocoDrive(40, false);
             await port.WaitForValue(int.Parse($"{new TimeSpan(0, 5, 0).TotalMilliseconds}"));
-            await SetLocoDrive(0, true);
+            SetLocoDrive(0, true);
         }
 
         /// <summary>
@@ -382,7 +365,7 @@ namespace TrainDatabase
             }
             finally
             {
-                await SetLocoDrive(0, true);
+                SetLocoDrive(0, true);
                 btnStart.IsEnabled = true;
                 btnStop.IsEnabled = false;
                 DrawSpeedMeasurementTable();
@@ -405,12 +388,7 @@ namespace TrainDatabase
             Vehicle = temp;
         }
 
-        private async Task SetLocoDrive(int speed, bool direction)
-        {
-            Log($"Speed: {speed} - Direction: {direction}");
-            Controller.SetLocoDrive(new LokInfoData() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
-            await CheckSpeed(speed, direction);
-        }
+        private void SetLocoDrive(int speed, bool direction) => Controller.SetLocoDrive(new LokInfoData() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
 
         private async Task SetTractionSpeed(int speedStep, bool direction, decimal speed)
         {
