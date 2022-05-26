@@ -49,11 +49,13 @@ namespace TrainDatabase.Z21Client
                     LogOn();
                     GetStatus();
                     ClientReachabilityChanged?.Invoke(this, null);
+                    RenewClientSubscription.Enabled = true;
                 }
                 if (clientReachabletemp && !value)
                 {
                     Logger.LogInformation("Ping - Client unreachable");
                     ClientReachabilityChanged?.Invoke(this, null);
+                    RenewClientSubscription.Enabled = false;
                 }
             }
         }
@@ -123,7 +125,7 @@ namespace TrainDatabase.Z21Client
 
         public int Port { get; }
 
-        private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
+        private Timer RenewClientSubscription { get; } = new Timer() { AutoReset = true, Enabled = false, Interval = new TimeSpan(0, 0, 50).TotalMilliseconds, };
 
         private Timer PingClient { get; } = new Timer() { AutoReset = true, Enabled = true, Interval = new TimeSpan(0, 0, 5).TotalMilliseconds, };
 
