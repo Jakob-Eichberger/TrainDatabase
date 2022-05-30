@@ -55,6 +55,8 @@ namespace Viewmodel
             if (FunctionModel.EnumType != FunctionType.None)
             {
                 var functions = FunctionModel.Vehicle.TractionVehicleIds.Select(e => Db.Vehicles.Include(e => e.Functions).FirstOrDefault(f => f.Id == e)).SelectMany(e => e?.Functions ?? new List<FunctionModel>()).Where(e => e.EnumType == FunctionModel.EnumType && e.ButtonType == FunctionModel.ButtonType).ToList();
+                functions.Add(FunctionModel);
+
                 List<(ToggleType toggle, FunctionModel Func)> list = new();
 
                 foreach (var item in functions)
