@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using Helper;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -192,7 +193,7 @@ namespace TrainDatabase
             {
                 var oldFileNameAndPath = ofd.FileName;
                 var imageName = Guid.NewGuid() + Path.GetExtension(ofd.FileName);
-                var directory = $"{Directory.GetCurrentDirectory()}\\Data\\VehicleImage";
+                var directory = Configuration.VehicleImagesFileLocation;
                 Directory.CreateDirectory(directory);
                 File.Copy(oldFileNameAndPath, $"{directory}\\{imageName}");
                 SelectedVehicle.ImageName = imageName;
