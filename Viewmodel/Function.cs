@@ -68,5 +68,11 @@ namespace Viewmodel
                 Z21Client.SetLocoFunction(FunctionModel, toggleType);
             }
         }
+
+        /// <summary>
+        /// Sets the state for this function.
+        /// </summary>
+        /// <param name="state"></param>
+        public void SetState(bool state) => SetState(state ? ToggleType.On : ToggleType.Off);
     }
 }
