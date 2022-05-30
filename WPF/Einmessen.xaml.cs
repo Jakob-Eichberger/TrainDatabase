@@ -149,7 +149,7 @@ namespace TrainDatabase
             await DrawSpeedDataPlot();
         }
 
-        private async void Deinitialize()
+        private void Deinitialize()
         {
             TabTraktionSettings.IsEnabled = true;
             btnStart.IsEnabled = true;
@@ -243,11 +243,6 @@ namespace TrainDatabase
             await DrawSpeedDataPlot();
         }
 
-        private async Task<SshCommand> ExecutePythonScriptAndGetResult(int itterations = 5)
-        {
-            return null;
-        }
-
         private async Task FillDataPointsList() => await Task.Run(() =>
         {
             PointsBackward = new();
@@ -324,7 +319,7 @@ namespace TrainDatabase
         private void OnGetLocoInfoEventArgs(Object? sender, GetLocoInfoEventArgs e)
         {
             if (e?.Data?.Adresse?.Value == Vehicle?.Address)
-                LokData = e.Data;
+                LokData = e?.Data ?? LokData;
         }
 
         private async Task ReturnHome()

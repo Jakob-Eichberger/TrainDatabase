@@ -179,7 +179,7 @@ namespace TrainDatabase
 
             foreach (var c in ImageCodecInfo.GetImageEncoders())
             {
-                string codecName = c.CodecName.Substring(8).Replace("Codec", "Files").Trim();
+                string codecName = c.CodecName?.Substring(8)?.Replace("Codec", "Files")?.Trim() ?? "";
                 ofd.Filter = string.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, codecName, c.FilenameExtension);
                 sep = "|";
             }

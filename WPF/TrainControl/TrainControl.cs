@@ -68,7 +68,7 @@ namespace TrainDatabase
         /// <summary>
         /// Holds the <see cref="VehicleModel.Id"/> of the slowest Vehicle in the traktion list.
         /// </summary>
-        public VehicleModel SlowestVehicleInTractionList { get; set; }
+        public VehicleModel SlowestVehicleInTractionList { get; set; } = default!;
 
         public int Speed
         {

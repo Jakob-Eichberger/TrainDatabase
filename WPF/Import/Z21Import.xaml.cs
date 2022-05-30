@@ -124,7 +124,7 @@ namespace Importer
             dic.Add("main_beam", FunctionType.MainBeam);
             dic.Add("main_beam2", FunctionType.LowBeam);
 
-            if (dic.TryGetValue(name?.ToLower(), out FunctionType func))
+            if (dic.TryGetValue(name.ToLower(), out FunctionType func))
                 return func;
             else if (Enum.TryParse<FunctionType>(name.Replace("_", ""), true, out var result))
                 return result;

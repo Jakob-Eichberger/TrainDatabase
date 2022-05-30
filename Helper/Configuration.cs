@@ -113,7 +113,7 @@ namespace Helper
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string Get(string key, string @default = null) => ConfigurationManager.AppSettings[key] ?? @default;
+        public static string Get(string key, string @default = "") => ConfigurationManager.AppSettings[key] ?? @default;
 
         /// <summary>
         /// Tries to get the value for the key as a <see cref="bool"/>.

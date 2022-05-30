@@ -32,7 +32,7 @@ namespace Viewmodel
 
         private IServiceProvider ServiceProvider { get; }
 
-        public event EventHandler<bool> StateChanged;
+        public event EventHandler<bool>? StateChanged;
 
         public FunctionModel FunctionModel { get; }
 

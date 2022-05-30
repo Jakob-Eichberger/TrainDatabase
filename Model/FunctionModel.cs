@@ -35,5 +35,7 @@ namespace Model
         public override string ToString() =>
             $"Name: \t{Name}\n" +
             $"Adresse:\t{FunctionIndex}";
+
+        public override int GetHashCode() => base.GetHashCode();
     }
 }
