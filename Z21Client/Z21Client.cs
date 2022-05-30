@@ -34,7 +34,7 @@ namespace TrainDatabase.Z21Client
         private bool clientReachable = false;
 
         /// <summary>
-        /// True if the z21 client is reachable via icmb ping.. False if notreachable.
+        /// True if the z21 client is reachable via icmp ping. False if not reachable.
         /// </summary>
         public bool ClientReachable
         {
@@ -65,10 +65,20 @@ namespace TrainDatabase.Z21Client
             try
             {
                 if (OperatingSystem.IsWindows())
-                    AllowNatTraversal(true);
+                {
+                    var allowNatTraversal = Configuration.GetBool("AllowNatTraversal") ?? true;
+
+                    Logger.LogInformation($"Using NAT traversal: {allowNatTraversal}");
+
+                    AllowNatTraversal(allowNatTraversal);
+                }
+
                 Address = Configuration.ClientIP;
                 Port = Configuration.ClientPort;
                 Connect(Address, Port);
+
+                Logger.LogInformation($"Connected to {Address}:{Port}");
+
                 BeginReceive(new AsyncCallback(Empfang), null);
                 RenewClientSubscription.Elapsed += (a, b) => GetStatus();
                 PingClient.Elapsed += async (a, b) =>
