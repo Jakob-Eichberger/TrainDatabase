@@ -10,10 +10,9 @@ namespace Viewmodel
 {
     public class Function
     {
-        public Function(IServiceProvider serviceProvider, FunctionModel functionModel, Action? StateChanged = null)
+        public Function(IServiceProvider serviceProvider, FunctionModel functionModel)
         {
             ServiceProvider = serviceProvider;
-            this.StateChanges = StateChanged;
             Db = ServiceProvider.GetService<Database>()!;
             Z21Client = ServiceProvider.GetService<Z21Client>()!;
 
@@ -33,7 +32,7 @@ namespace Viewmodel
 
         private IServiceProvider ServiceProvider { get; }
 
-        private Action? StateChanges { get; }
+        public event EventHandler<bool> StateChanged;
 
         public FunctionModel FunctionModel { get; }
 
@@ -43,7 +42,7 @@ namespace Viewmodel
             {
                 State = e.Data.Functions.First(e => e.functionIndex == FunctionModel.FunctionIndex).state;
 
-                StateChanges?.Invoke();
+                StateChanged?.Invoke(this, State);
             }
         }
 
