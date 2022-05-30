@@ -4,6 +4,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<Nullable>enable</Nullable>
+    	<LangVersion>latest</LangVersion>
 		<UseWPF>true</UseWPF>
 		<ApplicationIcon>Datenbank.ico</ApplicationIcon>
 		<AssemblyName>TrainDB</AssemblyName>
