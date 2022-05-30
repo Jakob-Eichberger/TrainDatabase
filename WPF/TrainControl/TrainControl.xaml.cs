@@ -76,25 +76,6 @@ namespace TrainDatabase
 
         protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        /// <summary>
-        /// Returns a new instance of <typeparamref name="T"/>, which is configured to controll a <see cref="FunctionModel"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        private static T GetButton<T>(FunctionModel item) where T : ButtonBase, new() => new T()
-        {
-            Height = 50,
-            Width = 90,
-            Content = $"{(item.ShowFunctionNumber ? $"({item.FunctionIndex}) " : "")}{item.Name}",
-            Tag = item,
-            ToolTip = $"{item}",
-            Margin = new(10),
-            Padding = new(2),
-            BorderBrush = Brushes.Black,
-            BorderThickness = new(1)
-        };
-
         private static LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, VehicleModel Vehicle) => new()
         {
             Adresse = new(Vehicle.Address),
@@ -118,20 +99,11 @@ namespace TrainDatabase
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e) => SwitchDirection();
 
-        private async void Controller_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
+        private void Controller_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
         {
             if (e.Data.Adresse.Value == Vehicle.Address)
             {
                 LiveData = e.Data;
-                foreach (var (functionIndex, state) in e.Data.Functions)
-                {
-                    await Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        var x = FunctionToggleButtons.FirstOrDefault(e => (e?.Tag as FunctionModel)?.FunctionIndex == functionIndex);
-                        if (x is not null)
-                            x.IsChecked = state;
-                    }));
-                }
             }
         }
 
@@ -160,31 +132,13 @@ namespace TrainDatabase
                 switch (item.ButtonType)
                 {
                     case ButtonType.Switch:
-                        ToggleButton tb = GetButton<ToggleButton>(item);
-                        tb.Click += (sender, e) => SetLocoFunction(((sender as ToggleButton)!.IsChecked ?? false) ? ToggleType.On : ToggleType.Off, ((e.Source as ToggleButton)!.Tag as FunctionModel)!);
-                        FunctionToggleButtons.Add(tb);
-                        FunctionGrid.Children.Add(tb);
+                        FunctionGrid.Children.Add(new WPF_Application.TrainControl.FunctionButton.SwitchButton(ServiceProvider, item));
                         break;
                     case ButtonType.PushButton:
-                        Button btn = GetButton<Button>(item);
-                        btn.PreviewMouseDown += (sender, e) => SetLocoFunction(ToggleType.On, ((e.Source as Button)?.Tag as FunctionModel)!);
-                        btn.PreviewMouseUp += (sender, e) => SetLocoFunction(ToggleType.Off, ((e.Source as Button)?.Tag as FunctionModel)!); ;
-                        FunctionButtons.Add(btn);
-                        FunctionGrid.Children.Add(btn);
+                        FunctionGrid.Children.Add(new WPF_Application.TrainControl.FunctionButton.PushButton(ServiceProvider, item));
                         break;
                     case ButtonType.Timer:
-                        Button btnt = GetButton<Button>(item);
-                        btnt.Click += async (sender, e) =>
-                        {
-                            btnt.IsEnabled = false;
-                            FunctionModel func = ((e.Source as Button)?.Tag! as FunctionModel)!;
-                            SetLocoFunction(ToggleType.On, func!);
-                            await Task.Delay(new TimeSpan(0, 0, func.Time));
-                            SetLocoFunction(ToggleType.Off, func!);
-                            btnt.IsEnabled = true;
-                        };
-                        FunctionButtons.Add(btnt);
-                        FunctionGrid.Children.Add(btnt);
+                        FunctionGrid.Children.Add(new WPF_Application.TrainControl.FunctionButton.TimerButton(ServiceProvider, item));
                         break;
                 }
             }
@@ -294,30 +248,6 @@ namespace TrainDatabase
             controller.SetLocoDrive(data);
         });
 
-        /// <summary>
-        /// Function used to set a Function on/off or switch its state. 
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="function"></param>
-        /// <param name="locoAdress"></param>
-        private void SetLocoFunction(ToggleType type, FunctionModel function)
-        {
-
-            if (function.EnumType != FunctionType.None)
-            {
-                var functions = MultiTractionList.Where(e => e.Vehicle.Id == Vehicle.Id || e.Vehicle.Type == VehicleType.Steuerwagen).SelectMany(e => e.Vehicle.Functions).Where(e => e.EnumType == function.EnumType && e.ButtonType == function.ButtonType).ToList();
-
-                List<(ToggleType toggle, FunctionModel Func)> list = new();
-
-                foreach (var item in functions)
-                    list.Add((type, item));
-
-                controller.SetLocoFunction(list);
-            }
-            else
-                controller.SetLocoFunction(function, type);
-        }
-
         private void SliderSpeed_PreviewMouseDown(object sender, MouseButtonEventArgs e) => SliderInUser = true;
 
         private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
@@ -367,7 +297,7 @@ namespace TrainDatabase
             controller.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => { IsEnabled = controller.ClientReachable; controller.GetLocoInfo(new LokAdresse(Vehicle.Address)); });
             controller.GetStatus();
             controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
-            
+
             IsEnabled = controller.ClientReachable;
 
             DrawAllFunctions();
