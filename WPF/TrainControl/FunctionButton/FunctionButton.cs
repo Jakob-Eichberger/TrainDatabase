@@ -10,7 +10,7 @@ namespace WPF_Application.TrainControl.FunctionButton
         {
             button.Height = 50;
             button.Width = 90;
-            button.Content = $"{(functionModel.ShowFunctionNumber ? $"({functionModel.FunctionIndex}) " : "")}{functionModel.Name}";
+            button.Content = $"{(functionModel.ShowFunctionNumber ? $"({functionModel.Address}) " : "")}{functionModel.Name}";
             button.Tag = functionModel;
             button.ToolTip = $"{functionModel}";
             button.Margin = new(10);

@@ -28,7 +28,7 @@
             <TextBox Grid.Row="0" Grid.Column="1" Padding="5" Margin="5" Text="{Binding ElementName=ew,Path=Function.Name, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Content="Function" Grid.Row="1" Grid.Column="0"/>
-            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Padding="5" Margin="5" Value="{Binding ElementName=ew,Path=Function.FunctionIndex, UpdateSourceTrigger=PropertyChanged}"/>
+            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Padding="5" Margin="5" Value="{Binding ElementName=ew,Path=Function.Address, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Label Content="Type:" Grid.Row="2" Grid.Column="0"/>
             <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">

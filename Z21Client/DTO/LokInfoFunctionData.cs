@@ -4,7 +4,7 @@ namespace TrainDatabase.Z21Client.DTO
 {
     public class LokInfoFunctionData
     {
-        public int FunctionIndex { get; set; }
+        public int FunctionAddress { get; set; }
 
         public LokAdresse LokAdresse { get; set; } = default!;
 

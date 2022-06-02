@@ -108,7 +108,7 @@
                     </Grid.RowDefinitions>
                     <DataGrid Name="DgFunctions" ItemsSource="{Binding ElementName=Vm,Path=SelectedVehicleFunctions, Mode=TwoWay}" SelectedItem="{Binding ElementName=Vm,Path=SelectedFunction,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow" GridLinesVisibility="All" Background="Transparent" BorderBrush="Transparent" SelectedCellsChanged="DgFunctions_SelectedCellsChanged" PreviewMouseDoubleClick="DgFunctions_PreviewMouseDoubleClick">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Adresse" Binding="{Binding FunctionIndex, UpdateSourceTrigger=PropertyChanged}"/>
+                            <DataGridTextColumn Header="Adresse" Binding="{Binding Address, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridTextColumn Header="Name"  Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridTextColumn Header="ButtonType"  Binding="{Binding ButtonType, UpdateSourceTrigger=PropertyChanged}"/>
                             <DataGridCheckBoxColumn Header="Aktiv" Binding="{Binding IsActive, UpdateSourceTrigger=PropertyChanged}" />

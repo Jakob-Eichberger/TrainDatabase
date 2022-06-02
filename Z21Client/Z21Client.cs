@@ -402,7 +402,7 @@ namespace TrainDatabase.Z21Client
             bytes[5] = 0xF8;
             bytes[6] = adresse.ValueBytes.Adr_MSB;
             bytes[7] = adresse.ValueBytes.Adr_LSB;
-            bytes[8] = (byte)function.FunctionIndex;
+            bytes[8] = (byte)function.Address;
 
             var bitarray = new BitArray(new byte[] { bytes[8] });
             switch (toggelType)
@@ -418,7 +418,7 @@ namespace TrainDatabase.Z21Client
             }
             bitarray.CopyTo(bytes, 8);
             bytes[9] = (byte)(bytes[4] ^ bytes[5] ^ bytes[6] ^ bytes[7] ^ bytes[8]);
-            Logger.LogByteArray($"SET LOCO FUNCTION ({adresse} - index: {function.FunctionIndex} - {toggelType})", bytes);
+            Logger.LogByteArray($"SET LOCO FUNCTION ({adresse} - index: {function.Address} - {toggelType})", bytes);
             return bytes;
         }
 
@@ -595,7 +595,7 @@ namespace TrainDatabase.Z21Client
                                 Speed = (byte)(received[8] & 0x7F),
                                 DrivingDirection = (received[8] & 0x80) == 0x80
                             };
-                            int functionIndexCount = 5;
+                            int functionAddressCount = 5;
                             for (int index = 9; index < received.Length && index <= 12; index++)
                             {
                                 BitArray functionBits = new(new byte[] { received[index] });
@@ -611,8 +611,8 @@ namespace TrainDatabase.Z21Client
                                 {
                                     for (int temp = 0; temp < 8; temp++)
                                     {
-                                        infodata.Functions.Add(new(functionIndexCount, Convert.ToBoolean(functionBits.Get(temp))));
-                                        functionIndexCount++;
+                                        infodata.Functions.Add(new(functionAddressCount, Convert.ToBoolean(functionBits.Get(temp))));
+                                        functionAddressCount++;
                                     }
                                 }
                             }

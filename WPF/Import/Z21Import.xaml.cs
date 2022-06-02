@@ -173,7 +173,7 @@ namespace Importer
                     Time = (int)reader.GetString(reader.GetOrdinal("time")).ToDecimal(),
                     Position = reader.GetString(reader.GetOrdinal("position")).ToInt32(),
                     ImageName = reader.GetString(reader.GetOrdinal("image_name")),
-                    FunctionIndex = reader.GetString(reader.GetOrdinal("function")).ToInt32(),
+                    Address = reader.GetString(reader.GetOrdinal("function")).ToInt32(),
                     ShowFunctionNumber = reader.GetString(reader.GetOrdinal("show_function_number")).ToBoolean(),
                     IsConfigured = reader.GetString(reader.GetOrdinal("is_configured")).ToBoolean(),
                     EnumType = GetFunctionType(reader.GetString(reader.GetOrdinal("image_name")))

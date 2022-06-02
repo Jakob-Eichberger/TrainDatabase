@@ -22,7 +22,7 @@ namespace Model
 
         public string ImageName { get; set; }
 
-        public int FunctionIndex { get; set; }
+        public int Address { get; set; }
 
         public bool ShowFunctionNumber { get; set; }
 
@@ -34,7 +34,7 @@ namespace Model
 
         public override string ToString() =>
             $"Name: \t{Name}\n" +
-            $"Adresse:\t{FunctionIndex}";
+            $"Adresse:\t{Address}";
 
         public override int GetHashCode() => base.GetHashCode();
     }

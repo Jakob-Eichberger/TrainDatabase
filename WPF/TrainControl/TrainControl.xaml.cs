@@ -127,7 +127,7 @@ namespace TrainDatabase
         private void DrawAllFunctions()
         {
             FunctionGrid.Children.Clear();
-            foreach (var item in Vehicle.Functions.OrderBy(e => e.FunctionIndex))
+            foreach (var item in Vehicle.Functions.OrderBy(e => e.Address))
             {
                 switch (item.ButtonType)
                 {

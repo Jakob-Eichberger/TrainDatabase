@@ -38,9 +38,9 @@ namespace Viewmodel
 
         private void Z21Client_OnGetLocoInfo(object? sender, TrainDatabase.Z21Client.Events.GetLocoInfoEventArgs e)
         {
-            if (e.Data.Adresse.Value == FunctionModel.Vehicle.Address && e.Data.Functions.Any(e => e.functionIndex == FunctionModel.FunctionIndex))
+            if (e.Data.Adresse.Value == FunctionModel.Vehicle.Address && e.Data.Functions.Any(e => e.address == FunctionModel.Address))
             {
-                State = e.Data.Functions.First(e => e.functionIndex == FunctionModel.FunctionIndex).state;
+                State = e.Data.Functions.First(e => e.address == FunctionModel.Address).state;
 
                 StateChanged?.Invoke(this, State);
             }
