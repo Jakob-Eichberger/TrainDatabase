@@ -26,7 +26,7 @@ namespace TrainDatabase
     /// </summary>
     public partial class Einmessen : Window, INotifyPropertyChanged
     {
-        private VehicleModel _vehicle = default!;
+        private VehicleModel? _vehicle = default!;
         private bool IsDisposed = false;
         public Einmessen(Database db, Z21Client.Z21Client controller)
         {
@@ -69,7 +69,7 @@ namespace TrainDatabase
         private LokInfoData LokData { get; set; } = new();
         private decimal?[] TractionBackward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
         private decimal?[] TractionForward { get; set; } = new decimal?[Z21Client.Z21Client.maxDccStep + 1];
-        private VehicleModel Vehicle
+        private VehicleModel? Vehicle
         {
             get => _vehicle; set
             {
@@ -353,8 +353,8 @@ namespace TrainDatabase
             }
             catch (OperationCanceledException)
             {
-                TractionForward = Vehicle.TractionForward;
-                TractionBackward = Vehicle.TractionBackward;
+                TractionForward = Vehicle?.TractionForward ?? TractionForward;
+                TractionBackward = Vehicle?.TractionBackward ?? TractionBackward;
                 DrawSpeedMeasurementTable();
                 await DrawSpeedDataPlot();
             }
@@ -383,7 +383,7 @@ namespace TrainDatabase
             Vehicle = temp;
         }
 
-        private void SetLocoDrive(int speed, bool direction) => Controller.SetLocoDrive(new LokInfoData() { Adresse = new(Vehicle.Address), DrivingDirection = direction, InUse = true, Speed = speed });
+        private void SetLocoDrive(int speed, bool direction) => Controller.SetLocoDrive(new LokInfoData() { Adresse = new(Vehicle?.Address ?? -1), DrivingDirection = direction, InUse = true, Speed = speed });
 
         private async Task SetTractionSpeed(int speedStep, bool direction, decimal speed)
         {
