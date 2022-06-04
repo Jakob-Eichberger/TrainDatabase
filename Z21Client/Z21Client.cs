@@ -77,7 +77,7 @@ namespace TrainDatabase.Z21Client
                 Port = Configuration.ClientPort;
                 Connect(Address, Port);
 
-                Logger.LogInformation($"Connected to {Address}:{Port}");
+                Logger.LogInformation($"UPD connection to {Address}:{Port} established.");
 
                 BeginReceive(new AsyncCallback(Empfang), null);
                 RenewClientSubscription.Elapsed += (a, b) => GetStatus();
