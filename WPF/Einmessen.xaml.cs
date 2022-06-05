@@ -3,8 +3,6 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Model;
 using OxyPlot;
-using Renci.SshNet;
-using Renci.SshNet.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -107,9 +105,6 @@ namespace TrainDatabase
                 PointsForward = new();
                 await Run();
             }
-            catch (SshConnectionException) { MessageBox.Show($"Die ssh Verbindung zum Pi wurde terminiert!"); }
-            catch (System.Net.Sockets.SocketException) { MessageBox.Show($"Verbindung zum Raspberry Pi konnte nicht hergestellt werden."); }
-            catch (SshAuthenticationException) { MessageBox.Show($"Authentifizierung hat fehlgeschlagen."); }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"");

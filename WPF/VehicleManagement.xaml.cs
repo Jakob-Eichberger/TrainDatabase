@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Model;
-using Renci.SshNet.Common;
 using Service;
 using System;
 using System.Collections.Generic;
