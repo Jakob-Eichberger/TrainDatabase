@@ -27,7 +27,7 @@ namespace TrainDatabase
     /// <summary>
     /// Interaction logic for VehicleController.xaml
     /// </summary>
-    public partial class TrainControl : Window, INotifyPropertyChanged, IDisposable
+    public partial class TrainControl : Window, INotifyPropertyChanged
     {
         public TrainControl(IServiceProvider serviceProvider, VehicleModel _vehicle)
         {
@@ -36,8 +36,16 @@ namespace TrainDatabase
                 ServiceProvider = serviceProvider;
                 Db = ServiceProvider.GetService<Database>()!;
                 VehicleService = ServiceProvider.GetService<VehicleService>()!;
-                controller = ServiceProvider.GetService<Z21Client.Z21Client>()!;
+                Z21Client = ServiceProvider.GetService<Z21Client.Z21Client>()!;
+
+                TrackPowerService = ServiceProvider.GetService<TrackPowerService>()!;
+                TrackPowerService.StateChanged += (a, b) => Dispatcher.Invoke(() => OnPropertyChanged());
+
                 Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
+
+                VehicleViewmodel = new(serviceProvider, Vehicle);
+                VehicleViewmodel.StateChanged += (a, b) => Dispatcher.Invoke(() => OnPropertyChanged());
+
                 DataContext = this;
                 InitializeComponent();
                 Activate();
@@ -50,7 +58,30 @@ namespace TrainDatabase
             }
         }
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public Database Db { get; } = default!;
+
+        public int MaxDccSpeed => TrainDatabase.Z21Client.Z21Client.maxDccStep;
+
         public IServiceProvider ServiceProvider { get; } = default!;
+
+        public TrackPowerService TrackPowerService { get; } = default!;
+
+        /// <summary>
+        /// The <see cref="Vehicle"/> the application is trying to controll
+        /// </summary>
+        public VehicleModel Vehicle { get; private set; } = default!;
+
+        public VehicleService VehicleService { get; } = default!;
+
+        public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
+
+        public Visibility VehicleTypeVisbility => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
+
+        public Viewmodel.Vehicle VehicleViewmodel { get; private set; } = default!;
+
+        public Z21Client.Z21Client Z21Client { get; } = default!;
 
         /// <summary>
         /// Creates a single instance of the <see cref="TrainControl"/> window.
@@ -69,57 +100,9 @@ namespace TrainDatabase
                 new TrainControl(serviceProvider, vehicle).Show();
         }
 
-        public void Dispose()
-        {
-            SetLocoDrive(inUse: false);
-        }
-
         protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private static LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, VehicleModel Vehicle) => new()
-        {
-            Adresse = new(Vehicle.Address),
-            DrivingDirection = direction,
-            InUse = inUse,
-            Speed = (byte)speedstep
-        };
-
-        private static double GetSlowestVehicleSpeed(int speedstep, bool direction, MultiTractionItem traction)
-        {
-            if ((!traction.TractionForward.Any()) || (!traction.TractionForward.Any()))
-                return double.NaN;
-
-            if (!traction.Vehicle.InvertTraction)
-                return direction ? traction.TractionForward.GetYValue(speedstep) : traction.TractionBackward.GetYValue(speedstep);
-            else
-                return direction ? traction.TractionBackward.GetYValue(speedstep) : traction.TractionForward.GetYValue(speedstep);
-        }
-
-        private static bool IsVehicleMeasured(MultiTractionItem item) => item.TractionForward.Any() && item.TractionBackward.Any();
-
-        private void BtnDirection_Click(object sender, RoutedEventArgs e) => SwitchDirection();
-
-        private void Controller_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
-        {
-            if (e.Data.Adresse.Value == Vehicle.Address)
-            {
-                LiveData = e.Data;
-            }
-        }
-
-        private void Controller_OnStatusChanged(object? sender, StateEventArgs e) => TrackPower = e.TrackPower;
-
-        private void Controller_TrackPowerChanged(object? sender, TrackPowerEventArgs e) => TrackPower = e.TrackPower;
-
-        private async Task DeterminSlowestVehicleInList() => await Task.Run(() =>
-        {
-            var list = MultiTractionList.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.TractionForward.Any() && e.TractionBackward.Any()).ToList();
-
-            if (list.Any())
-                SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) < (next.TractionForward?.GetYValue(MaxDccSpeed) ?? int.MaxValue) ? cur : next).Vehicle ?? Vehicle;
-            else
-                SlowestVehicleInTractionList = Vehicle;
-        });
+        private async void BtnDirection_Click(object sender, RoutedEventArgs e) => await VehicleViewmodel.SwitchDirection();
 
         /// <summary>
         /// Functions draws every single Function of a vehicle for the user to click on. 
@@ -167,33 +150,24 @@ namespace TrainDatabase
                         Margin = new Thickness(5),
                         IsChecked = Vehicle.TractionVehicleIds.Any(e => e == vehicle.Id)
                     };
-                    c.Unchecked += async (sender, e) =>
+                    c.Unchecked += (sender, e) =>
                     {
                         if ((sender as CheckBox)?.Tag is VehicleModel vehicle)
                         {
                             VehicleService.RemoveTractionVehilce(vehicle, Vehicle);
                         }
-                        await DeterminSlowestVehicleInList();
                     };
-                    c.Checked += async (sender, e) =>
+                    c.Checked += (sender, e) =>
                     {
-                        if (MultiTractionList.Count >= 140)
-                        {
-                            MessageBox.Show("Mehr als 140 Traktionsfahrzeuge sind nicht möglich!", "Max Limit reached.", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
                         if (sender is CheckBox c && c.Tag is VehicleModel v)
                         {
                             VehicleService.AddTractionVehilce(v, Vehicle);
-                            await DeterminSlowestVehicleInList();
                         }
                     };
                     SPVehilces.Children.Add(c);
                 }
             }
         }
-
-        private bool GetDrivingDirection(VehicleModel vehicle, bool direction) => vehicle.Id != Vehicle.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
 
         private void SearchBar_TextChanged(object sender, TextChangedEventArgs e) => SearchTractionVehicles();
 
@@ -210,67 +184,9 @@ namespace TrainDatabase
             }
         }
 
-        /// <summary>
-        /// Function used to Set the speed and direction of a Loco. 
-        /// </summary>
-        /// <param name="locoAdress"></param>
-        /// <param name="speedstep"></param>
-        /// <param name="drivingDirection"></param>
-        /// <param name="inUse"></param>
-        private async void SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
-        {
-            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.Z21Client.maxDccStep && DateTime.Now - lastSpeedchange < new TimeSpan(0, 0, 0, 0, 500))
-                return;
-            else
-                lastSpeedchange = DateTime.Now;
+        private void SetTitle() => Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
 
-            bool direction = drivingDirection ??= LiveData.DrivingDirection;
-            int speed = speedstep ?? Speed;
-            List<LokInfoData> data = new();
-            var slowestVehicle = MultiTractionList.FirstOrDefault(e => e.Vehicle.Equals(SlowestVehicleInTractionList));
-            var yValue = GetSlowestVehicleSpeed(speed, direction, slowestVehicle);
-            foreach (var item in MultiTractionList.Where(e => !e.Vehicle.Equals(SlowestVehicleInTractionList)))
-            {
-                if (IsVehicleMeasured(item))
-                {
-                    int dccSpeed;
-                    if (!item.Vehicle.InvertTraction)
-                        dccSpeed = direction ? item.TractionForward.GetXValue(yValue) : item.TractionBackward.GetXValue(yValue);
-                    else
-                        dccSpeed = direction ? item.TractionBackward.GetXValue(yValue) : item.TractionForward.GetXValue(yValue);
-
-                    data.Add(GetLocoInfoData(dccSpeed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
-                }
-                else
-                    data.Add(GetLocoInfoData(speed, GetDrivingDirection(item.Vehicle, direction), inUse, item.Vehicle));
-            }
-            data.Add(GetLocoInfoData(speed, GetDrivingDirection(slowestVehicle.Vehicle, direction), inUse, slowestVehicle.Vehicle));
-            controller.SetLocoDrive(data);
-        });
-
-        private void SliderSpeed_PreviewMouseDown(object sender, MouseButtonEventArgs e) => SliderInUser = true;
-
-        private void SliderSpeed_PreviewMouseUp(object sender, MouseButtonEventArgs e) => SliderInUser = false;
-
-        private void SwitchDirection() => SetLocoDrive(drivingDirection: !LiveData.DrivingDirection);
-
-        private void TBRailPower_Click(object sender, RoutedEventArgs e)
-        {
-            if (TrackPower == TrackPower.ON)
-            {
-                controller.SetTrackPowerON();
-            }
-            else
-            {
-                controller.SetTrackPowerOFF();
-            }
-        }
-
-        private void Tc_Activated(object sender, EventArgs e) => IsActive = true;
-
-        private void Tc_Closing(object sender, CancelEventArgs e) => Dispose();
-
-        private void Tc_Deactivated(object sender, EventArgs e) => IsActive = false;
+        private void TBRailPower_Click(object sender, RoutedEventArgs e) => TrackPowerService.SetTrackPower(!TrackPowerService.TrackPowerOn);
 
         private void Tc_PreviewKeyDown(object sender, KeyEventArgs e)
         {
@@ -280,81 +196,30 @@ namespace TrainDatabase
 
         private void Tc_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            Speed = e.Delta < 0 ? Speed - 1 : Speed + 1;
+            VehicleViewmodel.Speed = e.Delta < 0 ? VehicleViewmodel.Speed - 1 : VehicleViewmodel.Speed + 1;
             e.Handled = true;
-            SliderLastused = DateTime.Now;
+            VehicleViewmodel.LastUserInteraction = DateTime.Now;
         }
 
-        private async void TrainControl_Loaded(object sender, RoutedEventArgs e)
+        private void TrainControl_Loaded(object sender, RoutedEventArgs e)
         {
-            Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+            Z21Client.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => { IsEnabled = Z21Client.ClientReachable; Z21Client.GetLocoInfo(new LokAdresse(Vehicle.Address)); });
 
-            SlowestVehicleInTractionList = Vehicle;
+            Z21Client.GetStatus();
+            IsEnabled = Z21Client.ClientReachable;
 
-            controller.OnGetLocoInfo += Controller_OnGetLocoInfo;
-            controller.TrackPowerChanged += Controller_TrackPowerChanged;
-            controller.OnStatusChanged += Controller_OnStatusChanged;
-            controller.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => { IsEnabled = controller.ClientReachable; controller.GetLocoInfo(new LokAdresse(Vehicle.Address)); });
-            controller.GetStatus();
-            controller.GetLocoInfo(new LokAdresse(Vehicle.Address));
-
-            IsEnabled = controller.ClientReachable;
-
+            SetTitle();
             DrawAllFunctions();
             SearchTractionVehicles();
-            UpdateMultiTractionList();
-            await DeterminSlowestVehicleInList();
 
-            Db.ChangeTracker.StateChanged += async (a, b) =>
+            Db.ChangeTracker.StateChanged += (a, b) =>
             {
-                Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == Vehicle.Id)!;
-                Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+                SetTitle();
                 DrawAllFunctions();
                 SearchTractionVehicles();
-                UpdateMultiTractionList();
-                await DeterminSlowestVehicleInList();
             };
-        }
 
-        private void UpdateMultiTractionList()
-        {
-            MultiTractionList.Clear();
-            MultiTractionList.AddRange(Vehicle.TractionVehicleIds.Select(e => new MultiTractionItem(Db.Vehicles.FirstOrDefault(f => f.Id == e)!)).Where(e => e.Vehicle is not null));
-            MultiTractionList.Add(new(Vehicle));
-        }
-
-        public struct MultiTractionItem
-        {
-            public MultiTractionItem(VehicleModel vehicle)
-            {
-                Vehicle = vehicle;
-                TractionForward = GetSortedSet(vehicle?.TractionForward!) ?? new();
-                TractionBackward = GetSortedSet(vehicle?.TractionBackward!) ?? new();
-            }
-
-            public SortedSet<FunctionPoint> TractionBackward { get; private set; }
-
-            public SortedSet<FunctionPoint> TractionForward { get; private set; }
-
-            public VehicleModel Vehicle { get; }
-
-            /// <summary>
-            /// Converts the paramter <paramref name="tractionArray"/> to a <see cref="LineSeries"/> object.
-            /// </summary>
-            /// <param name="tractionArray"></param>
-            /// <returns></returns>
-            private static SortedSet<FunctionPoint>? GetSortedSet(decimal?[] tractionArray)
-            {
-                if (tractionArray is null || tractionArray[MaxDccSpeed] is null)
-                    return null!;
-
-                SortedSet<FunctionPoint>? function = new();
-
-                for (int i = 0; i <= Z21Client.Z21Client.maxDccStep; i++)
-                    if (tractionArray[i] is not null)
-                        function.Add(new(i, (double)(tractionArray[i] ?? 0)));
-                return function;
-            }
+            Z21Client.GetLocoInfo(new LokAdresse(Vehicle.Address));
         }
     }
 }

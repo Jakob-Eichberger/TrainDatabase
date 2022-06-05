@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace TrainDatabase.Extensions
+﻿namespace Viewmodel
 {
     public static class SortedSetExtension
     {

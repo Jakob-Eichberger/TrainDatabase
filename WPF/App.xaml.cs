@@ -28,6 +28,7 @@ namespace Wpf_Application
             services.AddDbContext<Database>();
             services.AddSingleton<Z21Client>();
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<TrackPowerService>();
             services.AddSingleton<LogWindow>();
             services.AddSingleton<VehicleService>();
         }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TrainDatabase"
         xmlns:converter="clr-namespace:WPF_Application.Converter"
         mc:Ignorable="d"
-        Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" Closing="Tc_Closing" PreviewMouseWheel="Tc_PreviewMouseWheel" Activated="Tc_Activated" Deactivated="Tc_Deactivated" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen" Loaded="TrainControl_Loaded" >
+        Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" PreviewMouseWheel="Tc_PreviewMouseWheel" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen" Loaded="TrainControl_Loaded" >
     <Window.Resources>
         <converter:BoolToDirectionConverter x:Key="BoolToDirectionConverter"/>
         <converter:TrackPowerToBoolConverter x:Key="TrackPowerToBoolConverter"/>
@@ -22,14 +22,14 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
 
-        <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Minimum="0" Maximum="{Binding ElementName=Tc,Path=MaxDccSpeed}" Value="{Binding ElementName=Tc,Path=Speed}" PreviewMouseDown="SliderSpeed_PreviewMouseDown" PreviewMouseUp="SliderSpeed_PreviewMouseUp" Margin="0,0,5,0"/>
-        <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=Tc,Path=LiveData.DrivingDirection, Converter={StaticResource BoolToDirectionConverter}}" Click="BtnDirection_Click" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
+        <Slider Name="SliderSpeed" Orientation="Vertical" Grid.Row="0" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Center" Minimum="0" Maximum="{Binding ElementName=Tc,Path=MaxDccSpeed}" Value="{Binding ElementName=Tc,Path=VehicleViewmodel.Speed}" Margin="0,0,5,0"/>
+        <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" Width="80" Content="{Binding ElementName=Tc,Path=VehicleViewmodel.Direction, Converter={StaticResource BoolToDirectionConverter}}" Click="BtnDirection_Click" Margin="0,5,5,0" x:Name="BtnDirection" Grid.Row="3" Grid.Column="0"/>
         <DockPanel Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" >
-            <Label  Content="{Binding ElementName=Tc,Path=Speed}" HorizontalAlignment="Center"/>
+            <Label  Content="{Binding ElementName=Tc,Path=VehicleViewmodel.Speed}" HorizontalAlignment="Center"/>
             <Label Content="/"/>
             <Label  Content="{Binding ElementName=Tc,Path=MaxDccSpeed}" HorizontalAlignment="Center"/>
         </DockPanel>
-        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPower,Converter={StaticResource TrackPowerToBoolConverter}}" Content="{Binding ElementName=Tc,Path=TrackPower}" HorizontalAlignment="Right" Click="TBRailPower_Click"/>
+        <ToggleButton x:Name="TBRailPower" Grid.Column="2" Grid.Row="3" Margin="0,5,0,0" Width="70" IsChecked="{Binding ElementName=Tc,Path=TrackPowerService.TrackPower,Converter={StaticResource TrackPowerToBoolConverter}, Mode=OneWay}" Content="{Binding ElementName=Tc,Path=TrackPowerService.TrackPower}" HorizontalAlignment="Right" Click="TBRailPower_Click"/>
         <TabControl Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" >
             <TabItem Header="Funktionen">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" >
