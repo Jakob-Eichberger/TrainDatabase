@@ -98,8 +98,7 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Grid.Row="0" Grid.Column="0" Content="Com Port:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Margin="5" Padding="5" Text="{Binding Path=(helper:Configuration.ArduinoComPort), Mode=TwoWay}" HorizontalContentAlignment="Right" />
-
+                            <local:ComPortsComboBox Grid.Row="0" Grid.Column="1" Margin="5" Padding="5"></local:ComPortsComboBox>
                             <Label Grid.Row="1" Grid.Column="0" Content="Baudrate:" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             <xctk:IntegerUpDown Text="cm"  Grid.Column="1"  Grid.Row="1" VerticalAlignment="Center"  Margin="5" Padding="5" Minimum="100" Maximum="20000" Value="{Binding Path=(helper:Configuration.ArduinoBaudrate), Mode=TwoWay}" ValueChanged="IntegerUpDown_ValueChanged"/>
 

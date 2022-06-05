@@ -12,6 +12,7 @@ using System.Management;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using TrainDatabase.Z21Client.DTO;
 using TrainDatabase.Z21Client.Events;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
@@ -19,6 +20,40 @@ using LineSeries = OxyPlot.Series.LineSeries;
 
 namespace TrainDatabase
 {
+    public class ComPortsComboBox : ComboBox
+    {
+        public ComPortsComboBox()
+        {
+            SetupManagementEventWatcher();
+            UpdateComPortList();
+            SelectionChanged += (a, b) => Configuration.ArduinoComPort = SelectedComPort;
+        }
+
+        public static List<string> ComPorts => ArduinoSerialPort.GetPortNames().ToList();
+
+        public string SelectedComPort => $"{SelectedItem}";
+
+        private ManagementEventWatcher ManagementEventWatcher { get; } = new ManagementEventWatcher();
+
+        private void ManagementEventWatcher_EventArrived(object sender, EventArrivedEventArgs e) => UpdateComPortList();
+
+        private void SetupManagementEventWatcher()
+        {
+            ManagementEventWatcher.Query = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent");
+            ManagementEventWatcher.EventArrived += new EventArrivedEventHandler(ManagementEventWatcher_EventArrived);
+            ManagementEventWatcher.Start();
+        }
+
+        private void UpdateComPortList() => Dispatcher.Invoke(() =>
+        {
+            var selectedItem = SelectedItem ?? Configuration.ArduinoComPort;
+            Items.Clear();
+            ComPorts.ForEach(e => Items.Add(e));
+            if (selectedItem is not null)
+                SelectedItem = selectedItem;
+        });
+    }
+
     /// <summary>
     /// Interaction logic for Einmessen.xaml
     /// </summary>
