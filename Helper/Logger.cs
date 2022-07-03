@@ -11,7 +11,7 @@ namespace Helper
 
         public static void LogError(Exception exception, string message)
         {
-            OnMessageLogged?.Invoke($"{exception}", new MessageLoggedEventArgs($"{message}", MessageTypeEnum.Error));
+            OnMessageLogged?.Invoke($"{exception}", new MessageLoggedEventArgs($"{message}\n{exception}", MessageTypeEnum.Error));
             LogToFile(message, exception);
         }
 
