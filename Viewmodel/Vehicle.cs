@@ -99,9 +99,14 @@ namespace Viewmodel
         private Z21Client Z21Client { get; } = default!;
 
         /// <summary>
+        /// Sets the direction of travel.
+        /// </summary>
+        public async void SetDirection(bool direction) => await SetLocoDrive(drivingDirection: direction);
+
+        /// <summary>
         /// Switches the direction of travel.
         /// </summary>
-        public async Task SwitchDirection() => await SetLocoDrive(drivingDirection: !LiveData?.DrivingDirection);
+        public async void SwitchDirection() => await SetLocoDrive(drivingDirection: !LiveData?.DrivingDirection);
 
         private static LokInfoData GetLocoInfoData(int speedstep, bool direction, bool inUse, VehicleModel Vehicle) => new()
         {
