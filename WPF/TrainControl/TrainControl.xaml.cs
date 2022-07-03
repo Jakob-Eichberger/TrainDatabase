@@ -102,7 +102,7 @@ namespace TrainDatabase
 
         protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private async void BtnDirection_Click(object sender, RoutedEventArgs e) => await VehicleViewmodel.SwitchDirection();
+        private void BtnDirection_Click(object sender, RoutedEventArgs e) => VehicleViewmodel.SwitchDirection();
 
         /// <summary>
         /// Functions draws every single Function of a vehicle for the user to click on. 
