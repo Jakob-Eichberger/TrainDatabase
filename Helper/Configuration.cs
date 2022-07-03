@@ -74,10 +74,10 @@ namespace Helper
             set => Set(nameof(ArduinoComPort), value);
         }
 
-        public static int? ArduinoBaudrate
+        public static int ArduinoBaudrate
         {
             get => GetInt(nameof(ArduinoBaudrate)) ?? 9600;
-            set => Set(nameof(ArduinoBaudrate), (value ?? 9600).ToString());
+            set => Set(nameof(ArduinoBaudrate), $"{value}");
         }
 
         /// <summary>

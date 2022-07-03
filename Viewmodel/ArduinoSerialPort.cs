@@ -26,7 +26,6 @@ namespace TrainDatabase
         /// </summary>
         public new event EventHandler<DataReceivedEventArgs>? DataReceived = null;
 
-
         private Semaphore Semaphore { get; set; } = new(0, 1);
 
         private Queue<char> SerialBuffer { get; } = new();
@@ -40,7 +39,7 @@ namespace TrainDatabase
         /// <returns></returns>
         public static bool PortAvailable(string name)
         {
-            if (!GetPortNames().ToList().Any(e => e == name))
+            if (!GetPortNames().ToList().Any(e => e.ToUpper() == name?.Trim()?.ToUpper()))
                 return false;
             else
             {

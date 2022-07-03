@@ -155,7 +155,7 @@ namespace Wpf_Application
             Search();
         }
 
-        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(Db, Client).Show();
+        private void MeasureLoko_Click(object sender, RoutedEventArgs e) => new Einmessen(ServiceProvider).Show();
 
         private void Mw_Closing(object sender, CancelEventArgs e)
         {
