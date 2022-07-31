@@ -14,13 +14,13 @@ namespace Wpf_Application
     /// </summary>
     public partial class App : Application
     {
-        private ServiceProvider serviceProvider { get; }
+        private ServiceProvider ServiceProvider { get; }
 
         public App()
         {
             ServiceCollection services = new();
             ConfigureServices(services);
-            serviceProvider = services.BuildServiceProvider();
+            ServiceProvider = services.BuildServiceProvider();
         }
 
         private static void ConfigureServices(ServiceCollection services)
@@ -45,13 +45,13 @@ namespace Wpf_Application
                 }
 
                 if (Configuration.OpenDebugConsoleOnStart)
-                    serviceProvider.GetService<LogWindow>()!.Show();
+                    ServiceProvider.GetService<LogWindow>()!.Show();
 
-                var client = serviceProvider.GetService<Client>() ?? throw new ApplicationException();
+                var client = ServiceProvider.GetService<Client>() ?? throw new ApplicationException();
                 client.LogMessage += (a, b) => Logger.LogInformation(b?.Message ?? "Error with no message");
                 client.Connect(Configuration.ClientIP, Configuration.GetBool("AllowNatTraversal") ?? true);
 
-                serviceProvider.GetService<MainWindow>()!.Show();
+                ServiceProvider.GetService<MainWindow>()!.Show();
             }
             catch (Exception ex)
             {
