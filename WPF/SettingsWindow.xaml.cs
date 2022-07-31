@@ -39,24 +39,6 @@ namespace TrainDatabase
             }
         }
 
-        public string ControllerPort
-        {
-            get => Configuration.ClientPort.ToString();
-            set
-            {
-                try
-                {
-                    ValueChanged = value != ControllerIp;
-                    Configuration.ClientPort = int.Parse(value);
-                }
-                catch
-                {
-                    ValueChanged = false;
-                    MessageBox.Show($"'{value}' ist kein valider Port!");
-                }
-            }
-        }
-
         public bool UsingJoyStick
         {
             get

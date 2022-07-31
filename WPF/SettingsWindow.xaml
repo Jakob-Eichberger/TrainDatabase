@@ -19,7 +19,6 @@
                         <RowDefinition Height="35"/>
                         <RowDefinition Height="35"/>
                         <RowDefinition Height="35"/>
-                        <RowDefinition Height="35"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
@@ -30,10 +29,8 @@
 
                     <Label Content="IP-Address:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
                     <TextBox Text="{Binding ElementName=settingsw,Path=ControllerIp}" Grid.Row="1" Grid.Column="1"  Margin="5"/>
-                    <Label Content="Port:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding ElementName=settingsw,Path=ControllerPort}" Grid.Row="2" Grid.Column="1"  Margin="5"/>
-                    <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Content="NAT Traversal für UDP Client erlauben" Margin="5" IsChecked="{Binding ElementName=settingsw,Path=AllowNatTraversal,Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Content="Debug Konsole beim Start öffnen." Margin="5" IsChecked="{Binding ElementName=settingsw,Path=OpenDebugConsoleOnStart,Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Content="NAT Traversal für UDP Client erlauben" Margin="5" IsChecked="{Binding ElementName=settingsw,Path=AllowNatTraversal,Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Content="Debug Konsole beim Start öffnen." Margin="5" IsChecked="{Binding ElementName=settingsw,Path=OpenDebugConsoleOnStart,Mode=TwoWay}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Theme" IsEnabled="False">

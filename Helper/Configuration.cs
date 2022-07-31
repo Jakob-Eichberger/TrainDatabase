@@ -28,21 +28,6 @@ namespace Helper
             }
         }
 
-        public static int ClientPort
-        {
-            get
-            {
-                return int.TryParse(Get(nameof(ClientPort)), out int port) ? port : 21105;
-            }
-            set
-            {
-                if (value > 0 && value < 65535)
-                    Set(nameof(ClientPort), value.ToString());
-                else
-                    throw new ApplicationException($"'{value}' ist kein valider Port!");
-            }
-        }
-
         public static bool UsingJoyStick
         {
             get

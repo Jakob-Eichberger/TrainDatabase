@@ -49,7 +49,7 @@ namespace Wpf_Application
 
                 var client = serviceProvider.GetService<Client>() ?? throw new ApplicationException();
                 client.LogMessage += (a, b) => Logger.LogInformation(b?.Message ?? "Error with no message");
-                client.Connect(Configuration.ClientIP, Configuration.ClientPort, Configuration.GetBool("AllowNatTraversal") ?? true);
+                client.Connect(Configuration.ClientIP, Configuration.GetBool("AllowNatTraversal") ?? true);
 
                 serviceProvider.GetService<MainWindow>()!.Show();
             }
