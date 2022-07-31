@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Z21">
+      <HintPath>..\..\z21Client\z21Client\Z21Client\bin\Release\net5.0\Z21.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

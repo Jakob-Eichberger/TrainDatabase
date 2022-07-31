@@ -17,8 +17,8 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TrainDatabase;
-using TrainDatabase.Z21Client;
 using WPF_Application;
+using Z21;
 
 namespace Wpf_Application
 {
@@ -38,7 +38,7 @@ namespace Wpf_Application
 
                 ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 Db = ServiceProvider.GetService<Database>()!;
-                Client = ServiceProvider.GetService<Z21Client>()!;
+                Client = ServiceProvider.GetService<Client>()!;
 
                 if (!mutex.WaitOne(TimeSpan.Zero, true))
                 {
@@ -61,7 +61,7 @@ namespace Wpf_Application
 
         public IServiceProvider ServiceProvider { get; } = default!;
 
-        private Z21Client Client { get; } = default!;
+        private Client Client { get; } = default!;
 
         private Database Db { get; } = default!;
 

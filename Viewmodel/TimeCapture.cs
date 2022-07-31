@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrainDatabase;
-using TrainDatabase.Z21Client;
+using Z21;
 
 namespace Viewmodel
 {
@@ -20,7 +20,7 @@ namespace Viewmodel
         {
             ServiceProvider = serviceProvider;
             VehicleModel = vehicleModel;
-            Z21Client = ServiceProvider.GetService<Z21Client>()!;
+            Z21Client = ServiceProvider.GetService<Client>()!;
             Database = ServiceProvider.GetService<Database>()!;
             Vehicle = new(ServiceProvider, vehicleModel);
         }
@@ -50,9 +50,9 @@ namespace Viewmodel
             set => Configuration.Set(nameof(StepMeasurement), value.ToString());
         }
 
-        public decimal?[] TractionBackward { get; private set; } = new decimal?[Z21Client.maxDccStep + 1];
+        public decimal?[] TractionBackward { get; private set; } = new decimal?[Client.maxDccStep + 1];
 
-        public decimal?[] TractionForward { get; private set; } = new decimal?[Z21Client.maxDccStep + 1];
+        public decimal?[] TractionForward { get; private set; } = new decimal?[Client.maxDccStep + 1];
 
         private Database Database { get; } = default!;
 
@@ -62,7 +62,7 @@ namespace Viewmodel
 
         private VehicleModel VehicleModel { get; }
 
-        private Z21Client Z21Client { get; } = default!;
+        private Client Z21Client { get; } = default!;
 
         public bool IsRunning { get; private set; } = false;
 
@@ -75,22 +75,22 @@ namespace Viewmodel
 
                 IsRunning = true;
 
-                TractionBackward = new decimal?[Z21Client.maxDccStep + 1];
-                TractionForward = new decimal?[Z21Client.maxDccStep + 1];
+                TractionBackward = new decimal?[Client.maxDccStep + 1];
+                TractionForward = new decimal?[Client.maxDccStep + 1];
 
                 Z21Client.SetTrackPowerON();
 
                 bool lastStep = false;
 
                 var stepMeasurement = StepMeasurement;
-                for (int speed = StartMeasurement; speed <= Z21Client.maxDccStep; speed += stepMeasurement)
+                for (int speed = StartMeasurement; speed <= Client.maxDccStep; speed += stepMeasurement)
                 {
                     await CaptureTime(speed, true);
                     await CaptureTime(speed, false);
 
-                    if (!lastStep && speed + stepMeasurement > Z21Client.maxDccStep)
+                    if (!lastStep && speed + stepMeasurement > Client.maxDccStep)
                     {
-                        speed = (Z21Client.maxDccStep - stepMeasurement);
+                        speed = (Client.maxDccStep - stepMeasurement);
                         lastStep = true;
                     }
                 }

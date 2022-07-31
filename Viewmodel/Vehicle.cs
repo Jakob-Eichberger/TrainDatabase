@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrainDatabase.Z21Client;
-using TrainDatabase.Z21Client.DTO;
-using TrainDatabase.Z21Client.Events;
+using Z21;
+using Z21.DTO;
+using Z21.Events;
 
 namespace Viewmodel
 {
@@ -22,7 +22,7 @@ namespace Viewmodel
         {
             ServiceProvider = serviceProvider;
             Db = ServiceProvider.GetService<Database>()!;
-            Z21Client = ServiceProvider.GetService<Z21Client>()!;
+            Z21Client = ServiceProvider.GetService<Client>()!;
             SetVehicleModel(vehicleModel);
 
             Z21Client.OnGetLocoInfo += Z21Client_OnGetLocoInfo;
@@ -59,7 +59,7 @@ namespace Viewmodel
         {
             get => speed; set
             {
-                if (value < 0 || value > Z21Client.maxDccStep)
+                if (value < 0 || value > Client.maxDccStep)
                     return;
 
                 speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
@@ -96,7 +96,7 @@ namespace Viewmodel
 
         private VehicleModel VehicleModel { get; set; } = default!;
 
-        private Z21Client Z21Client { get; } = default!;
+        private Client Z21Client { get; } = default!;
 
         /// <summary>
         /// Sets the direction of travel.
@@ -134,7 +134,7 @@ namespace Viewmodel
             var list = MultiTractionItems.Where(e => e.Vehicle.Type == VehicleType.Lokomotive && e.TractionForward.Any() && e.TractionBackward.Any()).ToList();
 
             if (list.Any())
-                SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.TractionForward?.GetYValue(Z21Client.maxDccStep) ?? int.MaxValue) < (next.TractionForward?.GetYValue(Z21Client.maxDccStep) ?? int.MaxValue) ? cur : next).Vehicle ?? VehicleModel;
+                SlowestVehicleInTractionList = list.Aggregate((cur, next) => (cur.TractionForward?.GetYValue(Client.maxDccStep) ?? int.MaxValue) < (next.TractionForward?.GetYValue(Client.maxDccStep) ?? int.MaxValue) ? cur : next).Vehicle ?? VehicleModel;
             else
                 SlowestVehicleInTractionList = VehicleModel;
         });
@@ -148,7 +148,7 @@ namespace Viewmodel
 
         private async Task SetLocoDrive(int? speedstep = null, bool? drivingDirection = null, bool inUse = true) => await Task.Run(() =>
         {
-            if (speedstep is not null && speedstep != 0 && speedstep != Z21Client.maxDccStep && DateTime.Now - LastSpeedChange < new TimeSpan(0, 0, 0, 0, 500))
+            if (speedstep is not null && speedstep != 0 && speedstep != Client.maxDccStep && DateTime.Now - LastSpeedChange < new TimeSpan(0, 0, 0, 0, 500))
             {
                 return;
             }

@@ -18,9 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using TrainDatabase.Extensions;
 using TrainDatabase.JoyStick;
-using TrainDatabase.Z21Client.DTO;
-using TrainDatabase.Z21Client.Enums;
-using TrainDatabase.Z21Client.Events;
+using Z21.DTO;
 
 namespace TrainDatabase
 {
@@ -36,7 +34,7 @@ namespace TrainDatabase
                 ServiceProvider = serviceProvider;
                 Db = ServiceProvider.GetService<Database>()!;
                 VehicleService = ServiceProvider.GetService<VehicleService>()!;
-                Z21Client = ServiceProvider.GetService<Z21Client.Z21Client>()!;
+                Z21Client = ServiceProvider.GetService<Z21.Client>()!;
 
                 TrackPowerService = ServiceProvider.GetService<TrackPowerService>()!;
                 TrackPowerService.StateChanged += (a, b) => Dispatcher.Invoke(() => OnPropertyChanged());
@@ -62,7 +60,7 @@ namespace TrainDatabase
 
         public Database Db { get; } = default!;
 
-        public int MaxDccSpeed => TrainDatabase.Z21Client.Z21Client.maxDccStep;
+        public int MaxDccSpeed => Z21.Client.maxDccStep;
 
         public IServiceProvider ServiceProvider { get; } = default!;
 
@@ -81,7 +79,7 @@ namespace TrainDatabase
 
         public Viewmodel.Vehicle VehicleViewmodel { get; private set; } = default!;
 
-        public Z21Client.Z21Client Z21Client { get; } = default!;
+        public Z21.Client Z21Client { get; } = default!;
 
         /// <summary>
         /// Creates a single instance of the <see cref="TrainControl"/> window.

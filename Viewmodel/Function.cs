@@ -2,9 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
-using TrainDatabase.Z21Client;
-using TrainDatabase.Z21Client.DTO;
-using TrainDatabase.Z21Client.Enums;
+using Z21;
+using Z21.DTO;
+using Z21.Enums;
+using Z21.Events;
 
 namespace Viewmodel
 {
@@ -14,11 +15,11 @@ namespace Viewmodel
         {
             ServiceProvider = serviceProvider;
             Db = ServiceProvider.GetService<Database>()!;
-            Z21Client = ServiceProvider.GetService<Z21Client>()!;
+            Client = ServiceProvider.GetService<Client>()!;
 
             FunctionModel = Db.Functions.Include(e => e.Vehicle).FirstOrDefault(e => e.Id == functionModel.Id) ?? throw new ApplicationException($"Function '{functionModel}' was not found!");
 
-            Z21Client.OnGetLocoInfo += Z21Client_OnGetLocoInfo;
+            Client.OnGetLocoInfo += Z21Client_OnGetLocoInfo;
         }
 
         /// <summary>
@@ -28,7 +29,7 @@ namespace Viewmodel
 
         private Database Db { get; }
 
-        private Z21Client Z21Client { get; }
+        private Client Client { get; }
 
         private IServiceProvider ServiceProvider { get; }
 
@@ -36,7 +37,7 @@ namespace Viewmodel
 
         public FunctionModel FunctionModel { get; }
 
-        private void Z21Client_OnGetLocoInfo(object? sender, TrainDatabase.Z21Client.Events.GetLocoInfoEventArgs e)
+        private void Z21Client_OnGetLocoInfo(object? sender, GetLocoInfoEventArgs e)
         {
             if (e.Data.Adresse.Value == FunctionModel.Vehicle.Address && e.Data.Functions.Any(e => e.address == FunctionModel.Address))
             {
@@ -57,16 +58,13 @@ namespace Viewmodel
                 var functions = FunctionModel.Vehicle.TractionVehicleIds.Select(e => Db.Vehicles.Include(e => e.Functions).FirstOrDefault(f => f.Id == e)).SelectMany(e => e?.Functions ?? new List<FunctionModel>()).Where(e => e.EnumType == FunctionModel.EnumType && e.ButtonType == FunctionModel.ButtonType).ToList();
                 functions.Add(FunctionModel);
 
-                List<(ToggleType toggle, FunctionModel Func)> list = new();
+                List<FunctionData> list = functions.Select(e => new FunctionData(e.Vehicle.Address, e.Address, toggleType)).ToList();
 
-                foreach (var item in functions)
-                    list.Add((toggleType, item));
-
-                Z21Client.SetLocoFunction(list);
+                Client.SetLocoFunction(list);
             }
             else
             {
-                Z21Client.SetLocoFunction(FunctionModel, toggleType);
+                Client.SetLocoFunction(new FunctionData(FunctionModel.Vehicle.Address, FunctionModel.Address, toggleType));
             }
         }
 

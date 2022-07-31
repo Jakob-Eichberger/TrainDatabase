@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrainDatabase.Z21Client;
-using TrainDatabase.Z21Client.Enums;
-using TrainDatabase.Z21Client.Events;
+using Z21;
+using Z21.Enums;
+using Z21.Events;
 
 namespace Service
 {
@@ -16,7 +16,7 @@ namespace Service
 
         private TrackPower trackPower;
 
-        public TrackPowerService(Z21Client z21Client)
+        public TrackPowerService(Client z21Client)
         {
             Z21Client = z21Client;
             Z21Client.TrackPowerChanged += Controller_TrackPowerChanged;
@@ -43,7 +43,7 @@ namespace Service
 
         public bool TrackPowerOn => TrackPower == TrackPower.ON;
 
-        private Z21Client Z21Client { get; }
+        private Client Z21Client { get; }
 
         /// <summary>
         ///  Sets the track power.

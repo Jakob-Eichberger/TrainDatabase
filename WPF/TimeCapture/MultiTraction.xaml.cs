@@ -19,7 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TrainDatabase;
-using TrainDatabase.Z21Client;
+using Z21;
 
 namespace WPF_Application.TimeCapture
 {
@@ -104,15 +104,15 @@ namespace WPF_Application.TimeCapture
 
             CreatSpeedTableRow($"Step", $"km/h (V)", $"km/h (R)");
             bool lastStep = false;
-            for (int i = Viewmodel.TimeCapture.StartMeasurement; i <= Z21Client.maxDccStep; i += Viewmodel.TimeCapture.StepMeasurement)
+            for (int i = Viewmodel.TimeCapture.StartMeasurement; i <= Client.maxDccStep; i += Viewmodel.TimeCapture.StepMeasurement)
             {
                 string text2 = $"{(TimeCapture?.TractionForward[i] is null ? "-" : (double)Math.Round((TimeCapture.TractionForward[i] / 3.6m) ?? 0, 2))} km/h";
                 string text3 = $"{(TimeCapture?.TractionBackward[i] is null ? "-" : (double)Math.Round((TimeCapture.TractionBackward[i] / 3.6m) ?? 0, 2))}  km/h";
                 CreatSpeedTableRow($"Step {i}", text2, text3);
 
-                if (!lastStep && i + Viewmodel.TimeCapture.StepMeasurement > Z21Client.maxDccStep)
+                if (!lastStep && i + Viewmodel.TimeCapture.StepMeasurement > Client.maxDccStep)
                 {
-                    i = (Z21Client.maxDccStep - Viewmodel.TimeCapture.StepMeasurement);
+                    i = (Client.maxDccStep - Viewmodel.TimeCapture.StepMeasurement);
                     lastStep = true;
                 }
             }
@@ -163,7 +163,7 @@ namespace WPF_Application.TimeCapture
 
             model.Axes.Add(new LinearAxis()
             {
-                Maximum = Z21Client.maxDccStep,
+                Maximum = Client.maxDccStep,
                 Minimum = Viewmodel.TimeCapture.StartMeasurement,
                 Position = OxyPlot.Axes.AxisPosition.Bottom,
                 Title = "Dcc Speed Step"
@@ -189,7 +189,7 @@ namespace WPF_Application.TimeCapture
         {
             List<DataPoint> pointsBackward = new();
 
-            for (int i = 2; i <= Z21Client.maxDccStep; i++)
+            for (int i = 2; i <= Client.maxDccStep; i++)
             {
                 if (values?[i] is not null)
                     pointsBackward.Add(new(i, (double)Math.Round((values[i] / 3.6m) ?? 0, 2)));

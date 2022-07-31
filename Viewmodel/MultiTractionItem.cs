@@ -1,5 +1,5 @@
 ﻿using Model;
-using TrainDatabase.Z21Client;
+using Z21;
 
 namespace Viewmodel
 {
@@ -25,12 +25,12 @@ namespace Viewmodel
         /// <returns></returns>
         private static SortedSet<FunctionPoint> GetSortedSet(decimal?[] tractionArray)
         {
-            if (tractionArray is null || tractionArray[Z21Client.maxDccStep] is null)
+            if (tractionArray is null || tractionArray[Client.maxDccStep] is null)
                 return new();
 
             SortedSet<FunctionPoint>? function = new();
 
-            for (int i = 0; i <= Z21Client.maxDccStep; i++)
+            for (int i = 0; i <= Client.maxDccStep; i++)
                 if (tractionArray[i] is not null)
                     function.Add(new(i, (double)(tractionArray[i] ?? 0)));
             return function;

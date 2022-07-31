@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Z21;
 
 namespace TrainDatabase.Exceptions
 {
     public class ControllerException : Exception
     {
-        public ControllerException(Z21Client.Z21Client controller)
+        public ControllerException(Client controller)
         {
             controller.SetTrackPowerOFF();
         }
 
-        public ControllerException(Z21Client.Z21Client controller, string message) : base(message)
+        public ControllerException(Client controller, string message) : base(message)
         {
             controller.SetTrackPowerOFF();
         }
 
-        public ControllerException(Z21Client.Z21Client controller, string message, Exception innerException) : base(message, innerException)
+        public ControllerException(Client controller, string message, Exception innerException) : base(message, innerException)
         {
             controller.SetTrackPowerOFF();
         }
 
-        protected ControllerException(Z21Client.Z21Client controller, SerializationInfo info, StreamingContext context) : base(info, context)
+        protected ControllerException(Client controller, SerializationInfo info, StreamingContext context) : base(info, context)
         {
             controller.SetTrackPowerOFF();
         }

@@ -14,8 +14,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using TrainDatabase.Z21Client.DTO;
-using TrainDatabase.Z21Client.Events;
 using WPF_Application.TimeCapture;
 using LinearAxis = OxyPlot.Axes.LinearAxis;
 using LineSeries = OxyPlot.Series.LineSeries;
