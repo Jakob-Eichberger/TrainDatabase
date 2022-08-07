@@ -59,12 +59,6 @@ namespace TrainDatabase
             set => Configuration.OpenDebugConsoleOnStart = value;
         }
 
-        public bool AllowNatTraversal
-        {
-            get => Configuration.GetBool("AllowNatTraversal") ?? true;
-            set => Configuration.Set("AllowNatTraversal", $"{value}");
-        }
-
         public SettingsWindow()
         {
             InitializeComponent();
