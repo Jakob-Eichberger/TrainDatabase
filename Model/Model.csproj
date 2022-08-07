@@ -10,4 +10,10 @@
     <ProjectReference Include="..\Helper\Helper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Z21">
+      <HintPath>..\..\z21Client\z21Client\Z21Client\bin\Release\net5.0\Z21.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

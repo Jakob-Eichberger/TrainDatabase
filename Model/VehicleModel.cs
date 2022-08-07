@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using Z21;
 
 #nullable disable
 
@@ -79,9 +80,9 @@ namespace Model
 
         public List<FunctionModel> Functions { get; set; } = new();
 
-        public decimal?[] TractionForward { get; set; } = new decimal?[127 + 1];
+        public decimal?[] TractionForward { get; set; } = new decimal?[Client.maxDccStep + 1];
 
-        public decimal?[] TractionBackward { get; set; } = new decimal?[127 + 1];
+        public decimal?[] TractionBackward { get; set; } = new decimal?[Client.maxDccStep + 1];
 
         public List<int> TractionVehicleIds { get; } = new();
 
@@ -95,7 +96,7 @@ namespace Model
         /// <param name="speed"></param>
         /// <param name="direction"></param>
         /// <returns></returns>
-        public decimal? GetTractionSpeed(int speed, bool direction) => (speed <= 127 && speed >= 2) ? (direction ? TractionForward[speed] : TractionBackward[speed]) : throw new ArgumentOutOfRangeException();
+        public decimal? GetTractionSpeed(int speed, bool direction) => (speed <= Client.maxDccStep && speed >= 2) ? (direction ? TractionForward[speed] : TractionBackward[speed]) : throw new ArgumentOutOfRangeException();
 
         public override string ToString() => $"Add: {Address} - Name: \"{Name ?? FullName}\" - Pos: {Position} - {(IsActive ? "Aktiv" : "Deaktiviert")}";
     }
