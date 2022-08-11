@@ -1,4 +1,5 @@
 ﻿using Helper;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,12 +25,13 @@ namespace WPF_Application
     public partial class LogWindow : Window, INotifyPropertyChanged
     {
 
-        public LogWindow()
+        public LogWindow(LogService logService)
         {
+            LogService = logService;
             DataContext = this;
             InitializeComponent();
 
-            Logger.OnMessageLogged += Logger_OnMessageLogged;
+            LogService.OnMessageLogged += Logger_OnMessageLogged;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -37,6 +39,7 @@ namespace WPF_Application
         public string Text { get; set; } = "";
 
         private Queue<string> Messages { get; } = new();
+        public LogService LogService { get; }
 
         public void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 
@@ -44,14 +47,14 @@ namespace WPF_Application
         {
             Dispatcher.Invoke(() =>
             {
-                Messages.Enqueue($"{e.DateTime:dd/MM/yy hh:mm:ss} - {e.Message?.Replace("\n","\n\t  ")}");
+                Messages.Enqueue($"{e.DateTime:dd/MM/yy hh:mm:ss} - {e.Message?.Replace("\n", "\n\t  ")}");
 
                 while (Messages.Count > 100)
                 {
                     Messages.Dequeue();
                 }
                 Text = string.Join("\n", Messages);
-                
+
                 OnPropertyChanged();
                 Sv?.ScrollToBottom();
             });

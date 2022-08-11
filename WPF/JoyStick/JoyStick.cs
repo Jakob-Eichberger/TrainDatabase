@@ -77,7 +77,7 @@ namespace TrainDatabase.JoyStick
                 }
                 catch (SharpDX.SharpDXException ex)
                 {
-                    Logger.LogError(ex, $"Fehler by {nameof(Joystick.GetBufferedData)}");
+                    //Logger.LogError(ex, $"Fehler by {nameof(Joystick.GetBufferedData)}");
                 }
             }).Start();
 

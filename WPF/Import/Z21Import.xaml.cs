@@ -2,8 +2,10 @@
 using Helper;
 using Infrastructure;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Model;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,13 +29,15 @@ namespace Importer
     {
         private readonly Database db;
 
-        public Z21Import(Database _db)
+        public Z21Import(IServiceProvider provider)
         {
             DataContext = this;
             InitializeComponent();
-            db = _db;
+            db = provider.GetService<Database>()!;
+            LogService = provider.GetService<LogService>()!;
         }
 
+        public LogService LogService { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -147,7 +151,7 @@ namespace Importer
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, $"Es ist ein import Fehler aufgetreten");
+                LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, ex);
                 MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex?.Message}");
             }
             finally

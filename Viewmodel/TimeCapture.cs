@@ -2,6 +2,7 @@
 using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,6 +23,7 @@ namespace Viewmodel
             VehicleModel = vehicleModel;
             Z21Client = ServiceProvider.GetService<Client>()!;
             Database = ServiceProvider.GetService<Database>()!;
+            LogService = ServiceProvider.GetService<LogService>()!;
             Vehicle = new(ServiceProvider, vehicleModel);
         }
 
@@ -55,6 +57,8 @@ namespace Viewmodel
         public decimal?[] TractionForward { get; private set; } = new decimal?[Client.maxDccStep + 1];
 
         private Database Database { get; } = default!;
+
+        private LogService LogService { get; } = default!;
 
         private IServiceProvider ServiceProvider { get; }
 
@@ -170,7 +174,7 @@ namespace Viewmodel
                 TractionBackward[speedStep] = speed;
             }
 
-            Logger.LogInformation($"Loco drove {speed} m/s at dcc speed {speedStep} and direction {direction}.");
+            LogService.Log(Microsoft.Extensions.Logging.LogLevel.Information, $"Loco drove {speed} m/s at dcc speed {speedStep} and direction {direction}.");
             OnStateChanged();
         }
     }

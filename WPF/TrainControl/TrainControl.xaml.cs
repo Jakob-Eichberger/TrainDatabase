@@ -34,6 +34,7 @@ namespace TrainDatabase
                 ServiceProvider = serviceProvider;
                 Db = ServiceProvider.GetService<Database>()!;
                 VehicleService = ServiceProvider.GetService<VehicleService>()!;
+                LogService = ServiceProvider.GetService<LogService>()!;
                 Z21Client = ServiceProvider.GetService<Z21.Client>()!;
 
                 TrackPowerService = ServiceProvider.GetService<TrackPowerService>()!;
@@ -51,7 +52,7 @@ namespace TrainDatabase
             catch (Exception ex)
             {
                 Close();
-                Logger.LogError(ex, "Fehler beim öffnen des Controllers.");
+                LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, ex);
                 MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -72,6 +73,7 @@ namespace TrainDatabase
         public VehicleModel Vehicle { get; private set; } = default!;
 
         public VehicleService VehicleService { get; } = default!;
+        public LogService LogService { get; private set; }
 
         public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
 

@@ -1,8 +1,10 @@
 ﻿using Helper;
+using Microsoft.Extensions.DependencyInjection;
 using Model;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,7 +34,7 @@ namespace WPF_Application.TimeCapture
         {
             ServiceProvider = serviceProvider;
             VehicleModel = vehicleModel;
-
+            LogService = ServiceProvider.GetService<LogService>();
             InitializeComponent();
 
             if (VehicleModel is not null)
@@ -62,6 +64,7 @@ namespace WPF_Application.TimeCapture
         public Viewmodel.TimeCapture? TimeCapture { get; }
 
         private VehicleModel? VehicleModel { get; }
+        public LogService LogService { get; private set; }
 
         protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 
@@ -83,7 +86,7 @@ namespace WPF_Application.TimeCapture
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error while measuring vehicle.");
+                LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, ex);
             }
             finally
             {

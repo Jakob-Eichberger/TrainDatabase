@@ -3,6 +3,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
+using Service;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,6 +40,7 @@ namespace Wpf_Application
                 ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 Db = ServiceProvider.GetService<Database>()!;
                 Client = ServiceProvider.GetService<Client>()!;
+                LogService = ServiceProvider.GetService<LogService>()!;
 
                 if (!mutex.WaitOne(TimeSpan.Zero, true))
                 {
@@ -52,7 +54,7 @@ namespace Wpf_Application
             catch (Exception e)
             {
                 Close();
-                Logger.LogError(e, $"Fehler beim start");
+                LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, e);
                 MessageBox.Show($"{e}");
             }
         }
@@ -62,6 +64,8 @@ namespace Wpf_Application
         public IServiceProvider ServiceProvider { get; } = default!;
 
         private Client Client { get; } = default!;
+
+        private LogService LogService { get; } = default!;
 
         private Database Db { get; } = default!;
 
@@ -91,12 +95,12 @@ namespace Wpf_Application
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            Logger.LogError(e.Exception, "An unhandled exception occoured.");
+            LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, e.Exception);
             e.Handled = true;
             MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
 
-        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(Db).ShowDialog();
+        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(ServiceProvider).ShowDialog();
 
         private void DrawVehicles(IEnumerable<VehicleModel> list)
         {
@@ -151,7 +155,7 @@ namespace Wpf_Application
         private void DrawVehiclesIfAnyExist()
         {
             if (!Db.Vehicles.Any() && MessageBoxResult.Yes == MessageBox.Show("Sie haben noch keine Daten in der Datenbank. Möchten Sie jetzt welche importieren?", "Datenbank importieren", MessageBoxButton.YesNo, MessageBoxImage.Question))
-                new Importer.Z21Import(Db).ShowDialog();
+                new Importer.Z21Import(ServiceProvider).ShowDialog();
             Search();
         }
 
