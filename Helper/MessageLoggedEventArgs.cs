@@ -1,19 +1,20 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 
 namespace Helper
 {
     public class MessageLoggedEventArgs : EventArgs
     {
-        public MessageLoggedEventArgs(string message, MessageTypeEnum type) : base()
+        public MessageLoggedEventArgs(string message, LogLevel logLevel) : base()
         {
             Message = message;
-            Type = type;
+            LogLevel = logLevel;
         }
 
         public DateTime DateTime { get; } = DateTime.Now;
 
         public string? Message { get; }
 
-        public MessageTypeEnum Type { get; }
+        public LogLevel LogLevel { get; }
     }
 }

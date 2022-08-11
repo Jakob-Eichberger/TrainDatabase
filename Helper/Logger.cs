@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,15 +12,15 @@ namespace Helper
 
         public static void LogError(Exception exception, string message)
         {
-            OnMessageLogged?.Invoke($"{exception}", new MessageLoggedEventArgs($"{message}\n{exception}", MessageTypeEnum.Error));
+            OnMessageLogged?.Invoke($"{exception}", new MessageLoggedEventArgs($"{message}\n{exception}", LogLevel.Error));
             LogToFile(message, exception);
         }
 
-        public static void LogInformation(string message) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, MessageTypeEnum.Information));
+        public static void LogInformation(string message) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, LogLevel.Information));
 
-        public static void LogByteArray(string message, byte[] bytes) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs($"{string.Join(" ", bytes.Select(e => $"{e:x2}"?.ToUpper()))} - {message}", MessageTypeEnum.Information));
+        public static void LogByteArray(string message, byte[] bytes) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs($"{string.Join(" ", bytes.Select(e => $"{e:x2}"?.ToUpper()))} - {message}", LogLevel.Information));
 
-        public static void LogWarning(string message) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, MessageTypeEnum.Warning));
+        public static void LogWarning(string message) => OnMessageLogged?.Invoke(null, new MessageLoggedEventArgs(message, LogLevel.Warning));
 
         private static void LogToFile(string message, Exception exception)
         {
