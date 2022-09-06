@@ -82,7 +82,6 @@
 	<ItemGroup>
 	  <Reference Include="Z21">
 	    <HintPath>..\..\z21Client\z21Client\Z21Client\bin\Release\net5.0\Z21.dll</HintPath>
-	    <EmbedInteropTypes></EmbedInteropTypes>
 	  </Reference>
 	</ItemGroup>
 
