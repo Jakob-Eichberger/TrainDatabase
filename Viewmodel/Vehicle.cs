@@ -183,6 +183,9 @@ namespace Viewmodel
 
             }
             data.Add(GetLocoInfoData(speed, GetDrivingDirection(slowestVehicle.Vehicle, direction), inUse, slowestVehicle.Vehicle));
+            LiveData.DrivingDirection = direction;
+            LiveData.Speed = speed;
+            OnStateChanged();
             Z21Client.SetLocoDrive(data);
         });
 
