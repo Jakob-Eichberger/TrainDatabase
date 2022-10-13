@@ -4,11 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
 using Service;
+using SharpDX.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -84,6 +86,17 @@ namespace Wpf_Application
             return bmi;
         }
 
+        private static BitmapImage LoadPhoto(Stream stream)
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.StreamSource = stream;
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+            return bitmap;
+        }
+
         private async void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2 && sender is VehicleBorder border)
@@ -117,16 +130,25 @@ namespace Wpf_Application
                 };
 
                 var path = $"{Configuration.VehicleImagesFileLocation}\\{item?.ImageName}";
+                BitmapImage bitmapImage = null;
                 if (File.Exists(path))
                 {
-                    sp.Children.Add(new Image()
-                    {
-                        Source = LoadPhoto(path),
-                        Width = 250,
-                        Height = 100,
-                        Tag = item
-                    });
+                    bitmapImage = LoadPhoto(path);
                 }
+                else
+                {
+                    var assembly = Assembly.GetExecutingAssembly();
+                    string resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("NotFound.png"));
+                    using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
+                    bitmapImage = LoadPhoto(stream!);
+                }
+                sp.Children.Add(new Image()
+                {
+                    Source = bitmapImage,
+                    Width = 250,
+                    Height = 100,
+                    Tag = item
+                });
 
                 sp.Children.Add(new TextBlock()
                 {

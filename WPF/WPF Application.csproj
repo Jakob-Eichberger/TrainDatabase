@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 	  <None Remove="Datenbank.ico" />
+	  <None Remove="Resource\NotFound.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -87,6 +88,10 @@
 
 	<ItemGroup>
 	  <SplashScreen Include="Datenbank.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resource\NotFound.png" />
 	</ItemGroup>
 
 </Project>
