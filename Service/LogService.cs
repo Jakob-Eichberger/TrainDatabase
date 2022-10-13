@@ -13,10 +13,10 @@ namespace Service
     {
         public event EventHandler<MessageLoggedEventArgs>? OnMessageLogged = default!;
 
-        public void Log(LogLevel level, string? message, Exception? exception, [CallerMemberName] string callerName = "") => OnMessageLogged?.Invoke(this, new(level, message, exception, callerName));
+        public void Log(LogLevel level, string? message, Exception? exception) => OnMessageLogged?.Invoke(this, new(level, message, exception));
 
-        public void Log(LogLevel level, Exception? exception, [CallerMemberName] string callerName = "") => OnMessageLogged?.Invoke(this, new(level, null, exception, callerName));
+        public void Log(LogLevel level, Exception? exception) => OnMessageLogged?.Invoke(this, new(level, null, exception));
 
-        public void Log(LogLevel level, string? message, [CallerMemberName] string callerName = "") => OnMessageLogged?.Invoke(this, new(level, message, null, callerName));
+        public void Log(LogLevel level, string? message) => OnMessageLogged?.Invoke(this, new(level, message, null));
     }
 }

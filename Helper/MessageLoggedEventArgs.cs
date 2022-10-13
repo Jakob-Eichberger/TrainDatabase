@@ -5,12 +5,11 @@ namespace Helper
 {
     public class MessageLoggedEventArgs : EventArgs
     {
-        public MessageLoggedEventArgs(LogLevel logLevel, string? message, Exception? exception, string callingName) : base()
+        public MessageLoggedEventArgs(LogLevel logLevel, string? message, Exception? exception) : base()
         {
             Message = message;
             LogLevel = logLevel;
             Exception = exception;
-            CallingName = callingName;
         }
 
 
@@ -19,8 +18,6 @@ namespace Helper
         public string? Message { get; }
 
         public Exception? Exception { get; set; }
-
-        public string CallingName { get; set; }
 
         public LogLevel LogLevel { get; }
     }
