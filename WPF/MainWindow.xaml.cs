@@ -100,7 +100,7 @@ namespace Wpf_Application
             MessageBox.Show("Es ist ein unerwarteter Fehler aufgetreten!");
         }
 
-        private void DB_Import_new(object sender, RoutedEventArgs e) => new Importer.Z21Import(ServiceProvider).ShowDialog();
+        private void MiImportNewDatabase(object sender, RoutedEventArgs e) => new Importer.Z21Import(ServiceProvider).ShowDialog();
 
         private void DrawVehicles(IEnumerable<VehicleModel> list)
         {
