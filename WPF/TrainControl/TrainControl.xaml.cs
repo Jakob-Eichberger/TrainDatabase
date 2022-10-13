@@ -18,7 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using TrainDatabase.Extensions;
 using TrainDatabase.JoyStick;
-using Z21.DTO;
+using Z21.Model;
 
 namespace TrainDatabase
 {

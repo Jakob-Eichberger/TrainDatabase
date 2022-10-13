@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
 using Z21;
-using Z21.DTO;
+using Z21.Model;
 using Z21.Enums;
 using Z21.Events;
 
