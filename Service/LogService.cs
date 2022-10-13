@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Service
 {
-    public class LogService
+    public class LogEventBus
     {
         public event EventHandler<MessageLoggedEventArgs>? OnMessageLogged = default!;
 

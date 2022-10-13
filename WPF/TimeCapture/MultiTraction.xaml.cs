@@ -34,7 +34,7 @@ namespace WPF_Application.TimeCapture
         {
             ServiceProvider = serviceProvider;
             VehicleModel = vehicleModel;
-            LogService = ServiceProvider.GetService<LogService>();
+            LogService = ServiceProvider.GetService<LogEventBus>();
             InitializeComponent();
 
             if (VehicleModel is not null)
@@ -64,7 +64,7 @@ namespace WPF_Application.TimeCapture
         public Viewmodel.TimeCapture? TimeCapture { get; }
 
         private VehicleModel? VehicleModel { get; }
-        public LogService LogService { get; private set; }
+        public LogEventBus LogService { get; private set; }
 
         protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 

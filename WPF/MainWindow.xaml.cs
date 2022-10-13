@@ -42,7 +42,7 @@ namespace Wpf_Application
                 ServiceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 Db = ServiceProvider.GetService<Database>()!;
                 Client = ServiceProvider.GetService<Client>()!;
-                LogService = ServiceProvider.GetService<LogService>()!;
+                LogService = ServiceProvider.GetService<LogEventBus>()!;
 
                 if (!mutex.WaitOne(TimeSpan.Zero, true))
                 {
@@ -67,7 +67,7 @@ namespace Wpf_Application
 
         private Client Client { get; } = default!;
 
-        private LogService LogService { get; } = default!;
+        private LogEventBus LogService { get; } = default!;
 
         private Database Db { get; } = default!;
 

@@ -25,7 +25,7 @@ namespace WPF_Application
     public partial class LogWindow : Window, INotifyPropertyChanged
     {
 
-        public LogWindow(LogService logService)
+        public LogWindow(LogEventBus logService)
         {
             LogService = logService;
             DataContext = this;
@@ -39,7 +39,7 @@ namespace WPF_Application
         public string Text { get; set; } = "";
 
         private Queue<string> Messages { get; } = new();
-        public LogService LogService { get; }
+        public LogEventBus LogService { get; }
 
         public void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
 

@@ -34,10 +34,10 @@ namespace Importer
             DataContext = this;
             InitializeComponent();
             db = provider.GetService<Database>()!;
-            LogService = provider.GetService<LogService>()!;
+            LogService = provider.GetService<LogEventBus>()!;
         }
 
-        public LogService LogService { get; set; }
+        public LogEventBus LogService { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

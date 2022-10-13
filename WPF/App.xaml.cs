@@ -31,7 +31,7 @@ namespace Wpf_Application
             services.AddSingleton<TrackPowerService>();
             services.AddSingleton<LogWindow>();
             services.AddSingleton<VehicleService>();
-            services.AddSingleton<LogService>();
+            services.AddSingleton<LogEventBus>();
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
@@ -49,7 +49,7 @@ namespace Wpf_Application
                     ServiceProvider.GetService<LogWindow>()!.Show();
 
                 var client = ServiceProvider.GetService<Client>() ?? throw new ApplicationException();
-                client.LogMessage += (a, b) => ServiceProvider.GetService<LogService>()!.Log(b.LogLevel, b.Message, b.Exception);
+                client.LogMessage += (a, b) => ServiceProvider.GetService<LogEventBus>()!.Log(b.LogLevel, b.Message, b.Exception);
                 client.Connect(Configuration.ClientIP);
 
                 ServiceProvider.GetService<MainWindow>()!.Show();

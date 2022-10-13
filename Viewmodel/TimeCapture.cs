@@ -23,7 +23,7 @@ namespace Viewmodel
             VehicleModel = vehicleModel;
             Z21Client = ServiceProvider.GetService<Client>()!;
             Database = ServiceProvider.GetService<Database>()!;
-            LogService = ServiceProvider.GetService<LogService>()!;
+            LogService = ServiceProvider.GetService<LogEventBus>()!;
             Vehicle = new(ServiceProvider, vehicleModel);
         }
 
@@ -58,7 +58,7 @@ namespace Viewmodel
 
         private Database Database { get; } = default!;
 
-        private LogService LogService { get; } = default!;
+        private LogEventBus LogService { get; } = default!;
 
         private IServiceProvider ServiceProvider { get; }
 
