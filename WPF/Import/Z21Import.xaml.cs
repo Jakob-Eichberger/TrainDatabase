@@ -238,9 +238,7 @@ namespace Importer
         private void InitializeDatabase()
         {
             db.Database.EnsureCreated();
-            db.Vehicles.RemoveRange(db.Vehicles);
-            db.Functions.RemoveRange(db.Functions);
-            db.SaveChanges();
+            db.Clear();
         }
     }
 }
