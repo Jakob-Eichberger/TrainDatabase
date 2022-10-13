@@ -18,6 +18,7 @@
         <Menu Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Stretch" Background="White">
             <MenuItem Header="Database">
                 <MenuItem Header="Neue Datenbank importieren" Click="DB_Import_new"/>
+                <MenuItem Header="Aktuelle Datenbank löschen" Click="MiDeleteDatabase"/>
             </MenuItem>
             <MenuItem Header="Fahrzeuge">
                 <MenuItem Header="Fahrzeuge verwalten" Click="OpenVehicleManagement_Click"/>

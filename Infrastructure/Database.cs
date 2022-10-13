@@ -114,5 +114,16 @@ namespace Infrastructure
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        /// <summary>
+        /// Deletes all dbset data.
+        /// </summary>
+        public void Clear()
+        {
+            Functions.RemoveAll();
+            Vehicles.RemoveAll();
+            SaveChanges();
+            InvokeCollectionChanged();
+        }
     }
 }

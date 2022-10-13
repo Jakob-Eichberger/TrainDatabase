@@ -252,5 +252,13 @@ namespace Wpf_Application
         }
 
         private void TbSearch_TextChanged(object sender, TextChangedEventArgs e) => Search();
+
+        private void MiDeleteDatabase(object sender, RoutedEventArgs e)
+        {
+            if (MessageBoxResult.Yes == MessageBox.Show("Sicher dass die Datenbank gelöscht werden soll?", "Datenbank löschen", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+            {
+                Db.Clear();
+            }
+        }
     }
 }
