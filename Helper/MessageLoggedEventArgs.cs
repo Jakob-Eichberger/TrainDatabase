@@ -12,6 +12,20 @@ namespace Helper
             Exception = exception;
         }
 
+        public MessageLoggedEventArgs(LogLevel logLevel, Exception? exception) : base()
+        {
+            Message = null;
+            LogLevel = logLevel;
+            Exception = exception;
+        }
+
+        public MessageLoggedEventArgs(LogLevel logLevel, string? message) : base()
+        {
+            Message = message;
+            LogLevel = logLevel;
+            Exception = null;
+        }
+
 
         public DateTime DateTime { get; } = DateTime.Now;
 

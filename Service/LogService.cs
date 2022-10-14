@@ -15,8 +15,8 @@ namespace Service
 
         public void Log(LogLevel level, string? message, Exception? exception) => OnMessageLogged?.Invoke(this, new(level, message, exception));
 
-        public void Log(LogLevel level, Exception? exception) => OnMessageLogged?.Invoke(this, new(level, null, exception));
+        public void Log(LogLevel level, Exception? exception) => OnMessageLogged?.Invoke(this, new(level, exception));
 
-        public void Log(LogLevel level, string? message) => OnMessageLogged?.Invoke(this, new(level, message, null));
+        public void Log(LogLevel level, string? message) => OnMessageLogged?.Invoke(this, new(level, message));
     }
 }
