@@ -18,6 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using TrainDatabase.Extensions;
 using TrainDatabase.JoyStick;
+using WPF_Application.TrainControl;
 using Z21.Model;
 
 namespace TrainDatabase
@@ -127,63 +128,6 @@ namespace TrainDatabase
             }
         }
 
-        private void DrawAllVehicles(IEnumerable<VehicleModel> vehicles)
-        {
-            var tractionVehicles = vehicles.Where(f => Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position).ToList();
-            TIMultiTraction.Header = $"Mehrfachtraktion ({tractionVehicles.Count})";
-
-            if (tractionVehicles.Any())
-            {
-                AddListToStackPanel(tractionVehicles);
-                SPVehilces.Children.Add(new Separator());
-            }
-            AddListToStackPanel(vehicles.Where(f => !Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
-
-            void AddListToStackPanel(IEnumerable<VehicleModel> vehicles)
-            {
-                foreach (var vehicle in vehicles.Where(e => e.Id != Vehicle.Id))
-                {
-                    CheckBox c = new()
-                    {
-                        Content = vehicle.Name,
-                        Tag = vehicle,
-                        Margin = new Thickness(5),
-                        IsChecked = Vehicle.TractionVehicleIds.Any(e => e == vehicle.Id)
-                    };
-                    c.Unchecked += (sender, e) =>
-                    {
-                        if ((sender as CheckBox)?.Tag is VehicleModel vehicle)
-                        {
-                            VehicleService.RemoveTractionVehilce(vehicle, Vehicle);
-                        }
-                    };
-                    c.Checked += (sender, e) =>
-                    {
-                        if (sender is CheckBox c && c.Tag is VehicleModel v)
-                        {
-                            VehicleService.AddTractionVehilce(v, Vehicle);
-                        }
-                    };
-                    SPVehilces.Children.Add(c);
-                }
-            }
-        }
-
-        private void SearchBar_TextChanged(object sender, TextChangedEventArgs e) => SearchTractionVehicles();
-
-        private void SearchTractionVehicles()
-        {
-            SPVehilces.Children.Clear();
-            if (!string.IsNullOrWhiteSpace(tbSearch.Text))
-            {
-                DrawAllVehicles(Db.Vehicles.Where(i => (i.Address + i.ArticleNumber + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
-            }
-            else
-            {
-                DrawAllVehicles(Db.Vehicles.OrderBy(e => e.Position));
-            }
-        }
-
         private void SetTitle() => Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
 
         private void TBRailPower_Click(object sender, RoutedEventArgs e) => TrackPowerService.SetTrackPower(!TrackPowerService.TrackPowerOn);
@@ -210,16 +154,19 @@ namespace TrainDatabase
 
             SetTitle();
             DrawAllFunctions();
-            SearchTractionVehicles();
+            UpdateTiMultiTractionHeader();
+            TIMultiTraction.Content = new MultitractionSelectorControl(ServiceProvider, Vehicle);
 
             Db.ChangeTracker.StateChanged += (a, b) =>
             {
                 SetTitle();
                 DrawAllFunctions();
-                SearchTractionVehicles();
+                UpdateTiMultiTractionHeader();
             };
 
             Z21Client.GetLocoInfo(new LokAdresse(Vehicle.Address));
         }
+
+        private void UpdateTiMultiTractionHeader() => TIMultiTraction.Header = $"Mehrfachtraktion ({Vehicle.TractionVehicleIds.Count})";
     }
 }

@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TrainDatabase"
         xmlns:converter="clr-namespace:WPF_Application.Converter"
+        xmlns:tc="clr-namespace:WPF_Application.TrainControl"
         mc:Ignorable="d"
         Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" PreviewMouseWheel="Tc_PreviewMouseWheel" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen" Loaded="TrainControl_Loaded" >
     <Window.Resources>
@@ -36,18 +37,7 @@
                     <WrapPanel Name="FunctionGrid" />
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Mehrfachtraktion" Name="TIMultiTraction" >
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBox Name="tbSearch" Grid.Row="0" Margin="5" Padding="5" TextChanged="SearchBar_TextChanged"/>
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible">
-                        <StackPanel Name="SPVehilces"/>
-                    </ScrollViewer>
-                </Grid>
-            </TabItem>
+            <TabItem Header="Mehrfachtraktion" Name="TIMultiTraction" />
         </TabControl>
     </Grid>
 </Window>
