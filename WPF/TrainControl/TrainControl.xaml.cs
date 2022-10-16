@@ -74,6 +74,7 @@ namespace TrainDatabase
         public VehicleModel Vehicle { get; private set; } = default!;
 
         public VehicleService VehicleService { get; } = default!;
+      
         public LogEventBus LogService { get; private set; }
 
         public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
@@ -105,29 +106,6 @@ namespace TrainDatabase
 
         private void BtnDirection_Click(object sender, RoutedEventArgs e) => VehicleViewmodel.SwitchDirection();
 
-        /// <summary>
-        /// Functions draws every single Function of a vehicle for the user to click on. 
-        /// </summary>
-        private void DrawAllFunctions()
-        {
-            FunctionGrid.Children.Clear();
-            foreach (var item in Vehicle.Functions.OrderBy(e => e.Address))
-            {
-                switch (item.ButtonType)
-                {
-                    case ButtonType.Switch:
-                        FunctionGrid.Children.Add(new WPF_Application.TrainControl.FunctionButton.SwitchButton(ServiceProvider, item));
-                        break;
-                    case ButtonType.PushButton:
-                        FunctionGrid.Children.Add(new WPF_Application.TrainControl.FunctionButton.PushButton(ServiceProvider, item));
-                        break;
-                    case ButtonType.Timer:
-                        FunctionGrid.Children.Add(new WPF_Application.TrainControl.FunctionButton.TimerButton(ServiceProvider, item));
-                        break;
-                }
-            }
-        }
-
         private void SetTitle() => Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
 
         private void TBRailPower_Click(object sender, RoutedEventArgs e) => TrackPowerService.SetTrackPower(!TrackPowerService.TrackPowerOn);
@@ -153,14 +131,14 @@ namespace TrainDatabase
             IsEnabled = Z21Client.ClientReachable;
 
             SetTitle();
-            DrawAllFunctions();
             UpdateTiMultiTractionHeader();
+
+            TIFunction.Content = new FunctionControl(ServiceProvider, Vehicle);
             TIMultiTraction.Content = new MultitractionSelectorControl(ServiceProvider, Vehicle);
 
             Db.ChangeTracker.StateChanged += (a, b) =>
             {
                 SetTitle();
-                DrawAllFunctions();
                 UpdateTiMultiTractionHeader();
             };
 
