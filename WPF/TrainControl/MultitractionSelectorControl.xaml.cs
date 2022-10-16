@@ -49,12 +49,12 @@ namespace WPF_Application.TrainControl
         private void DrawAllVehicles(IEnumerable<VehicleModel> vehicles)
         {
             var tractionVehicles = vehicles.Where(f => Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position).ToList();
-
             if (tractionVehicles.Any())
             {
                 AddListToStackPanel(tractionVehicles);
                 SPVehilces.Children.Add(new Separator());
             }
+
             AddListToStackPanel(vehicles.Where(f => !Vehicle.TractionVehicleIds.Any(e => e == f.Id)).OrderBy(e => e.Position));
         }
 
