@@ -90,7 +90,7 @@
 
 	<ItemGroup>
 	  <Reference Include="Z21">
-	    <HintPath>..\..\z21Client\z21Client\Z21Client\bin\Debug\net5.0\Z21.dll</HintPath>
+	    <HintPath>..\..\z21Client\z21Client\Z21Client\bin\Debug\publish\Z21.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 
