@@ -5,8 +5,8 @@ TrainDatabase fully supports multi traction.
 The features of this software are as followed: 
 - Controlling your trains with either a mouse, hotkeys, or throttle.
 - Fully supports double traction for control cars, unmeasured and measured locomotives. 
-- Measuring the vehicle's speed using a raspberry pi. 
 - Database can be imported from the new Roco Z21 app. 
+- Measuring the vehicle's speed using a micro controller and two infrared sensors. 
 
 *Note: TrainDatabase and its documentation is written in German. An English language package is **not** planned.*
 
