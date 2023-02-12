@@ -73,7 +73,7 @@ Manage vehicles|Complete
 Control vehicle speed|Complete
 Control vehicle functions|Complete
 Multi traction support|In development
-Joystick support|In development
+Joystick support|Not done
 Hotykey support|Not done
 
 ## Sources
