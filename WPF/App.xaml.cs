@@ -1,8 +1,13 @@
 ﻿using Helper;
 using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
 using Service;
 using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using WPF_Application;
 using Z21;
@@ -20,6 +25,14 @@ namespace Wpf_Application
         {
             ServiceCollection services = new();
             ConfigureServices(services);
+            Log.Logger = new LoggerConfiguration()
+                        .MinimumLevel.Debug()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                        .Enrich.FromLogContext()
+                        .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+                        .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug, theme: AnsiConsoleTheme.Sixteen)
+                        .CreateLogger();
+
             ServiceProvider = services.BuildServiceProvider();
         }
 
@@ -29,9 +42,9 @@ namespace Wpf_Application
             services.AddSingleton<Client>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<TrackPowerService>();
-            services.AddSingleton<LogWindow>();
             services.AddSingleton<VehicleService>();
             services.AddSingleton<LogEventBus>();
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
@@ -45,19 +58,25 @@ namespace Wpf_Application
                     db.Database.EnsureCreated();
                 }
 
-                if (Configuration.OpenDebugConsoleOnStart)
-                    ServiceProvider.GetService<LogWindow>()!.Show();
+                if (Configuration.OpenDebugConsoleOnStart || Debugger.IsAttached)
+                {
+                    AllocConsole();
+                }
 
                 var client = ServiceProvider.GetService<Client>() ?? throw new ApplicationException();
-                client.LogMessage += (a, b) => ServiceProvider.GetService<LogEventBus>()!.Log(b.LogLevel, b.Message, b.Exception);
                 client.Connect(Configuration.ClientIP);
-
                 ServiceProvider.GetService<MainWindow>()!.Show();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                Log.Logger.Error(ex, "Startup failed to initialize!");
             }
         }
+
+        [DllImport("Kernel32")]
+        public static extern void AllocConsole();
+
+        [DllImport("Kernel32")]
+        public static extern void FreeConsole();
     }
 }

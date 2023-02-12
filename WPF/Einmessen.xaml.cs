@@ -60,7 +60,6 @@ namespace TrainDatabase
     public partial class Einmessen : Window, INotifyPropertyChanged
     {
         private VehicleModel? _vehicle = default!;
-        private bool IsDisposed = false;
         public Einmessen(IServiceProvider serviceProvider)
         {
             this.DataContext = this;
@@ -92,7 +91,6 @@ namespace TrainDatabase
 
         private void BtnStopSpeedMeasurement_Click(object sender, RoutedEventArgs e)
         {
-            IsDisposed = true;
             this.Close();
         }
 
