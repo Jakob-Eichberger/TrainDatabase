@@ -24,6 +24,13 @@
 	<ItemGroup>
 	  <None Remove="Datenbank.ico" />
 	  <None Remove="Resource\NotFound.png" />
+	  <None Remove="Script\cmd.exe" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Script\cmd.exe">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
