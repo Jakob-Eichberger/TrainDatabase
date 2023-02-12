@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_76E15986BEB0463385B855ED05057BEA"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -22,12 +28,6 @@
         "Entry"
         {
         "MsmKey" = "8:_80AA236F321D40229AED36DDD0A7DDF2"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9EB75112C20540C7B6FCCD5596B1A638"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -68,6 +68,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
         "Release"
@@ -151,6 +159,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_47C9FD9072DF4ABB92264431FC0ED0CD"
+            {
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\Datenbank.ico"
+            "TargetName" = "8:Datenbank.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_76E15986BEB0463385B855ED05057BEA"
             {
             "SourcePath" = "8:..\\WPF\\Script\\cmd.exe"
@@ -175,26 +203,6 @@
             {
             "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\TrainDB.dll.config"
             "TargetName" = "8:TrainDB.dll.config"
-            "Tag" = "8:"
-            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9EB75112C20540C7B6FCCD5596B1A638"
-            {
-            "SourcePath" = "8:..\\WPF\\Datenbank.ico"
-            "TargetName" = "8:Datenbank.ico"
             "Tag" = "8:"
             "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
             "Condition" = "8:"
@@ -260,7 +268,7 @@
             "{1525181F-901A-416C-8A58-119130FE478E}:_68359F7030FD42F18C7C74595714F3C7"
             {
             "Name" = "8:#1916"
-            "AlwaysCreate" = "11:FALSE"
+            "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Property" = "8:DesktopFolder"
@@ -271,7 +279,7 @@
             "{1525181F-901A-416C-8A58-119130FE478E}:_E9E39B3F649B42988AFF4E3767EF0CCA"
             {
             "Name" = "8:#1919"
-            "AlwaysCreate" = "11:FALSE"
+            "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Property" = "8:ProgramMenuFolder"
@@ -319,7 +327,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Train Database"
         "ProductCode" = "8:{F01FBCFB-D7E9-44B8-8E49-2A6750B6DEC8}"
-        "PackageCode" = "8:{0385567F-9D85-465D-B716-F95DF719220B}"
+        "PackageCode" = "8:{113EE43C-6A49-43AA-8E04-D5C9C271CCCC}"
         "UpgradeCode" = "8:{8F2F2FF6-A026-464A-A4F7-333D9653AA4A}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -336,7 +344,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:https://github.com/Jakob-Eichberger/TrainDatabase"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -439,23 +447,9 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E43AA2D0FF174B4682D23F8CF879D95C"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_547059686BF847BE9D36CB2F7EDAB384"
             {
-            "Name" = "8:TrainDB"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_F0603D0716824092A3C4660BABA0DB18"
-            "Folder" = "8:_E9E39B3F649B42988AFF4E3767EF0CCA"
-            "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
-            "Icon" = "8:_9EB75112C20540C7B6FCCD5596B1A638"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FD97ABB51E25486FB46F78C9A461F757"
-            {
-            "Name" = "8:TrainDB"
+            "Name" = "8:TrainDatabase"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -464,7 +458,21 @@
             "Target" = "8:_F0603D0716824092A3C4660BABA0DB18"
             "Folder" = "8:_68359F7030FD42F18C7C74595714F3C7"
             "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
-            "Icon" = "8:_9EB75112C20540C7B6FCCD5596B1A638"
+            "Icon" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8B666CD6CF984A4BBE7D569FD71EC940"
+            {
+            "Name" = "8:TrainDatabase"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_F0603D0716824092A3C4660BABA0DB18"
+            "Folder" = "8:_E9E39B3F649B42988AFF4E3767EF0CCA"
+            "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Icon" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
             "Feature" = "8:"
             }
         }

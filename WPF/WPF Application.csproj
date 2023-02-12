@@ -91,7 +91,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <SplashScreen Include="Datenbank.ico" />
+	  <Content Include="Datenbank.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
