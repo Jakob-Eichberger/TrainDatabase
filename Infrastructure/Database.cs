@@ -1,4 +1,5 @@
 ﻿using Extensions;
+using Helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -98,10 +99,10 @@ namespace Infrastructure
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var path = Path.Combine(new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TrainDb", "Loco.sqlite" });
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            string dbPath = Configuration.ApplicationData.DatabaseFile.FullName;
+            Directory.CreateDirectory(Path.GetDirectoryName(dbPath));
             if (!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlite($"Data Source={path}");
+                optionsBuilder.UseSqlite($"Data Source={dbPath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

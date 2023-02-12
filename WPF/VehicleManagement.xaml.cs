@@ -192,7 +192,7 @@ namespace TrainDatabase
             {
                 var oldFileNameAndPath = ofd.FileName;
                 var imageName = Guid.NewGuid() + Path.GetExtension(ofd.FileName);
-                var directory = Configuration.VehicleImagesFileLocation;
+                var directory = Configuration.ApplicationData.VehicleImages.FullName;
                 Directory.CreateDirectory(directory);
                 File.Copy(oldFileNameAndPath, $"{directory}\\{imageName}");
                 SelectedVehicle.ImageName = imageName;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,30 @@ namespace Helper
 {
     public static class Configuration
     {
+        public static class ApplicationData
+        {
+            /// <summary>
+            /// Path where application related data is stored. 
+            /// </summary>
+            public static DirectoryInfo ApplicationDataDirectory => new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TrainDatabase"));
+
+            /// <summary>
+            /// Returns the location of the vehicle image folder.
+            /// </summary>
+            public static DirectoryInfo VehicleImages => new(Path.Combine(ApplicationDataDirectory.FullName, "Data", "VehicleImage"));
+
+            /// <summary>
+            /// Returns the location of the log file directory.
+            /// </summary>
+            public static DirectoryInfo LogDirectory => new(System.IO.Path.Combine(ApplicationDataDirectory.FullName, "Log"));
+
+            /// <summary>
+            /// Returns the location of the log file directory.
+            /// </summary>
+            public static FileInfo DatabaseFile => new(Path.Combine(ApplicationDataDirectory.FullName, "Data", "Database.sqlite"));
+        }
+
+
         public static IPAddress ClientIP
         {
             get
@@ -64,11 +89,6 @@ namespace Helper
             get => GetInt(nameof(ArduinoBaudrate)) ?? 9600;
             set => Set(nameof(ArduinoBaudrate), $"{value}");
         }
-
-        /// <summary>
-        /// Returns the location of the vehicle image folder.
-        /// </summary>
-        public static string VehicleImagesFileLocation => System.IO.Path.Combine(new string[] { Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TrainDb", "Data", "VehicleImage" });
 
         /// <summary>
         /// Sets a value for a key.

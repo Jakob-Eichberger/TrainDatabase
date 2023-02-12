@@ -7,6 +7,7 @@ using Serilog.Sinks.SystemConsole.Themes;
 using Service;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using WPF_Application;
@@ -25,16 +26,18 @@ namespace Wpf_Application
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            ServiceCollection services = new();
-            ConfigureServices(services);
+            string logFilePath = Path.Combine(Configuration.ApplicationData.LogDirectory.FullName, "log.txt");
             Log.Logger = new LoggerConfiguration()
                         .MinimumLevel.Debug()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                         .Enrich.FromLogContext()
-                        .WriteTo.File("Log\\log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+                        .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
                         .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug, theme: AnsiConsoleTheme.Sixteen)
                         .CreateLogger();
 
+
+            ServiceCollection services = new();
+            ConfigureServices(services);
             ServiceProvider = services.BuildServiceProvider();
         }
 
