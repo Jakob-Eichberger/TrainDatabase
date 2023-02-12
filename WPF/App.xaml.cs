@@ -77,7 +77,7 @@ namespace Wpf_Application
             }
             catch (Exception ex)
             {
-                Log.Logger.Error(ex, "Startup failed to initialize!");
+                Log.Logger.Fatal(ex, $"Failed to initialize the application!");
             }
         }
 
