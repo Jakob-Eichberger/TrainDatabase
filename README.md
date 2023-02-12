@@ -15,9 +15,9 @@ The features of this software are as followed:
 ### Installing the software
 
 1. Make sure that you have a z21/Z21 from Roco/Fleischmann. (No other digital control center is currently supported)
-2. Go to this [link](https://github.com/Jakob-Eichberger/TrainDatabase/releases) to download the software.
-3. Unpack the .zip file, copy the folder to its final directory and start the TrainDB.exe. (*Note: A wix based installer is planned*)
-4. When it's your first time starting the app you get the option to import your Z21 Layout (from the new Z21 Android/IOS App).
+2. Go to this [link](https://github.com/Jakob-Eichberger/TrainDatabase/releases) to download the installer.
+3. Install the software using the provided installer!
+4. When the app starts for the first time you get the option to import your Z21 layout (from the new Z21 Android/IOS App).
 
 ### Import existing z21 Layout. 
 1. Open the Roco/Fleischmann Z21 App.
