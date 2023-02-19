@@ -258,7 +258,7 @@ namespace Wpf_Application
         {
             var vehicles = Db.Vehicles.Where(e => e.IsActive).ToList();
             foreach (var item in tbSearch.Text.Split(" ", StringSplitOptions.RemoveEmptyEntries))
-                vehicles = vehicles.Where(i => i.IsActive && $"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway} {i.DecoderType} {i.Manufacturer} {i.ArticleNumber}".ToLower().Contains(item.ToLower().Trim())).ToList();
+                vehicles = vehicles.Where(i => i.IsActive && $"{i.Name} {i.FullName} {i.Type} {i.Address} {i.Railway}".ToLower().Contains(item.ToLower().Trim())).ToList();
             DrawVehicles(vehicles);
         }
 

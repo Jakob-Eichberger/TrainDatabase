@@ -29,11 +29,6 @@
                             <DataGridCheckBoxColumn Header="Aktiv" Binding="{Binding IsActive}"/>
                             <DataGridCheckBoxColumn Header="Traktion Invertieren" Binding="{Binding InvertTraction}"/>
                             <DataGridTextColumn Header="EVU" Binding="{Binding Railway}"/>
-                            <DataGridTextColumn Header="Rmin" Binding="{Binding Rmin}"/>
-                            <DataGridTextColumn Header="Hersteller" Binding="{Binding Manufacturer}"/>
-                            <DataGridTextColumn Header="Artikel Nummer" Binding="{Binding ArticleNumber}"/>
-                            <DataGridTextColumn Header="Decoder Type" Binding="{Binding DecoderType}"/>
-                            <DataGridTextColumn Header="Kaufdatum" Binding="{Binding BuildYear}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <DockPanel Grid.Row="1">
@@ -80,15 +75,6 @@
 
                     <Label Grid.Row="5" Grid.Column="0" Content="EVU"  Margin="5" VerticalAlignment="Center" ToolTip="Eisenbahnverkehrsunternehmen"/>
                     <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Railway, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"   VerticalAlignment="Center"/>
-
-                    <Label Grid.Row="6" Grid.Column="0" Content="Decoder Type"  Margin="5" VerticalAlignment="Center"/>
-                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.DecoderType, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"   VerticalAlignment="Center"/>
-
-                    <Label Grid.Row="7" Grid.Column="0" Content="Hersteller"  Margin="5" VerticalAlignment="Center"/>
-                    <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Manufacturer, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"  VerticalAlignment="Center" />
-
-                    <Label Grid.Row="8" Grid.Column="0" Content="Artikel Nummer"  Margin="5" VerticalAlignment="Center"/>
-                    <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.ArticleNumber, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"  VerticalAlignment="Center" />
 
                     <Label Grid.Row="9" Grid.Column="0" Content="Beschreibung"  Margin="5" VerticalAlignment="Top"/>
                     <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Description, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"  />

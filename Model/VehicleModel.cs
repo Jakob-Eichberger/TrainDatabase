@@ -30,51 +30,15 @@ namespace Model
 
         public long Position { get; set; } = 0;
 
-        public string DriversCab { get; set; } = "";
-
         public string FullName { get; set; } = "";
 
-        public long? SpeedDisplay { get; set; } = 0;
-
         public string Railway { get; set; } = "";
-
-        public long BufferLenght { get; set; }
-
-        public long ModelBufferLenght { get; set; }
-
-        public long ServiceWeight { get; set; }
-
-        public long ModelWeight { get; set; }
-
-        public long Rmin { get; set; }
-
-        public string Manufacturer { get; set; } = "";
-
-        public string ArticleNumber { get; set; } = "";
-
-        public string DecoderType { get; set; } = "";
-
-        public string Owner { get; set; } = "";
-
-        public string BuildYear { get; set; } = "";
-
-        public string OwningSince { get; set; } = "";
 
         public bool InvertTraction { get; set; }
 
         public string Description { get; set; } = "";
 
         public bool? Dummy { get; set; } = false;
-
-        public IPAddress Ip { get; set; } = IPAddress.None;
-
-        public long? Video { get; set; } = 0;
-
-        public long? DirectSteering { get; set; } = 0;
-
-        public bool? Crane { get; set; } = false;
-
-        public int CategoryId { get; set; }
 
         public Epoch Epoche { get; set; } = Epoch.@default;
 

@@ -94,7 +94,7 @@ namespace WPF_Application.TrainControl
             SPVehilces.Children.Clear();
             if (!string.IsNullOrWhiteSpace(tbSearch.Text))
             {
-                DrawAllVehicles(Db.Vehicles.Where(i => (i.Address + i.ArticleNumber + i.Owner + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
+                DrawAllVehicles(Db.Vehicles.Where(i => (i.Address + i.Railway + i.Description + i.FullName + i.Name + i.Type).ToLower().Contains(tbSearch.Text.ToLower())).OrderBy(e => e.Position));
             }
             else
             {
