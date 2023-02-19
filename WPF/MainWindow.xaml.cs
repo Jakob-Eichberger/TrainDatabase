@@ -129,7 +129,7 @@ namespace Wpf_Application
                     Background = Brushes.White,
                 };
 
-                var path = Path.Combine(Configuration.ApplicationData.VehicleImages.FullName, item?.ImageName);
+                var path = Path.Combine(Configuration.ApplicationData.VehicleImages.FullName, item?.ImageName??"");
                 BitmapImage bitmapImage = null;
                 if (File.Exists(path))
                 {
