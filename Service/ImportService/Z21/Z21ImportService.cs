@@ -1,13 +1,20 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
+using Extensions;
 using Extensions.Exceptions;
 using Helper;
 using Infrastructure;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using Model;
+using Serilog;
+using Serilog.Core;
 using Service.ImportService.Z21.TDO;
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -25,6 +32,12 @@ namespace Service.ImportService.Z21
 
         private Database Database { get; set; }
 
+        /// <summary>
+        /// Import the Data from a z21 file into the internal database.
+        /// </summary>
+        /// <param name="z21File"></param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
         public async Task Import(FileInfo z21File) => await Task.Run(async () =>
         {
             if (z21File.Extension.ToLower() is not ".z21")
@@ -36,8 +49,61 @@ namespace Service.ImportService.Z21
             await Database.Database.EnsureDeletedAsync();
             await Database.Database.EnsureCreatedAsync();
 
-            var filePath = ExtractPhotosAndSqlFileFromZ21File(z21File.FullName);
+            var filePath = await ExtractPhotosAndSqlFileFromZ21File(z21File.FullName);
+            var con = new SqliteConnection($"Data Source={filePath}");
+            MapVehicles(con);
+            MapFunctions(con, true);
         });
+
+        private void MapFunctions(SqliteConnection con, bool removeEmptyFunctions)
+        {
+            var f = con.Query<FunctionDTO>("Select * from functions").ToList();
+            var functions = f.Select(e => new FunctionModel()
+            {
+                Id = (int)e.id,
+                Vehicle = Database.Vehicles.FirstOrDefault(v => v.Id == (int)e.vehicle_id),
+                ButtonType = (ButtonType)(int)e.button_type,
+                Name = e.shortcut.IsNullOrWhiteSpace() ? e.image_name : e.shortcut,
+                Time = (int)decimal.Parse(e.time),
+                Position = (int)e.position,
+                ImageName = e.image_name,
+                Address = (int)e.function,
+                ShowFunctionNumber = e.show_function_number == 1,
+                IsConfigured = e.is_configured == 1,
+
+            }).Where(e => e.Vehicle is not null).ToList();
+
+            functions = functions.Where(e => removeEmptyFunctions && e.Name is not "Empty").ToList();
+
+            Database.AddRange(functions);
+            Database.SaveChanges();
+            Database.InvokeCollectionChanged();
+        }
+
+        private void MapVehicles(SqliteConnection con)
+        {
+            var v = con.Query<VehicleDTO>("Select * from vehicles").ToList();
+            var vehicles = v.Select(e => new VehicleModel()
+            {
+                Id = (int)e.id,
+                Name = e.name,
+                ImageName = e.image_name,
+                Type = (VehicleType)(int)e.type,
+                MaxSpeed = e.max_speed,
+                Speedstep = e.speed_display,
+                Address = e.address,
+                IsActive = e.active == 1,
+                Position = e.position,
+                FullName = e.full_name,
+                Railway = e.railway,
+                InvertTraction = e.traction_direction == 1,
+                Description = e.description,
+                Dummy = e.dummy == 1,
+            }).ToList();
+            Database.AddRange(vehicles);
+            Database.SaveChanges();
+            Database.Vehicles.Where(e => string.IsNullOrWhiteSpace(e.Name)).ForEachAsync(e => Log.Warning($"Imported Vehicle with Adresse {e.Address} has no display name!"));
+        }
 
         /// <summary>
         /// Extracts the database file and pictures from the Roco .z21 archive file.
@@ -77,6 +143,5 @@ namespace Service.ImportService.Z21
 
             return new FileInfo(sqlLiteDB);
         });
-
     }
 }
