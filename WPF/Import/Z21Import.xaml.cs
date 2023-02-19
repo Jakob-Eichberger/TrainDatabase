@@ -50,8 +50,8 @@ namespace Importer
         {
             var z21 = new Z21ImportService(db);
             await z21.Import(new FileInfo(Path));
-            //await ImportAsync();
-            //Close();
+            MessageBox.Show($"Import Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            this.Close();
         }
 
         private void BtnOpenFileDalog_Click(object sender, RoutedEventArgs e)
@@ -65,167 +65,20 @@ namespace Importer
             Path = ofp.FileName;
         }
 
-        /// <summary>
-        /// Extracts data from the Roco .z21 file.
-        /// </summary>
-        /// <returns>Returns the location of the sql database file.</returns>
-        private async Task<string> ExtractDataFromZ21File()
-        {
-            GetDirectories(out string vehicleDirectory, out string tempDirectory, out string zipFileLocation);
+        //private FunctionType GetFunctionType(string name)
+        //{
+        //    Dictionary<string, FunctionType> dic = new();
+        //    dic.Add("sound", FunctionType.Sound1);
+        //    dic.Add("light", FunctionType.Light1);
+        //    dic.Add("main_beam", FunctionType.MainBeam);
+        //    dic.Add("main_beam2", FunctionType.LowBeam);
 
-            if (Directory.Exists(tempDirectory))
-                Directory.Delete(tempDirectory, true);
-
-            if (Directory.Exists(vehicleDirectory))
-                Directory.Delete(vehicleDirectory, true);
-            Directory.CreateDirectory(vehicleDirectory);
-
-            File.Copy(Path, zipFileLocation);
-            ZipFile.ExtractToDirectory(zipFileLocation, tempDirectory);
-            File.Delete(zipFileLocation);
-
-            var firstLayer = Directory.GetDirectories(tempDirectory).FirstOrDefault() ?? throw new ApplicationException($"Kein Subdirectory in '{tempDirectory}' gefunden!");
-
-            var secondLayer = Directory.GetDirectories(firstLayer).FirstOrDefault() ?? throw new ApplicationException($"Kein Subdirectory in '{firstLayer}' gefunden!");
-
-            var files = Directory.GetFiles(secondLayer).ToList();
-
-            var sqlLiteDB = files.FirstOrDefault(e => System.IO.Path.GetExtension(e) == ".sqlite") ?? throw new ApplicationException("Benötigte .sqlite Datei nicht gefunden!");
-
-            await Task.Run(() =>
-            {
-                foreach (var image in files.Where(e => System.IO.Path.GetExtension(e) != ".sqlite").ToList())
-                    File.Move(image, $"{vehicleDirectory}\\{System.IO.Path.GetFileName(image)}");
-            });
-
-            return sqlLiteDB;
-        }
-
-        private async Task FillDbFromDB(string sqlLiteLocation)
-        {
-            if (string.IsNullOrWhiteSpace(sqlLiteLocation)) throw new ApplicationException($"Paramter {nameof(sqlLiteLocation)} is null!");
-            await Task.Run(() =>
-            {
-                using SqliteConnection connection = new($"Data Source={sqlLiteLocation}");
-                connection.Open();
-
-                ImportVehicles(connection);
-                ImportFunctions(connection);
-
-                connection.Dispose();
-            });
-        }
-
-        private void GetDirectories(out string vehicleDirectory, out string tempDirectory, out string zipFileLocation)
-        {
-            vehicleDirectory = Configuration.ApplicationData.VehicleImages.FullName;
-            tempDirectory = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Temp");
-            zipFileLocation = new StringBuilder(Path).Replace(".z21", ".zip").ToString();
-        }
-
-        private FunctionType GetFunctionType(string name)
-        {
-            Dictionary<string, FunctionType> dic = new();
-            dic.Add("sound", FunctionType.Sound1);
-            dic.Add("light", FunctionType.Light1);
-            dic.Add("main_beam", FunctionType.MainBeam);
-            dic.Add("main_beam2", FunctionType.LowBeam);
-
-            if (dic.TryGetValue(name.ToLower(), out FunctionType func))
-                return func;
-            else if (Enum.TryParse<FunctionType>(name.Replace("_", ""), true, out var result))
-                return result;
-            else
-                return FunctionType.None;
-        }
-
-        private async Task ImportAsync()
-        {
-            Pb.Visibility = Visibility.Visible;
-            IsEnabled = false;
-            try
-            {
-                InitializeDatabase();
-
-                await FillDbFromDB(await ExtractDataFromZ21File());
-
-                Close();
-                MessageBox.Show("Import erfolgreich!", "Erfolg", MessageBoxButton.OK);
-            }
-            catch (Exception ex)
-            {
-                LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, ex);
-                MessageBox.Show($"Es ist ein Fehler aufgetreten: {ex?.Message}");
-            }
-            finally
-            {
-                Pb.Visibility = Visibility.Collapsed;
-                IsEnabled = true;
-            }
-        }
-
-        private void ImportFunctions(SqliteConnection connection)
-        {
-            var command = connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM functions;";
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                FunctionModel func = new()
-                {
-                    Id = reader.GetString(reader.GetOrdinal("id")).ToInt32(),
-                    Vehicle = db.Vehicles.FirstOrDefault(e => e.Id == reader.GetString(reader.GetOrdinal("vehicle_id")).ToInt32()),
-                    ButtonType = (ButtonType)reader.GetString(reader.GetOrdinal("button_type")).ToInt32(),
-                    Name = ParseFunctionName(reader.GetString(reader.GetOrdinal("shortcut")).IsNullOrWhiteSpace() ? reader.GetString(reader.GetOrdinal("image_name")) : reader.GetString(reader.GetOrdinal("shortcut"))),
-                    Time = (int)reader.GetString(reader.GetOrdinal("time")).ToDecimal(),
-                    Position = reader.GetString(reader.GetOrdinal("position")).ToInt32(),
-                    ImageName = reader.GetString(reader.GetOrdinal("image_name")),
-                    Address = reader.GetString(reader.GetOrdinal("function")).ToInt32(),
-                    ShowFunctionNumber = reader.GetString(reader.GetOrdinal("show_function_number")).ToBoolean(),
-                    IsConfigured = reader.GetString(reader.GetOrdinal("is_configured")).ToBoolean(),
-                    EnumType = GetFunctionType(reader.GetString(reader.GetOrdinal("image_name")))
-                };
-
-                if (func.Name != "Empty")
-                    db.Functions.Add(func);
-            }
-            db.SaveChanges();
-        }
-
-        private static string ParseFunctionName(string name) => Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(Regex.Replace(name?.ToLower()?.Replace("_", " ") ?? "", "[0-9]", " ").Trim());
-
-        private void ImportVehicles(SqliteConnection connection)
-        {
-            var command = connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM vehicles";
-            using var reader = command.ExecuteReader();
-
-            while (reader.Read())
-            {
-                db.Add(new VehicleModel()
-                {
-                    Id = reader.GetString(reader.GetOrdinal("id")).ToInt32(),
-                    Name = reader.GetString(reader.GetOrdinal("name")),
-                    ImageName = reader.GetString(reader.GetOrdinal("image_name")),
-                    Type = (VehicleType)reader.GetString(reader.GetOrdinal("type")).ToInt32(),
-                    MaxSpeed = reader.GetString(reader.GetOrdinal("max_speed")).ToInt64(),
-                    Address = reader.GetString(reader.GetOrdinal("address")).ToInt64(),
-                    IsActive = reader.GetString(reader.GetOrdinal("active")).ToBoolean(),
-                    Position = reader.GetString(reader.GetOrdinal("position")).ToInt64(),
-                    FullName = reader.GetString(reader.GetOrdinal("full_name")),
-                    Railway = reader.GetString(reader.GetOrdinal("railway")),
-                    InvertTraction = reader.GetString(reader.GetOrdinal("traction_direction")).ToBoolean(),
-                    Description = reader.GetString(reader.GetOrdinal("description")),
-                    Dummy = reader.GetString(reader.GetOrdinal("dummy")).ToBoolean(),
-                });
-            }
-            db.SaveChanges();
-        }
-
-        private void InitializeDatabase()
-        {
-            db.Database.EnsureCreated();
-            db.Clear();
-        }
+        //    if (dic.TryGetValue(name.ToLower(), out FunctionType func))
+        //        return func;
+        //    else if (Enum.TryParse<FunctionType>(name.Replace("_", ""), true, out var result))
+        //        return result;
+        //    else
+        //        return FunctionType.None;
+        //}
     }
 }
