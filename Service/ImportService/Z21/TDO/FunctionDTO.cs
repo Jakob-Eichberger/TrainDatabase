@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Service.ImportService.Z21.TDO
 {
@@ -7,33 +6,33 @@ namespace Service.ImportService.Z21.TDO
     internal class FunctionDTO
     {
         [Column("id")]
-        internal long Id { get; set; }
+        internal long id { get; set; }
 
         [Column("vehicle_id")]
-        internal long VehicleId { get; set; }
+        internal long vehicle_id { get; set; }
 
         [Column("button_type")]
-        internal long ButtonType { get; set; }
+        internal long button_type { get; set; }
 
         [Column("shortcut")]
-        internal string Shortcut { get; set; }
+        internal string shortcut { get; set; }
 
         [Column("time")]
-        internal string Time { get; set; }
+        internal string time { get; set; }
 
         [Column("position")]
-        internal long Position { get; set; }
+        internal long position { get; set; }
 
         [Column("image_name")]
-        internal string ImageName { get; set; }
+        internal string image_name { get; set; }
 
         [Column("function")]
         internal long function { get; set; }
 
         [Column("show_function_number")]
-        internal long ShowFunctionNumber { get; set; }
+        internal long show_function_number { get; set; }
 
         [Column("is_configured")]
-        internal long IsConfigured { get; set; }
+        internal long is_configured { get; set; }
     }
 }
