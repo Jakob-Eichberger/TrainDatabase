@@ -31,6 +31,12 @@ namespace Helper
             /// Returns the location of the log file directory.
             /// </summary>
             public static FileInfo DatabaseFile => new(Path.Combine(ApplicationDataDirectory.FullName, "Data", "Database.sqlite"));
+
+            /// <summary>
+            /// Returns the location of the temp path directory.
+            /// </summary>
+            public static DirectoryInfo TempPath => new(Path.Combine(Path.GetTempPath(), "TrainDatabase"));
+
         }
 
 
