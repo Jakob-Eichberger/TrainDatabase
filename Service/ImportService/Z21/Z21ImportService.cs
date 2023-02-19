@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Dapper;
+﻿using Dapper;
 using Extensions;
 using Extensions.Exceptions;
 using Helper;
