@@ -40,8 +40,6 @@ namespace Model
 
         public bool? Dummy { get; set; } = false;
 
-        public Epoch Epoche { get; set; } = Epoch.@default;
-
         public List<FunctionModel> Functions { get; set; } = new();
 
         public decimal?[] TractionForward { get; set; } = new decimal?[Client.maxDccStep + 1];
