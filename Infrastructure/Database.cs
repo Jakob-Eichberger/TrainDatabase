@@ -119,8 +119,9 @@ namespace Infrastructure
         /// <summary>
         /// Deletes all dbset data.
         /// </summary>
-        public void Clear()
+        public void DeleteAll()
         {
+            DetachAllEntities();
             Functions.RemoveAll();
             Vehicles.RemoveAll();
             SaveChanges();

@@ -279,7 +279,7 @@ namespace Wpf_Application
         {
             if (MessageBoxResult.Yes == MessageBox.Show("Sicher dass die Datenbank gelöscht werden soll?", "Datenbank löschen", MessageBoxButton.YesNo, MessageBoxImage.Warning))
             {
-                Db.Clear();
+                Db.DeleteAll();
             }
         }
     }

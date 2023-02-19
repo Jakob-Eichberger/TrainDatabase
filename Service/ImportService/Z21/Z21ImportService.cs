@@ -44,7 +44,7 @@ namespace Service.ImportService.Z21
                 throw new NotSupportedException($"Importing a {z21File.Extension} file is not supported!");
             }
 
-            Database.DetachAllEntities();
+            Database.DeleteAll();
             await Database.Database.EnsureDeletedAsync();
             await Database.Database.EnsureCreatedAsync();
 
