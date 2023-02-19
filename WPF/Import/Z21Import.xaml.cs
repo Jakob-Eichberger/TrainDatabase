@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Model;
 using Service;
+using Service.ImportService.Z21;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -47,8 +48,10 @@ namespace Importer
 
         private async void BtnGo_Click(object sender, RoutedEventArgs e)
         {
-            await ImportAsync();
-            Close();
+            var z21 = new Z21ImportService(db);
+            await z21.Import(new FileInfo(Path));
+            //await ImportAsync();
+            //Close();
         }
 
         private void BtnOpenFileDalog_Click(object sender, RoutedEventArgs e)
@@ -209,27 +212,11 @@ namespace Importer
                     Address = reader.GetString(reader.GetOrdinal("address")).ToInt64(),
                     IsActive = reader.GetString(reader.GetOrdinal("active")).ToBoolean(),
                     Position = reader.GetString(reader.GetOrdinal("position")).ToInt64(),
-                    DriversCab = reader.GetString(reader.GetOrdinal("drivers_cab")),
                     FullName = reader.GetString(reader.GetOrdinal("full_name")),
-                    SpeedDisplay = reader.GetString(reader.GetOrdinal("speed_display")).ToInt64(),
                     Railway = reader.GetString(reader.GetOrdinal("railway")),
-                    BufferLenght = reader.GetString(reader.GetOrdinal("buffer_lenght")).ToInt64(),
-                    ModelBufferLenght = reader.GetString(reader.GetOrdinal("model_buffer_lenght")).ToInt64(),
-                    ServiceWeight = reader.GetString(reader.GetOrdinal("service_weight")).ToInt64(),
-                    ModelWeight = reader.GetString(reader.GetOrdinal("model_weight")).ToInt64(),
-                    Rmin = reader.GetString(reader.GetOrdinal("rmin")).ToInt64(),
-                    ArticleNumber = reader.GetString(reader.GetOrdinal("article_number")),
-                    DecoderType = reader.GetString(reader.GetOrdinal("decoder_type")),
-                    Owner = reader.GetString(reader.GetOrdinal("owner")),
-                    BuildYear = reader.GetString(reader.GetOrdinal("build_year")),
-                    OwningSince = reader.GetString(reader.GetOrdinal("owning_since")),
                     InvertTraction = reader.GetString(reader.GetOrdinal("traction_direction")).ToBoolean(),
                     Description = reader.GetString(reader.GetOrdinal("description")),
                     Dummy = reader.GetString(reader.GetOrdinal("dummy")).ToBoolean(),
-                    Ip = IPAddress.Parse(reader.GetString(reader.GetOrdinal("ip"))),
-                    Video = reader.GetString(reader.GetOrdinal("video")).ToInt64(),
-                    Crane = reader.GetString(reader.GetOrdinal("crane")).ToBoolean(),
-                    DirectSteering = reader.GetString(reader.GetOrdinal("direct_steering")).ToInt64(),
                 });
             }
             db.SaveChanges();
