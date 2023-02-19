@@ -126,5 +126,17 @@ namespace Infrastructure
             SaveChanges();
             InvokeCollectionChanged();
         }
+
+        /// <summary>
+        /// Detaches all tracked entities
+        /// </summary>
+        public void DetachAllEntities()
+        {
+            var changedEntriesCopy = ChangeTracker.Entries().Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted).ToList();
+            foreach (var entry in changedEntriesCopy)
+            {
+                entry.State = EntityState.Detached;
+            }
+        }
     }
 }
