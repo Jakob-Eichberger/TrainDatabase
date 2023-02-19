@@ -1,17 +1,22 @@
-﻿using Extensions.Exceptions;
+﻿using Dapper;
+using Extensions.Exceptions;
 using Helper;
 using Infrastructure;
+using Microsoft.Data.Sqlite;
+using Microsoft.VisualBasic;
+using Service.ImportService.Z21.TDO;
 using System;
-using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Service
+namespace Service.ImportService.Z21
 {
-    internal class Z21ImportService
+    public class Z21ImportService
     {
         public Z21ImportService(Database database)
         {
@@ -31,14 +36,14 @@ namespace Service
             await Database.Database.EnsureDeletedAsync();
             await Database.Database.EnsureCreatedAsync();
 
-            var filePath = ExtractDataFromZ21File(z21File.FullName);
+            var filePath = ExtractPhotosAndSqlFileFromZ21File(z21File.FullName);
         });
 
         /// <summary>
         /// Extracts the database file and pictures from the Roco .z21 archive file.
         /// </summary>
         /// <returns>Returns the location of the sql database file.</returns>
-        private async Task<FileInfo> ExtractDataFromZ21File(string z21Path) => await Task.Run(() =>
+        private async Task<FileInfo> ExtractPhotosAndSqlFileFromZ21File(string z21Path) => await Task.Run(() =>
         {
             var zipFileLocation = new StringBuilder(z21Path).Replace(".z21", ".zip").ToString();
 
@@ -67,7 +72,7 @@ namespace Service
 
             foreach (var image in files.Where(e => Path.GetExtension(e) != ".sqlite").ToList())
             {
-                File.Move(image, $"{Configuration.ApplicationData.VehicleImages.FullName}\\{System.IO.Path.GetFileName(image)}");
+                File.Move(image, $"{Configuration.ApplicationData.VehicleImages.FullName}\\{Path.GetFileName(image)}");
             }
 
             return new FileInfo(sqlLiteDB);
