@@ -1,6 +1,5 @@
 # TrainDatabase
-TrainDatabase is software for managing and controlling your model trains. The software was created because no pc software currently exists that provides a modern, simple and intuitive interface for controlling your trains. 
-TrainDatabase fully supports multi traction. 
+TrainDatabase is a software that lets you control your model trains with your PC. Whether you want to run a single train or a whole network, TrainDatabase gives you an easy and intuitive way to do it. You can customize the speed, direction, lights and sounds of your trains, and switch between different layouts and scenarios. TrainDatabase is designed for model train enthusiasts who want to have full manual control over their hobby. Unlike other software that focus on automation or simulation, TrainDatabase lets you experience the thrill of driving your trains yourself
 
 The features of this software are as followed: 
 - Controlling your trains with either a mouse, hotkeys, or throttle.
