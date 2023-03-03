@@ -31,8 +31,6 @@
                     <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Content="Debug Konsole beim Start öffnen." Margin="5" IsChecked="{Binding ElementName=settingsw,Path=OpenDebugConsoleOnStart,Mode=TwoWay}"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Theme" IsEnabled="False">
-            </TabItem>
             <TabItem Header="JoyStick" IsEnabled="False">
                 <Grid>
                     <Grid.RowDefinitions>
