@@ -1,11 +1,11 @@
 # TrainDatabase
-TrainDatabase is a software that lets you control your model trains with your PC. Whether you want to run a single train or a whole network, TrainDatabase gives you an easy and intuitive way to do it. You can customize the speed, direction, lights and sounds of your trains, and switch between different layouts and scenarios. TrainDatabase is designed for model train enthusiasts who want to have full manual control over their hobby. Unlike other software that focus on automation or simulation, TrainDatabase lets you experience the thrill of driving your trains yourself
+TrainDatabase is a software that lets you control your model trains with your PC. Whether you want to run a single train or a whole network, TrainDatabase gives you an easy and intuitive way to do it. With TrainDatabase, you can:
 
-The features of this software are as followed: 
-- Controlling your trains with either a mouse, hotkeys, or throttle.
-- Fully supports double traction for control cars, unmeasured and measured locomotives. 
-- Database can be imported from the new Roco Z21 app. 
-- Measuring the vehicle's speed using a micro controller and two infrared sensors. 
+- Control your model trains with your PC using TrainDatabase
+- Run a single train or a whole network with ease and flexibility
+- Enjoy realistic and immersive simulation of train operations and scenarios
+- Support double traction for more power and speed
+- Import a z21 Database for seamless integration with your existing Roco/Fleischman system
 
 *Note: TrainDatabase and its documentation is written in German. An English language package is **not** planned.*
 
