@@ -15,7 +15,25 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_0A923E08E6ED42509F24811C819B35DE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_528DEA74BC4E4F1CB8DF791F03E03211"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_53D212F6C856432F99008F25658F38ED"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -27,19 +45,31 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_80AA236F321D40229AED36DDD0A7DDF2"
+        "MsmKey" = "8:_7EF513AF24E146BE98F48A2172536D76"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_D050C59F1E8F4EACB43EDB1E2017379C"
+        "MsmKey" = "8:_883656DF40214903868D13D64D7F0910"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_F0603D0716824092A3C4660BABA0DB18"
+        "MsmKey" = "8:_CDD2D0C278F84F25B8D61AFDED89C010"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E099D86D176A44EA88C13FE45735BFF0"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F28A609C23964B8D98844CEE18D15F73"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -159,10 +189,70 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0A923E08E6ED42509F24811C819B35DE"
+            {
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\e_sqlite3.dll"
+            "TargetName" = "8:e_sqlite3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_47C9FD9072DF4ABB92264431FC0ED0CD"
             {
             "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\Datenbank.ico"
             "TargetName" = "8:Datenbank.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_528DEA74BC4E4F1CB8DF791F03E03211"
+            {
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\PenImc_cor3.dll"
+            "TargetName" = "8:PenImc_cor3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_53D212F6C856432F99008F25658F38ED"
+            {
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\vcruntime140_cor3.dll"
+            "TargetName" = "8:vcruntime140_cor3.dll"
             "Tag" = "8:"
             "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
             "Condition" = "8:"
@@ -199,10 +289,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_80AA236F321D40229AED36DDD0A7DDF2"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7EF513AF24E146BE98F48A2172536D76"
             {
-            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\TrainDB.dll.config"
-            "TargetName" = "8:TrainDB.dll.config"
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\D3DCompiler_47_cor3.dll"
+            "TargetName" = "8:D3DCompiler_47_cor3.dll"
             "Tag" = "8:"
             "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
             "Condition" = "8:"
@@ -219,10 +309,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D050C59F1E8F4EACB43EDB1E2017379C"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_883656DF40214903868D13D64D7F0910"
             {
-            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\e_sqlite3.dll"
-            "TargetName" = "8:e_sqlite3.dll"
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\PresentationNative_cor3.dll"
+            "TargetName" = "8:PresentationNative_cor3.dll"
             "Tag" = "8:"
             "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
             "Condition" = "8:"
@@ -239,10 +329,50 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F0603D0716824092A3C4660BABA0DB18"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CDD2D0C278F84F25B8D61AFDED89C010"
             {
             "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\TrainDB.exe"
             "TargetName" = "8:TrainDB.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E099D86D176A44EA88C13FE45735BFF0"
+            {
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\wpfgfx_cor3.dll"
+            "TargetName" = "8:wpfgfx_cor3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F28A609C23964B8D98844CEE18D15F73"
+            {
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\TrainDB.dll.config"
+            "TargetName" = "8:TrainDB.dll.config"
             "Tag" = "8:"
             "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
             "Condition" = "8:"
@@ -326,15 +456,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Train Database"
-        "ProductCode" = "8:{DA10AA73-872C-4CA6-9B81-0173FD42F729}"
-        "PackageCode" = "8:{581B6318-70D3-4918-A0C3-F0114AFD1891}"
+        "ProductCode" = "8:{DF14641F-C648-469A-8D14-2C3533BA42D1}"
+        "PackageCode" = "8:{0C74DA32-8801-4945-B3AB-C93A1DD77997}"
         "UpgradeCode" = "8:{8F2F2FF6-A026-464A-A4F7-333D9653AA4A}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.5.0"
+        "ProductVersion" = "8:0.6.0"
         "Manufacturer" = "8:Jakob Eichberger"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://github.com/Jakob-Eichberger/TrainDatabase"
@@ -447,32 +577,32 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_547059686BF847BE9D36CB2F7EDAB384"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6F88E218E0394F8F8F4FABB1575917E2"
             {
-            "Name" = "8:TrainDatabase"
+            "Name" = "8:TrainDB"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_F0603D0716824092A3C4660BABA0DB18"
-            "Folder" = "8:_68359F7030FD42F18C7C74595714F3C7"
-            "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
-            "Icon" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8B666CD6CF984A4BBE7D569FD71EC940"
-            {
-            "Name" = "8:TrainDatabase"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_F0603D0716824092A3C4660BABA0DB18"
+            "Target" = "8:_CDD2D0C278F84F25B8D61AFDED89C010"
             "Folder" = "8:_E9E39B3F649B42988AFF4E3767EF0CCA"
             "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
-            "Icon" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FE0E0FE474EC48668A3AE3C8D4F470C2"
+            {
+            "Name" = "8:TrainDB"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_CDD2D0C278F84F25B8D61AFDED89C010"
+            "Folder" = "8:_68359F7030FD42F18C7C74595714F3C7"
+            "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Icon" = "8:"
             "Feature" = "8:"
             }
         }
