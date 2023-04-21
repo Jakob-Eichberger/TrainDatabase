@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Z21;
-using Z21.Model;
+using Z21.DTO;
 using Z21.Events;
 
 namespace Viewmodel

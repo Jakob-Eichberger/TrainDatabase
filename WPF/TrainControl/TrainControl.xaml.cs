@@ -19,7 +19,7 @@ using System.Windows.Media;
 using TrainDatabase.Extensions;
 using TrainDatabase.JoyStick;
 using WPF_Application.TrainControl;
-using Z21.Model;
+using Z21.DTO;
 
 namespace TrainDatabase
 {
