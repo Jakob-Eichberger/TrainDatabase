@@ -15,19 +15,19 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_76E15986BEB0463385B855ED05057BEA"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A85F8AFC481C4BA3B1B03FD36DCE6B0A"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C8BF9FE4D5094F3BBE178B15B835DC55"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CA5F2ED001F34DCB8BDCB605ED968E40"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -108,17 +108,17 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_617218D8CB434435906C3B537B26DBC7"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_21EC9FA9DECC4133A1211584F3925A57"
             {
             "Name" = "8:cmd.exe"
             "Condition" = "8:"
-            "Object" = "8:_76E15986BEB0463385B855ED05057BEA"
+            "Object" = "8:_C8BF9FE4D5094F3BBE178B15B835DC55"
             "FileType" = "3:2"
             "InstallAction" = "3:2"
             "Arguments" = "8:/C \"icacls \"C:\\Program Files\\TrainDatabase\" /grant *S-1-1-0:(F) /T /C /Q\""
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_65C9EF60_51C7_4BA1_8019_91E0354E6011"
+            "Identifier" = "8:_BD3548E1_D94D_4D49_AD1B_5722DC4E927B"
             "InstallerClass" = "11:FALSE"
             "CustomActionData" = "8:"
             }
@@ -147,12 +147,12 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_47C9FD9072DF4ABB92264431FC0ED0CD"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C8BF9FE4D5094F3BBE178B15B835DC55"
             {
-            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\publish\\win-x64\\Datenbank.ico"
-            "TargetName" = "8:Datenbank.ico"
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\Script\\cmd.exe"
+            "TargetName" = "8:cmd.exe"
             "Tag" = "8:"
-            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Folder" = "8:_EC08B15E2C904D8A8533492CA7F9BC2A"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -167,12 +167,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_76E15986BEB0463385B855ED05057BEA"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CA5F2ED001F34DCB8BDCB605ED968E40"
             {
-            "SourcePath" = "8:..\\WPF\\Script\\cmd.exe"
-            "TargetName" = "8:cmd.exe"
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\Datenbank.ico"
+            "TargetName" = "8:Datenbank.ico"
             "Tag" = "8:"
-            "Folder" = "8:_EC08B15E2C904D8A8533492CA7F9BC2A"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -255,7 +255,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Train Database"
         "ProductCode" = "8:{9CD34AEE-9D2B-4B14-9808-2E91043BA69A}"
-        "PackageCode" = "8:{31B06B1A-DA7A-4029-A23F-AD9316EC77BD}"
+        "PackageCode" = "8:{CAF91D11-76C4-4BE8-AC6D-1FD63806FCC1}"
         "UpgradeCode" = "8:{8F2F2FF6-A026-464A-A4F7-333D9653AA4A}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -272,7 +272,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:https://github.com/Jakob-Eichberger/TrainDatabase"
-        "ARPPRODUCTICON" = "8:_47C9FD9072DF4ABB92264431FC0ED0CD"
+        "ARPPRODUCTICON" = "8:_CA5F2ED001F34DCB8BDCB605ED968E40"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
