@@ -401,6 +401,34 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_263A3080398E4229B9C63257BA259B09"
+            {
+            "Name" = "8:Train Database"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_370501D9C50F4E85838F087B4348A8A4"
+            "Folder" = "8:_E9E39B3F649B42988AFF4E3767EF0CCA"
+            "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Icon" = "8:_CA5F2ED001F34DCB8BDCB605ED968E40"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_E3BFDD82273744A992F7FC32769FB252"
+            {
+            "Name" = "8:Train Database"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_370501D9C50F4E85838F087B4348A8A4"
+            "Folder" = "8:_68359F7030FD42F18C7C74595714F3C7"
+            "WorkingFolder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Icon" = "8:_CA5F2ED001F34DCB8BDCB605ED968E40"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {
