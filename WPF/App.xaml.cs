@@ -83,6 +83,7 @@ namespace Wpf_Application
             {
                 Log.Logger.Fatal(ex, $"Failed to initialize the application!");
                 MessageBox.Show(ex.Message, "Fatal error");
+                Environment.Exit(1);
             }
         }
 
