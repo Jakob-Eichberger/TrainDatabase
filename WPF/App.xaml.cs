@@ -63,7 +63,7 @@ namespace Wpf_Application
         {
             try
             {
-                
+
                 using (var db = new Database())
                 {
                     //db.Database.EnsureDeleted();
@@ -82,6 +82,7 @@ namespace Wpf_Application
             catch (Exception ex)
             {
                 Log.Logger.Fatal(ex, $"Failed to initialize the application!");
+                MessageBox.Show(ex.Message, "Fatal error");
             }
         }
 
