@@ -15,7 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_A85F8AFC481C4BA3B1B03FD36DCE6B0A"
+        "MsmKey" = "8:_370501D9C50F4E85838F087B4348A8A4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_75BA8FADC14C488F9E9CEE8419C4A3C9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -147,6 +153,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_75BA8FADC14C488F9E9CEE8419C4A3C9"
+            {
+            "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\runtimes\\win-x64\\native\\e_sqlite3.dll"
+            "TargetName" = "8:e_sqlite3.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C8BF9FE4D5094F3BBE178B15B835DC55"
             {
             "SourcePath" = "8:..\\WPF\\bin\\Release\\net7.0-windows\\Script\\cmd.exe"
@@ -255,7 +281,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Train Database"
         "ProductCode" = "8:{9CD34AEE-9D2B-4B14-9808-2E91043BA69A}"
-        "PackageCode" = "8:{CAF91D11-76C4-4BE8-AC6D-1FD63806FCC1}"
+        "PackageCode" = "8:{58CCCDC0-C740-485D-B5DF-A014E345D412}"
         "UpgradeCode" = "8:{8F2F2FF6-A026-464A-A4F7-333D9653AA4A}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -717,9 +743,9 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A85F8AFC481C4BA3B1B03FD36DCE6B0A"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_370501D9C50F4E85838F087B4348A8A4"
             {
-            "SourcePath" = "8:..\\WPF\\obj\\Release\\net7.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\WPF\\obj\\x64\\Release\\net7.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F7CAED32CFEF46628204D6D821A409D7"
@@ -737,7 +763,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|Any CPU"
+            "OutputConfiguration" = "8:Release|x64"
             "OutputGroupCanonicalName" = "8:PublishItems"
             "OutputProjectGuid" = "8:{AEB176C2-14E7-488C-BB3A-1BA664BB049B}"
             "ShowKeyOutput" = "11:TRUE"
