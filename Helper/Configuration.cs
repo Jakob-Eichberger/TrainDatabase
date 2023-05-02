@@ -28,7 +28,7 @@ namespace Helper
             public static DirectoryInfo LogDirectory => new(System.IO.Path.Combine(ApplicationDataDirectory.FullName, "Log"));
 
             /// <summary>
-            /// Returns the location of the log file directory.
+            /// Returns the location of the database file directory.
             /// </summary>
             public static FileInfo DatabaseFile => new(Path.Combine(ApplicationDataDirectory.FullName, "Data", "Database.sqlite"));
 
