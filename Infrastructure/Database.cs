@@ -107,10 +107,15 @@ namespace Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var converter = new ValueConverter<decimal?[], string>(v => string.Join(";", v), v => v.Split(";", StringSplitOptions.None).Select(val => val.IsDecimal() ? decimal.Parse(val) : (decimal?)null).ToArray());
-            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionForward).HasConversion(converter);
-            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionBackward).HasConversion(converter);
-            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionVehicleIds).HasConversion(new ValueConverter<List<int>, string>(v => string.Join(";", v.Distinct()), v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).Select(val => val.IsInt() ? int.Parse(val) : int.MinValue).Distinct().ToList()));
+            var decimArrayToStringConverter = new ValueConverter<decimal?[], string>(v => string.Join(";", v), v => v.Split(";", StringSplitOptions.None).Select(val => val.IsDecimal() ? decimal.Parse(val) : (decimal?)null).ToArray());
+            var decimalArrayValueComparer = new ValueComparer<decimal?[]>((a, b) => a.SequenceEqual(b), v => v.Aggregate(0, (a, i) => HashCode.Combine(a, i.GetHashCode())), v => v.ToArray());
+            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionForward).HasConversion(decimArrayToStringConverter).Metadata.SetValueComparer(decimalArrayValueComparer);
+            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionBackward).HasConversion(decimArrayToStringConverter).Metadata.SetValueComparer(decimalArrayValueComparer);
+
+            var intListConverter = new ValueConverter<List<int>, string>(v => string.Join(";", v.Distinct()), v => v.Split(";", StringSplitOptions.RemoveEmptyEntries).Select(val => val.IsInt() ? int.Parse(val) : int.MinValue).Distinct().ToList());
+            var intListValueComparer = new ValueComparer<List<int>>((a, b) => a.SequenceEqual(b), v => v.Aggregate(0, (a, i) => HashCode.Combine(a, i.GetHashCode())), v => v.ToList());
+            modelBuilder.Entity<VehicleModel>().Property(e => e.TractionVehicleIds).HasConversion(intListConverter).Metadata.SetValueComparer(intListValueComparer);
+
             OnModelCreatingPartial(modelBuilder);
         }
 
