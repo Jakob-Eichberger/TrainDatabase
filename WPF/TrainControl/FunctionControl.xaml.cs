@@ -46,7 +46,7 @@ namespace WPF_Application.TrainControl
         /// <summary>
         /// Functions draws every single Function of a vehicle for the user to click on. 
         /// </summary>
-        private void DrawAllFunctions()
+        private void DrawAllFunctions() => Dispatcher.BeginInvoke(() =>
         {
             FunctionGrid.Children.Clear();
             foreach (var item in Vehicle.Functions.OrderBy(e => e.Address))
@@ -64,6 +64,6 @@ namespace WPF_Application.TrainControl
                         break;
                 }
             }
-        }
+        });
     }
 }
