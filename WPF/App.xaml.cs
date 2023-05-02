@@ -1,5 +1,6 @@
 ﻿using Helper;
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
@@ -66,7 +67,7 @@ namespace Wpf_Application
                 using (var db = new Database())
                 {
                     //db.Database.EnsureDeleted();
-                    db.Database.EnsureCreated();
+                    db.Database.MigrateAsync();
                 }
 
                 if (Configuration.OpenDebugConsoleOnStart || Debugger.IsAttached)
