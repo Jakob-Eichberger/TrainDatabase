@@ -1,6 +1,5 @@
 ﻿using Helper;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
@@ -59,7 +58,7 @@ namespace Wpf_Application
             services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
         }
 
-        private async void OnStartup(object sender, StartupEventArgs e)
+        private void OnStartup(object sender, StartupEventArgs e)
         {
             try
             {
@@ -67,7 +66,7 @@ namespace Wpf_Application
                 using (var db = new Database())
                 {
                     //db.Database.EnsureDeleted();
-                    await db.Database.MigrateAsync();
+                    db.Database.EnsureCreated();
                 }
 
                 if (Configuration.OpenDebugConsoleOnStart || Debugger.IsAttached)
