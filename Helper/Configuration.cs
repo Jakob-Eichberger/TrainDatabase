@@ -33,9 +33,9 @@ namespace Helper
             public static FileInfo DatabaseFile => new(Path.Combine(ApplicationDataDirectory.FullName, "Data", "Database.sqlite"));
 
             /// <summary>
-            /// Returns the location of the temp path directory.
+            /// Returns a temporary path for this application. Every time this property is called the path is going to be different!
             /// </summary>
-            public static DirectoryInfo TempPath => new(Path.Combine(Path.GetTempPath(), "TrainDatabase"));
+            public static DirectoryInfo TempPath => new(Path.Combine(Path.GetTempPath(), "TrainDatabase", Guid.NewGuid().ToString()));
 
         }
 
