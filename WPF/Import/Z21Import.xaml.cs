@@ -49,7 +49,7 @@ namespace Importer
         private async void BtnGo_Click(object sender, RoutedEventArgs e)
         {
             var z21 = new Z21ImportService(db);
-            await z21.Import(new FileInfo(Path));
+            await z21.ImportAsync(new FileInfo(Path));
             MessageBox.Show($"Import Successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             this.Close();
         }

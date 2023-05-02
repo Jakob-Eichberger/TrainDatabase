@@ -37,7 +37,7 @@ namespace Service.ImportService.Z21
         /// <param name="z21File"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
-        public async Task Import(FileInfo z21File) => await Task.Run(async () =>
+        public async Task ImportAsync(FileInfo z21File) => await Task.Run(async () =>
         {
             if (z21File.Extension.ToLower() is not ".z21")
             {
@@ -45,16 +45,16 @@ namespace Service.ImportService.Z21
             }
 
             Database.DeleteAll();
-            await Database.Database.EnsureDeletedAsync();
-            await Database.Database.EnsureCreatedAsync();
 
-            var filePath = await ExtractPhotosAndSqlFileFromZ21File(z21File.FullName);
-            var con = new SqliteConnection($"Data Source={filePath}");
-            MapVehicles(con);
-            MapFunctions(con, true);
+            var tempPath = Configuration.ApplicationData.TempPath.FullName;
+            var filePath = await ExtractPhotosAndSqlFileFromZ21File(z21File.FullName, tempPath);
+            using var con = new SqliteConnection($"Data Source={filePath}");
+            await MapVehiclesAsync(con);
+            await MapFunctionsAsync(con, true);
+            await con.CloseAsync();
         });
 
-        private void MapFunctions(SqliteConnection con, bool removeEmptyFunctions)
+        private async Task MapFunctionsAsync(SqliteConnection con, bool removeEmptyFunctions)
         {
             var f = con.Query<FunctionDTO>("Select * from functions").ToList();
             var functions = f.Select(e => new FunctionModel()
@@ -74,12 +74,12 @@ namespace Service.ImportService.Z21
 
             functions = functions.Where(e => removeEmptyFunctions && e.Name is not "Empty").ToList();
 
-            Database.AddRange(functions);
-            Database.SaveChanges();
+            await Database.AddRangeAsync(functions);
+            await Database.SaveChangesAsync();
             Database.InvokeCollectionChanged();
         }
 
-        private void MapVehicles(SqliteConnection con)
+        private async Task MapVehiclesAsync(SqliteConnection con)
         {
             var v = con.Query<VehicleDTO>("Select * from vehicles").ToList();
             var vehicles = v.Select(e => new VehicleModel()
@@ -99,23 +99,23 @@ namespace Service.ImportService.Z21
                 Description = e.description,
                 Dummy = e.dummy == 1,
             }).ToList();
-            Database.AddRange(vehicles);
-            Database.SaveChanges();
-            Database.Vehicles.Where(e => string.IsNullOrWhiteSpace(e.Name)).ForEachAsync(e => Log.Warning($"Imported Vehicle with Adresse {e.Address} has no display name!"));
+            await Database.AddRangeAsync(vehicles);
+            await Database.SaveChangesAsync();
+            await Database.Vehicles.Where(e => string.IsNullOrWhiteSpace(e.Name)).ForEachAsync(e => Log.Warning($"Imported Vehicle with Adresse {e.Address} has no display name!"));
         }
 
         /// <summary>
         /// Extracts the database file and pictures from the Roco .z21 archive file.
         /// </summary>
         /// <returns>Returns the location of the sql database file.</returns>
-        private async Task<FileInfo> ExtractPhotosAndSqlFileFromZ21File(string z21Path) => await Task.Run(() =>
+        private async Task<FileInfo> ExtractPhotosAndSqlFileFromZ21File(string z21Path, string tempPath) => await Task.Run(() =>
         {
-            var zipFileLocation = new StringBuilder(z21Path).Replace(".z21", ".zip").ToString();
-
-            if (Directory.Exists(Configuration.ApplicationData.TempPath.FullName))
+            if (Directory.Exists(tempPath))
             {
-                Directory.Delete(Configuration.ApplicationData.TempPath.FullName, true);
+                Directory.Delete(tempPath, true);
             }
+            Directory.CreateDirectory(tempPath);
+
 
             if (Directory.Exists(Configuration.ApplicationData.VehicleImages.FullName))
             {
@@ -123,11 +123,21 @@ namespace Service.ImportService.Z21
             }
             Directory.CreateDirectory(Configuration.ApplicationData.VehicleImages.FullName);
 
-            File.Copy(z21Path, zipFileLocation);
-            ZipFile.ExtractToDirectory(zipFileLocation, Configuration.ApplicationData.TempPath.FullName);
-            File.Delete(zipFileLocation);
+            //Copy the z21File to the temp location
+            var z21PathNew = Path.Combine(tempPath, Path.GetFileName(z21Path));
+            File.Copy(z21Path, z21PathNew);
+            z21Path = z21PathNew;
 
-            var firstLayer = Directory.GetDirectories(Configuration.ApplicationData.TempPath.FullName).FirstOrDefault() ?? throw new MissingDirectoryException(Configuration.ApplicationData.TempPath);
+            //Rename the .z21 file to .zip.
+            var zipFileLocation = new StringBuilder(z21Path).Replace(".z21", ".zip").ToString();
+            File.Copy(z21Path, zipFileLocation);
+
+            //Extract the zip file and delte the zip and z21 file.
+            ZipFile.ExtractToDirectory(zipFileLocation, tempPath);
+            File.Delete(zipFileLocation);
+            File.Delete(z21Path);
+
+            var firstLayer = Directory.GetDirectories(tempPath).FirstOrDefault() ?? throw new MissingDirectoryException(tempPath);
 
             var secondLayer = Directory.GetDirectories(firstLayer).FirstOrDefault() ?? throw new MissingDirectoryException(firstLayer);
 
