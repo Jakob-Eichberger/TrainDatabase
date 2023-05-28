@@ -360,3 +360,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
+# advanced installer build files
+Installer\Installer-cache\*
+*.msi
