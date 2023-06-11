@@ -28,4 +28,10 @@
 		</Reference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="Viewmodel\ArduinoSerialPort.cs">
+	    <SubType>Component</SubType>
+	  </Compile>
+	</ItemGroup>
+
 </Project>

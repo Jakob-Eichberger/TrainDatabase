@@ -5,6 +5,7 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using Service;
+using Service.Viewmodel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,7 +21,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TrainDatabase;
 using Z21;
 
 namespace WPF_Application.TimeCapture
@@ -61,7 +61,7 @@ namespace WPF_Application.TimeCapture
 
         private IServiceProvider ServiceProvider { get; }
 
-        public Viewmodel.TimeCapture? TimeCapture { get; }
+        public Service.Viewmodel.TimeCapture? TimeCapture { get; }
 
         private VehicleModel? VehicleModel { get; }
         public LogEventBus LogService { get; private set; }
@@ -107,15 +107,15 @@ namespace WPF_Application.TimeCapture
 
             CreatSpeedTableRow($"Step", $"km/h (V)", $"km/h (R)");
             bool lastStep = false;
-            for (int i = Viewmodel.TimeCapture.StartMeasurement; i <= Client.maxDccStep; i += Viewmodel.TimeCapture.StepMeasurement)
+            for (int i = Service.Viewmodel.TimeCapture.StartMeasurement; i <= Client.maxDccStep; i += Service.Viewmodel.TimeCapture.StepMeasurement)
             {
                 string text2 = $"{(TimeCapture?.TractionForward[i] is null ? "-" : (double)Math.Round((TimeCapture.TractionForward[i] / 3.6m) ?? 0, 2))} km/h";
                 string text3 = $"{(TimeCapture?.TractionBackward[i] is null ? "-" : (double)Math.Round((TimeCapture.TractionBackward[i] / 3.6m) ?? 0, 2))}  km/h";
                 CreatSpeedTableRow($"Step {i}", text2, text3);
 
-                if (!lastStep && i + Viewmodel.TimeCapture.StepMeasurement > Client.maxDccStep)
+                if (!lastStep && i + Service.Viewmodel.TimeCapture.StepMeasurement > Client.maxDccStep)
                 {
-                    i = (Client.maxDccStep - Viewmodel.TimeCapture.StepMeasurement);
+                    i = (Client.maxDccStep - Service.Viewmodel.TimeCapture.StepMeasurement);
                     lastStep = true;
                 }
             }
@@ -167,7 +167,7 @@ namespace WPF_Application.TimeCapture
             model.Axes.Add(new LinearAxis()
             {
                 Maximum = Client.maxDccStep,
-                Minimum = Viewmodel.TimeCapture.StartMeasurement,
+                Minimum = Service.Viewmodel.TimeCapture.StartMeasurement,
                 Position = OxyPlot.Axes.AxisPosition.Bottom,
                 Title = "Dcc Speed Step"
             });

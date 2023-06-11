@@ -9,10 +9,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrainDatabase;
 using Z21;
 
-namespace Viewmodel
+namespace Service.Viewmodel
 {
     public class TimeCapture
     {
@@ -94,7 +93,7 @@ namespace Viewmodel
 
                     if (!lastStep && speed + stepMeasurement > Client.maxDccStep)
                     {
-                        speed = (Client.maxDccStep - stepMeasurement);
+                        speed = Client.maxDccStep - stepMeasurement;
                         lastStep = true;
                     }
                 }
@@ -114,7 +113,7 @@ namespace Viewmodel
         private async Task CaptureTime(int steps, bool direction)
         {
             decimal time = await GetTimeBetweenSensors(steps, direction) / 1000.0m;
-            decimal speed = Math.Round(((DistanceBetweenSensorsInMM / 1000.0m) / time) * 87.0m, 2);
+            decimal speed = Math.Round(DistanceBetweenSensorsInMM / 1000.0m / time * 87.0m, 2);
             SetTractionSpeed(steps, direction, speed);
         }
 

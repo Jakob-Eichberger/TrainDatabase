@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
 using OxyPlot;
+using Service.Viewmodel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

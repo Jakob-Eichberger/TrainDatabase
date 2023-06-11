@@ -1,10 +1,10 @@
 ﻿using Model;
+using Service.Viewmodel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls.Primitives;
-using Viewmodel;
 
 namespace WPF_Application.TrainControl.FunctionButton
 {
