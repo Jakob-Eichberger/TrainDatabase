@@ -1,7 +1,8 @@
 ﻿using Model;
+using System.Collections.Generic;
 using Z21;
 
-namespace Viewmodel
+namespace Service.Viewmodel
 {
     public struct MultiTractionItem
     {

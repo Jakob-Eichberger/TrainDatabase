@@ -1,7 +1,7 @@
 ﻿using Model;
+using Service.Viewmodel;
 using System;
 using System.Windows.Controls;
-using Viewmodel;
 
 namespace WPF_Application.TrainControl.FunctionButton
 {

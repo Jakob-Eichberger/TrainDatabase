@@ -16,7 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Viewmodel;
 using WPF_Application.TrainControl.FunctionButton;
 
 namespace WPF_Application.TrainControl

@@ -11,7 +11,7 @@ using Z21;
 using Z21.Model;
 using Z21.Events;
 
-namespace Viewmodel
+namespace Service.Viewmodel
 {
     public class Vehicle
     {
@@ -43,7 +43,7 @@ namespace Viewmodel
         /// Stores the direction of travel for the current vehicle. This property should be used for one way binding (Source to target).
         /// </summary>
         /// <remarks>
-        /// To switch direction call <see cref="Vehicle.SwitchDirection"/>.
+        /// To switch direction call <see cref="SwitchDirection"/>.
         /// </remarks>
         public bool Direction => GetDrivingDirection(VehicleModel, LiveData?.DrivingDirection ?? true);
 
@@ -62,7 +62,7 @@ namespace Viewmodel
                 if (value < 0 || value > Client.maxDccStep)
                     return;
 
-                speed = value == 1 ? (speed > 1 ? 0 : 2) : value;
+                speed = value == 1 ? speed > 1 ? 0 : 2 : value;
 
                 if ((LiveData?.Speed ?? int.MinValue) != speed)
                     _ = SetLocoDrive(speedstep: speed);
@@ -139,7 +139,7 @@ namespace Viewmodel
                 SlowestVehicleInTractionList = VehicleModel;
         });
 
-        private bool GetDrivingDirection(VehicleModel vehicle, bool direction) => vehicle.Id != VehicleModel.Id ? (vehicle.InvertTraction ? !direction : direction) : direction;
+        private bool GetDrivingDirection(VehicleModel vehicle, bool direction) => vehicle.Id != VehicleModel.Id ? vehicle.InvertTraction ? !direction : direction : direction;
 
         /// <summary>
         /// Raises the <see cref="StateChanged"/> event. 

@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TrainDatabase
+namespace Service.Viewmodel
 {
     /// <summary>
     /// Used to read the arduiono serial bus.
@@ -79,7 +79,7 @@ namespace TrainDatabase
             try
             {
                 Semaphore.WaitOne(millisecondsTimeout);
-                return String.Join("", SerialBuffer.ToList());
+                return string.Join("", SerialBuffer.ToList());
             }
             finally
             {
@@ -114,7 +114,7 @@ namespace TrainDatabase
 
         private void ResetTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            DataReceived?.Invoke(this, new DataReceivedEventArgs(String.Join("", SerialBuffer.ToList())));
+            DataReceived?.Invoke(this, new DataReceivedEventArgs(string.Join("", SerialBuffer.ToList())));
             ReleaseSemaphore();
         }
 
