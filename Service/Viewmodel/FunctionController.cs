@@ -12,9 +12,9 @@ using System.Collections.Generic;
 
 namespace Service.Viewmodel
 {
-    public class Function
+    public class FunctionController
     {
-        public Function(IServiceProvider serviceProvider, FunctionModel functionModel)
+        public FunctionController(IServiceProvider serviceProvider, FunctionModel functionModel)
         {
             ServiceProvider = serviceProvider;
             Db = ServiceProvider.GetService<Database>()!;

@@ -13,10 +13,10 @@ using Z21;
 
 namespace Service.Viewmodel
 {
-    public class TimeCapture
+    public class TimeCaptureController
     {
 
-        public TimeCapture(IServiceProvider serviceProvider, VehicleModel vehicleModel)
+        public TimeCaptureController(IServiceProvider serviceProvider, VehicleModel vehicleModel)
         {
             ServiceProvider = serviceProvider;
             VehicleModel = vehicleModel;
@@ -61,7 +61,7 @@ namespace Service.Viewmodel
 
         private IServiceProvider ServiceProvider { get; }
 
-        private Vehicle Vehicle { get; } = default!;
+        private VehicleController Vehicle { get; } = default!;
 
         private VehicleModel VehicleModel { get; }
 

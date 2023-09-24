@@ -13,13 +13,13 @@ namespace WPF_Application.TrainControl.FunctionButton
             FunctionModel = functionModel;
             FunctionButton.ApplyStyle(this, FunctionModel);
 
-            Function = new Function(ServiceProvider, functionModel);
+            Function = new FunctionController(ServiceProvider, functionModel);
         }
 
         private IServiceProvider ServiceProvider { get; }
 
         private FunctionModel FunctionModel { get; }
 
-        internal Function Function { get; }
+        internal FunctionController Function { get; }
     }
 }

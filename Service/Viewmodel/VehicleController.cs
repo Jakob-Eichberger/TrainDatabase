@@ -13,12 +13,12 @@ using Z21.Events;
 
 namespace Service.Viewmodel
 {
-    public class Vehicle
+    public class VehicleController
     {
         private LokInfoData? liveData = default!;
         private int speed;
 
-        public Vehicle(IServiceProvider serviceProvider, VehicleModel vehicleModel)
+        public VehicleController(IServiceProvider serviceProvider, VehicleModel vehicleModel)
         {
             ServiceProvider = serviceProvider;
             Db = ServiceProvider.GetService<Database>()!;
