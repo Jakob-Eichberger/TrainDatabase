@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 using Z21;
 using Z21.Model;
 using Z21.Events;
+using Service.Viewmodel;
+using Service.Extension;
 
-namespace Service.Viewmodel
+namespace Service.Controller
 {
     public class VehicleController
     {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Model;
 using OxyPlot.Series;
 using Service;
-using Service.Viewmodel;
+using Service.Controller;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

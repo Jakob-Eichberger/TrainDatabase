@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Viewmodel\ArduinoSerialPort.cs">
+	  <Compile Update="Controller\ArduinoSerialPort.cs">
 	    <SubType>Component</SubType>
 	  </Compile>
 	</ItemGroup>

@@ -2,7 +2,6 @@
 using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
-using Service;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Z21;
 
-namespace Service.Viewmodel
+namespace Service.Controller
 {
     public class TimeCaptureController
     {

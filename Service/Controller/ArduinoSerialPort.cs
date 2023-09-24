@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Service.Viewmodel
+namespace Service.Controller
 {
     /// <summary>
     /// Used to read the arduiono serial bus.
