@@ -1,4 +1,6 @@
-﻿namespace Viewmodel
+﻿using System;
+
+namespace Service.Viewmodel
 {
     public struct FunctionPoint : IComparable<FunctionPoint>
     {
@@ -6,8 +8,8 @@
 
         public FunctionPoint(double x, double y = 0)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         /// <summary>
@@ -23,7 +25,7 @@
             double y1 = start.Y;
             double x2 = end.X;
             double y2 = end.Y;
-            return (y / ((y2 - y1) / (x2 - x1))) - y + x1;
+            return y / ((y2 - y1) / (x2 - x1)) - y + x1;
         }
 
         /// <summary>

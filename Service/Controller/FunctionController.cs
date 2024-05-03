@@ -6,12 +6,15 @@ using Z21;
 using Z21.Model;
 using Z21.Enums;
 using Z21.Events;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace Viewmodel
+namespace Service.Controller
 {
-    public class Function
+    public class FunctionController
     {
-        public Function(IServiceProvider serviceProvider, FunctionModel functionModel)
+        public FunctionController(IServiceProvider serviceProvider, FunctionModel functionModel)
         {
             ServiceProvider = serviceProvider;
             Db = ServiceProvider.GetService<Database>()!;

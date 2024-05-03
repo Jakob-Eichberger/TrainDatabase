@@ -29,10 +29,4 @@
 		</Reference>
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="ArduinoSerialPort.cs">
-			<SubType>Component</SubType>
-		</Compile>
-	</ItemGroup>
-
 </Project>
