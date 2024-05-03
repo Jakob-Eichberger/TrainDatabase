@@ -2,7 +2,6 @@
 using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Model;
-using Service;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,12 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Z21;
 
-namespace Service.Viewmodel
+namespace Service.Controller
 {
-    public class TimeCapture
+    public class TimeCaptureController
     {
 
-        public TimeCapture(IServiceProvider serviceProvider, VehicleModel vehicleModel)
+        public TimeCaptureController(IServiceProvider serviceProvider, VehicleModel vehicleModel)
         {
             ServiceProvider = serviceProvider;
             VehicleModel = vehicleModel;
@@ -61,7 +60,7 @@ namespace Service.Viewmodel
 
         private IServiceProvider ServiceProvider { get; }
 
-        private Vehicle Vehicle { get; } = default!;
+        private VehicleController Vehicle { get; } = default!;
 
         private VehicleModel VehicleModel { get; }
 

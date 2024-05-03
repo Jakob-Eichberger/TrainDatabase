@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Model;
 using OxyPlot.Series;
 using Service;
-using Service.Viewmodel;
+using Service.Controller;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -82,7 +82,7 @@ namespace TrainDatabase
 
         public Visibility VehicleTypeVisbility => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
 
-        public Vehicle VehicleViewmodel { get; private set; } = default!;
+        public VehicleController VehicleViewmodel { get; private set; } = default!;
 
         public Z21.Client Z21Client { get; } = default!;
 

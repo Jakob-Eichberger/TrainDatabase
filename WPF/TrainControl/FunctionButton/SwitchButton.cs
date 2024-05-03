@@ -1,5 +1,5 @@
 ﻿using Model;
-using Service.Viewmodel;
+using Service.Controller;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace WPF_Application.TrainControl.FunctionButton
             FunctionModel = functionModel;
             FunctionButton.ApplyStyle(this, FunctionModel);
 
-            Function = new Function(ServiceProvider, functionModel);
+            Function = new FunctionController(ServiceProvider, functionModel);
             Function.StateChanged += (a, state) => Dispatcher.Invoke(() => IsChecked = state);
             Click += (a, b) => Function.SetState(IsChecked ?? false);
         }
@@ -28,6 +28,6 @@ namespace WPF_Application.TrainControl.FunctionButton
 
         private FunctionModel FunctionModel { get; }
 
-        private Function Function { get; }
+        private FunctionController Function { get; }
     }
 }

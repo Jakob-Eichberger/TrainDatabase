@@ -10,15 +10,17 @@ using System.Threading.Tasks;
 using Z21;
 using Z21.Model;
 using Z21.Events;
+using Service.Viewmodel;
+using Service.Extension;
 
-namespace Service.Viewmodel
+namespace Service.Controller
 {
-    public class Vehicle
+    public class VehicleController
     {
         private LokInfoData? liveData = default!;
         private int speed;
 
-        public Vehicle(IServiceProvider serviceProvider, VehicleModel vehicleModel)
+        public VehicleController(IServiceProvider serviceProvider, VehicleModel vehicleModel)
         {
             ServiceProvider = serviceProvider;
             Db = ServiceProvider.GetService<Database>()!;
