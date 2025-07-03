@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using TrainDatabase;
 using WPF_Application;
@@ -147,23 +148,26 @@ namespace Wpf_Application
                     Source = bitmapImage,
                     Width = 250,
                     Height = 100,
-                    Tag = item
+                    Tag = item,
                 });
 
                 sp.Children.Add(new TextBlock()
                 {
-                    Text = !string.IsNullOrWhiteSpace(item?.Name) ? item.Name : (!string.IsNullOrWhiteSpace(item?.FullName) ? item.FullName : $"Adresse: {item?.Address}")
+                    Text = !string.IsNullOrWhiteSpace(item?.Name) ? item.Name : (!string.IsNullOrWhiteSpace(item?.FullName) ? item.FullName : $"Adresse: {item?.Address}"),
+                    Background = Brushes.Transparent,
                 });
 
                 VehicleBorder border = new()
                 {
                     Padding = new(2),
                     Margin = new(10),
-                    BorderThickness = new(1),
-                    BorderBrush = Brushes.Black,
+                    BorderThickness = new(0),
+                    CornerRadius = new(4),
+                    BorderBrush = Brushes.LightGray,
                     Vehicle = item,
                     Child = sp,
-                    ContextMenu = new()
+                    ContextMenu = new(),
+                    Effect = new DropShadowEffect(){Opacity = 0.2}
                 };
 
                 var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => TrainControl.CreatTrainControlWindow(ServiceProvider, a));
