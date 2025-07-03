@@ -6,13 +6,15 @@
         xmlns:local="clr-namespace:TrainDatabase"
         xmlns:converter="clr-namespace:WPF_Application.Converter"
         xmlns:tc="clr-namespace:WPF_Application.TrainControl"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="TrainControl" Name="Tc" MinHeight="300" MinWidth="240" Width="480" Height="450" PreviewMouseWheel="Tc_PreviewMouseWheel" PreviewKeyDown="Tc_PreviewKeyDown" WindowStartupLocation="CenterScreen" Loaded="TrainControl_Loaded" >
     <Window.Resources>
         <converter:BoolToDirectionConverter x:Key="BoolToDirectionConverter"/>
         <converter:TrackPowerToBoolConverter x:Key="TrackPowerToBoolConverter"/>
     </Window.Resources>
-    <Grid Margin="5">
+    <xctk:BusyIndicator IsBusy="True" Name="BusyIndicator" BusyContent="Verbindung zur Zentrale wird hergestellt..." >
+        <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding ElementName=Tc,Path=VehicleTypeGridLength}" />
             <ColumnDefinition Width="*"/>
@@ -36,4 +38,5 @@
             <TabItem Header="Mehrfachtraktion" Name="TIMultiTraction" />
         </TabControl>
     </Grid>
+    </xctk:BusyIndicator>
 </Window>

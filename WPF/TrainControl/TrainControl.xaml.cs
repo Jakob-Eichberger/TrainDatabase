@@ -126,11 +126,11 @@ namespace TrainDatabase
 
         private void TrainControl_Loaded(object sender, RoutedEventArgs e)
         {
-            Z21Client.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => { IsEnabled = Z21Client.ClientReachable; Z21Client.GetLocoInfo(new LokAdresse(Vehicle.Address)); });
+            Z21Client.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => { BusyIndicator.IsBusy = !Z21Client.ClientReachable; Z21Client.GetLocoInfo(new LokAdresse(Vehicle.Address)); });
 
             Z21Client.GetStatus();
-            IsEnabled = Z21Client.ClientReachable;
-
+            BusyIndicator.IsBusy = !Z21Client.ClientReachable;
+            
             SetTitle();
             UpdateTiMultiTractionHeader();
 
