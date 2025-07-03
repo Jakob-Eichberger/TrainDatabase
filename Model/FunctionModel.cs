@@ -37,8 +37,7 @@ namespace Model
 
     override public string ToString()
     {
-      return $"Name: \t{Name}\n" +
-             $"Adresse:\t{Address}";
+      return $"F{Address} {Name}";
     }
 
     override public int GetHashCode()
