@@ -78,7 +78,7 @@
                              VerticalAlignment="Center" />
 
                     <Label Grid.Row="3" Grid.Column="0" Content="Adresse" Margin="5" VerticalAlignment="Center" />
-                    <!--<xctk:IntegerUpDown   Grid.Row="3" Grid.Column="1"   Text="{Binding ElementName=Vm,Path=SelectedVehicle.Address, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>-->
+                    <xctk:IntegerUpDown   Grid.Row="3" Grid.Column="1"   Text="{Binding ElementName=Vm,Path=SelectedVehicle.Address, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>
 
                     <Label Content="Bild" Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" />
 
