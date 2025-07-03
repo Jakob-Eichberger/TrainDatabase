@@ -7,104 +7,147 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:model="clr-namespace:Model;assembly=Model"
         mc:Ignorable="d"
-        Title="VehicleManagement" Height="450" Width="800" Name="Vm" MinHeight="500" MinWidth="800" Closing="Vm_Closing" >
+        Title="VehicleManagement" Height="450" Width="800" Name="Vm" MinHeight="500" MinWidth="800"
+        Closing="Vm_Closing">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="AUTO" />
         </Grid.RowDefinitions>
-        <TabControl Grid.Row="0" Margin="5">
-            <TabItem Header="Übersicht" >
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="AUTO"/>
-                    </Grid.RowDefinitions>
-                    <DataGrid Name="DgVehicles" ItemsSource="{Binding ElementName=Vm,Path=Vehicles}" SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle,Mode=TwoWay}" AutoGenerateColumns="False" GridLinesVisibility="Horizontal"  SelectionMode="Single" Background="Transparent" VerticalAlignment="Stretch" SelectedCellsChanged="DgVehicles_SelectedCellsChanged" Grid.Row="0" IsReadOnly="True" CanUserSortColumns="False" >
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Position" Binding="{Binding Position}"/>
-                            <DataGridTextColumn Header="Kurzer Name" Binding="{Binding Name}"/>
-                            <DataGridTextColumn Header="Langer Name" Binding="{Binding FullName}"/>
-                            <DataGridTextColumn Header="Type" Binding="{Binding Type}"/>
-                            <DataGridTextColumn Header="Adresse" Binding="{Binding Address}"/>
-                            <DataGridCheckBoxColumn Header="Aktiv" Binding="{Binding IsActive}"/>
-                            <DataGridCheckBoxColumn Header="Traktion Invertieren" Binding="{Binding InvertTraction}"/>
-                            <DataGridTextColumn Header="EVU" Binding="{Binding Railway}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <DockPanel Grid.Row="1">
-                        <Button Content="Neu" Name="BtnNew" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnNewVehicle_Click"/>
-                        <Button Content="Löschen" Name="BtnDeleteVehicle" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnDeleteVehicle_Click" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
-                        <Button Content="↑" Name="BtnMoveItemUp" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnMoveVehiclePositionUp_Click" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
-                        <Button Content="↓" Name="BtnMoveItemDown" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnMoveVehiclePositionDown_Click" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
-                    </DockPanel>
-                </Grid>
-            </TabItem>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="AUTO"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <DataGrid Name="DgVehicles" ItemsSource="{Binding ElementName=Vm,Path=Vehicles}"
+                  SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle,Mode=TwoWay}"
+                  AutoGenerateColumns="False" GridLinesVisibility="Horizontal" SelectionMode="Single"
+                  Background="Transparent" VerticalAlignment="Stretch"
+                  SelectedCellsChanged="DgVehicles_SelectedCellsChanged" Grid.Row="0" IsReadOnly="True"
+                  CanUserSortColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Adresse" Binding="{Binding Address}" />
+                <DataGridTextColumn Header="Kurzer Name" Binding="{Binding Name}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <Button Content="Neu" Name="BtnNew" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5"
+                    Margin="5" Click="BtnNewVehicle_Click" />
+            <Button Content="Löschen" Name="BtnDeleteVehicle" VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Padding="5" Margin="5" Click="BtnDeleteVehicle_Click"
+                    IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
+            <Button Content="↑" Name="BtnMoveItemUp" VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Padding="5" Margin="5" Click="BtnMoveVehiclePositionUp_Click"
+                    IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
+            <Button Content="↓" Name="BtnMoveItemDown" VerticalAlignment="Center" HorizontalAlignment="Left"
+                    Padding="5" Margin="5" Click="BtnMoveVehiclePositionDown_Click"
+                    IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" />
+        </DockPanel>
+
+        <TabControl Grid.Row="0" Grid.Column="1" Margin="5">
             <TabItem Header="Allgemein" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="AUTO"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="AUTO" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="AUTO"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="AUTO"/>
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="AUTO" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="AUTO" />
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="Kurzer Name"  Margin="5" VerticalAlignment="Center"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Name, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"  VerticalAlignment="Center"/>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Kurzer Name" Margin="5" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Text="{Binding ElementName=Vm,Path=SelectedVehicle.Name, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"
+                             VerticalAlignment="Center" />
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Langer Name"  Margin="5" VerticalAlignment="Center"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.FullName, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5" VerticalAlignment="Center"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Langer Name" Margin="5" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Text="{Binding ElementName=Vm,Path=SelectedVehicle.FullName, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"
+                             VerticalAlignment="Center" />
 
-                    <Label Grid.Row="3" Grid.Column="0" Content="Adresse"  Margin="5" VerticalAlignment="Center"/>
+                    <Label Grid.Row="3" Grid.Column="0" Content="Adresse" Margin="5" VerticalAlignment="Center" />
                     <!--<xctk:IntegerUpDown   Grid.Row="3" Grid.Column="1"   Text="{Binding ElementName=Vm,Path=SelectedVehicle.Address, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>-->
 
-                    <Label Content="Bild" Grid.Row="4" Grid.Column="0"  Margin="5" VerticalAlignment="Center"/>
+                    <Label Content="Bild" Grid.Row="4" Grid.Column="0" Margin="5" VerticalAlignment="Center" />
 
-                    <TextBox Grid.Row="4" Grid.Column="1" Margin="5,5,40,5" Padding="5"  IsReadOnly="True" Text="{Binding ElementName=Vm,Path=SelectedVehicle.ImageName, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Button Grid.Row="4" Grid.Column="1" Margin="5" Padding="5" HorizontalAlignment="Right" Content=" ... " ToolTip="Bild ändern." Click="BtnEditVehicleFunction_Click"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Margin="5,5,40,5" Padding="5" IsReadOnly="True"
+                             Text="{Binding ElementName=Vm,Path=SelectedVehicle.ImageName, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Grid.Row="4" Grid.Column="1" Margin="5" Padding="5" HorizontalAlignment="Right"
+                            Content=" ... " ToolTip="Bild ändern." Click="BtnEditVehicleFunction_Click" />
 
-                    <Label Grid.Row="5" Grid.Column="0" Content="EVU"  Margin="5" VerticalAlignment="Center" ToolTip="Eisenbahnverkehrsunternehmen"/>
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Railway, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"   VerticalAlignment="Center"/>
+                    <Label Grid.Row="5" Grid.Column="0" Content="EVU" Margin="5" VerticalAlignment="Center"
+                           ToolTip="Eisenbahnverkehrsunternehmen" />
+                    <TextBox Grid.Row="5" Grid.Column="1"
+                             Text="{Binding ElementName=Vm,Path=SelectedVehicle.Railway, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"
+                             VerticalAlignment="Center" />
 
-                    <Label Grid.Row="9" Grid.Column="0" Content="Beschreibung"  Margin="5" VerticalAlignment="Top"/>
-                    <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding ElementName=Vm,Path=SelectedVehicle.Description, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5"  />
+                    <Label Grid.Row="9" Grid.Column="0" Content="Beschreibung" Margin="5" VerticalAlignment="Top" />
+                    <TextBox Grid.Row="9" Grid.Column="1"
+                             Text="{Binding ElementName=Vm,Path=SelectedVehicle.Description, UpdateSourceTrigger=PropertyChanged}"
+                             IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Padding="5" />
 
-                    <StackPanel  Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+                    <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
 
-                        <CheckBox IsChecked="{Binding ElementName=Vm,Path=SelectedVehicle.IsActive, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5"  Content="Lok aktiv" HorizontalAlignment="Left" VerticalAlignment="Center"  />
-                        <CheckBox IsChecked="{Binding ElementName=Vm,Path=SelectedVehicle.InvertTraction, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5"  Content="Richtung in Lokverbund invertieren" HorizontalAlignment="Left" VerticalAlignment="Center"  />
+                        <CheckBox
+                            IsChecked="{Binding ElementName=Vm,Path=SelectedVehicle.IsActive, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Content="Lok aktiv"
+                            HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <CheckBox
+                            IsChecked="{Binding ElementName=Vm,Path=SelectedVehicle.InvertTraction, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5"
+                            Content="Richtung in Lokverbund invertieren" HorizontalAlignment="Left"
+                            VerticalAlignment="Center" />
                     </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="Funktionen" IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="AUTO"/>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="AUTO" />
                     </Grid.RowDefinitions>
-                    <DataGrid Name="DgFunctions" ItemsSource="{Binding ElementName=Vm,Path=SelectedVehicleFunctions, Mode=TwoWay}" SelectedItem="{Binding ElementName=Vm,Path=SelectedFunction,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow" GridLinesVisibility="All" Background="Transparent" BorderBrush="Transparent" SelectedCellsChanged="DgFunctions_SelectedCellsChanged" PreviewMouseDoubleClick="DgFunctions_PreviewMouseDoubleClick">
+                    <DataGrid Name="DgFunctions"
+                              ItemsSource="{Binding ElementName=Vm,Path=SelectedVehicleFunctions, Mode=TwoWay}"
+                              SelectedItem="{Binding ElementName=Vm,Path=SelectedFunction,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single"
+                              SelectionUnit="FullRow" GridLinesVisibility="All" Background="Transparent"
+                              BorderBrush="Transparent" SelectedCellsChanged="DgFunctions_SelectedCellsChanged"
+                              PreviewMouseDoubleClick="DgFunctions_PreviewMouseDoubleClick">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Adresse" Binding="{Binding Address, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="Name"  Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridTextColumn Header="ButtonType"  Binding="{Binding ButtonType, UpdateSourceTrigger=PropertyChanged}"/>
-                            <DataGridCheckBoxColumn Header="Aktiv" Binding="{Binding IsActive, UpdateSourceTrigger=PropertyChanged}" />
-                            <DataGridCheckBoxColumn Header="Adresse anzeigen" Binding="{Binding ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridTextColumn Header="Adresse"
+                                                Binding="{Binding Address, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridTextColumn Header="Name"
+                                                Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridTextColumn Header="ButtonType"
+                                                Binding="{Binding ButtonType, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridCheckBoxColumn Header="Aktiv"
+                                                    Binding="{Binding IsActive, UpdateSourceTrigger=PropertyChanged}" />
+                            <DataGridCheckBoxColumn Header="Adresse anzeigen"
+                                                    Binding="{Binding ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <DockPanel Grid.Row="1">
-                        <Button Content="Neu" Name="BtnNewFunction" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnNewFunction_Click"/>
-                        <Button Content="Bearbeiten" Name="BtnEditFunction" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnEditFunction_Click" IsEnabled="{Binding ElementName=Vm, Path=FunctionSelected}"/>
-                        <Button Content="Löschen" Name="BtnDeleteFunction" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnDeleteFunction_Click" IsEnabled="{Binding ElementName=Vm, Path=FunctionSelected}"/>
+                        <Button Content="Neu" Name="BtnNewFunction" VerticalAlignment="Center"
+                                HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnNewFunction_Click" />
+                        <Button Content="Bearbeiten" Name="BtnEditFunction" VerticalAlignment="Center"
+                                HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnEditFunction_Click"
+                                IsEnabled="{Binding ElementName=Vm, Path=FunctionSelected}" />
+                        <Button Content="Löschen" Name="BtnDeleteFunction" VerticalAlignment="Center"
+                                HorizontalAlignment="Left" Padding="5" Margin="5" Click="BtnDeleteFunction_Click"
+                                IsEnabled="{Binding ElementName=Vm, Path=FunctionSelected}" />
                     </DockPanel>
                 </Grid>
             </TabItem>
