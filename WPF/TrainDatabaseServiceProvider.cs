@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Extras.CommonServiceLocator;
 using CommonServiceLocator;
-using Helper;
 using Infrastructure;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -17,7 +16,7 @@ using Z21;
 
 namespace WPF_Application
 {
-  // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
+  [UsedImplicitly]
   public class TrainDatabaseServiceProvider()
   {
     private const string KeyWord = "TrainDatabase";
