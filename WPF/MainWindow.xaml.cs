@@ -131,7 +131,7 @@ namespace Wpf_Application
                 };
 
                 var path = Path.Combine(Configuration.ApplicationData.VehicleImages.FullName, item?.ImageName??"");
-                BitmapImage bitmapImage = null;
+                BitmapImage bitmapImage;
                 if (File.Exists(path))
                 {
                     bitmapImage = LoadPhoto(path);
@@ -162,12 +162,10 @@ namespace Wpf_Application
                     Padding = new(2),
                     Margin = new(10),
                     BorderThickness = new(0),
-                    CornerRadius = new(4),
-                    BorderBrush = Brushes.LightGray,
                     Vehicle = item,
                     Child = sp,
                     ContextMenu = new(),
-                    Effect = new DropShadowEffect(){Opacity = 0.2}
+                    Effect = new DropShadowEffect(){Opacity = 0.2, RenderingBias = RenderingBias.Quality}
                 };
 
                 var mi = new VehicleMenuItem(item, "Fahrzeug steuern", (a) => TrainControl.CreatTrainControlWindow(ServiceProvider, a));
