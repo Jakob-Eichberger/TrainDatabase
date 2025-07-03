@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wpf="clr-namespace:TrainDatabase"
         xmlns:model="clr-namespace:Model;assembly=Model"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="EditFunctionWindow" SizeToContent="WidthAndHeight" MinWidth="250" MinHeight="210" Height="210" Name="ew">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -28,7 +29,7 @@
                      Text="{Binding ElementName=ew,Path=Function.Name, UpdateSourceTrigger=PropertyChanged}" />
 
             <Label Content="Function" Grid.Row="1" Grid.Column="0" />
-            <!--<xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Padding="5" Margin="5" Value="{Binding ElementName=ew,Path=Function.Address, UpdateSourceTrigger=PropertyChanged}"/>-->
+            <xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Padding="5" Margin="5" Value="{Binding ElementName=ew,Path=Function.Address, UpdateSourceTrigger=PropertyChanged}"/>
 
             <Label Content="Type:" Grid.Row="2" Grid.Column="0" />
             <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left"
