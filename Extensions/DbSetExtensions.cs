@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Extensions
 {
-    public static class DbSetExtensions
+  public static class DbSetExtensions
+  {
+    public static void RemoveAll<TEntity>(this DbSet<TEntity> e) where TEntity : class
     {
-        public static void RemoveAll<TEntity>(this DbSet<TEntity> e) where TEntity : class
-        {
-            foreach (var item in e.ToList())
-            {
-                e.Remove(item);
-            }
-        }
+      foreach (TEntity? item in e.ToList())
+      {
+        e.Remove(item);
+      }
     }
+  }
 }

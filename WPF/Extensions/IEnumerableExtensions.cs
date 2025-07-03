@@ -4,40 +4,43 @@ using System.Linq;
 
 namespace TrainDatabase.Extensions
 {
-    public static class IEnumerableExtensions
+  public static class IEnumerableExtensions
+  {
+    /// <summary>
+    /// Swaps the position of two vehicles. Uses the <see cref="VehicleModel.Position"/> property.
+    /// </summary>
+    /// <param name="moveUp">True if the position of the <paramref name="vehicle"/> should be moved up.</param>
+    /// <param name="vehicle"></param>
+    public static void Swap(this IEnumerable<VehicleModel> vehicles, VehicleModel vehicle, bool moveUp)
     {
-        /// <summary>
-        /// Swaps the position of two vehicles. Uses the <see cref="VehicleModel.Position"/> property.
-        /// </summary>
-        /// <param name="moveUp">True if the position of the <paramref name="vehicle"/> should be moved up.</param>
-        /// <param name="vehicle"></param>
-        public static void Swap(this IEnumerable<VehicleModel> vehicles, VehicleModel vehicle, bool moveUp)
-        {
-            var pos = vehicle.Position;
-            VehicleModel vehicle2 = default!;
+      long pos = vehicle.Position;
+      VehicleModel vehicle2 = default!;
 
-            if (moveUp)
-                vehicle2 = vehicles.OrderBy(e => e.Position).SkipWhile(e => e.Position <= pos).FirstOrDefault()!;
-            else
-                vehicle2 = vehicles.OrderByDescending(e => e.Position).SkipWhile(e => e.Position >= pos).FirstOrDefault()!;
+      if (moveUp)
+      {
+        vehicle2 = vehicles.OrderBy(e => e.Position).SkipWhile(e => e.Position <= pos).FirstOrDefault()!;
+      }
+      else
+      {
+        vehicle2 = vehicles.OrderByDescending(e => e.Position).SkipWhile(e => e.Position >= pos).FirstOrDefault()!;
+      }
 
-            if (vehicle2 is object)
-            {
-                var temp = vehicle2.Position;
-                vehicle2.Position = vehicle.Position;
-                vehicle.Position = temp;
-            }
-        }
-
-        /// <summary>
-        /// Swaps the position of two functions. Uses the <see cref="FunctionModel.Position"/> property.
-        /// </summary>
-        /// <param name="functions"></param>
-        /// <param name="Id2"></param>
-        /// <param name="id2"></param>
-        public static void Swap(this IEnumerable<FunctionModel> functions, int id1, bool moveUp)
-        {
-
-        }
+      if (vehicle2 is object)
+      {
+        long temp = vehicle2.Position;
+        vehicle2.Position = vehicle.Position;
+        vehicle.Position = temp;
+      }
     }
+
+    /// <summary>
+    /// Swaps the position of two functions. Uses the <see cref="FunctionModel.Position"/> property.
+    /// </summary>
+    /// <param name="functions"></param>
+    /// <param name="Id2"></param>
+    /// <param name="id2"></param>
+    public static void Swap(this IEnumerable<FunctionModel> functions, int id1, bool moveUp)
+    {
+    }
+  }
 }

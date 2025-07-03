@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wpf="clr-namespace:TrainDatabase"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:model="clr-namespace:Model;assembly=Model"
         mc:Ignorable="d"
@@ -12,7 +11,7 @@
     <Window.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type model:VehicleType}" x:Key="StatusEnumValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="model:VehicleType"/>
+                <x:Type TypeName="model:VehicleType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
@@ -23,8 +22,8 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="AUTO"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="AUTO" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <DataGrid Name="DgVehicles" ItemsSource="{Binding ElementName=Vm,Path=Vehicles}"
                   SelectedItem="{Binding ElementName=Vm,Path=SelectedVehicle,Mode=TwoWay}"
@@ -75,10 +74,11 @@
                     </Grid.RowDefinitions>
 
                     <Label Grid.Row="0" Grid.Column="0" Content="Fahrzeug Type" Margin="5" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Source={StaticResource StatusEnumValues}}" 
-                              SelectedItem="{Binding ElementName=Vm, Path=SelectedVehicle.Type, UpdateSourceTrigger=PropertyChanged}" 
-                              Margin="5" Padding="5"/>
-                    
+                    <ComboBox Grid.Row="0" Grid.Column="1"
+                              ItemsSource="{Binding Source={StaticResource StatusEnumValues}}"
+                              SelectedItem="{Binding ElementName=Vm, Path=SelectedVehicle.Type, UpdateSourceTrigger=PropertyChanged}"
+                              Margin="5" Padding="5" />
+
                     <Label Grid.Row="1" Grid.Column="0" Content="Kurzer Name" Margin="5" VerticalAlignment="Center" />
                     <TextBox Grid.Row="1" Grid.Column="1"
                              Text="{Binding ElementName=Vm,Path=SelectedVehicle.Name, UpdateSourceTrigger=PropertyChanged}"
@@ -92,7 +92,9 @@
                              VerticalAlignment="Center" />
 
                     <Label Grid.Row="4" Grid.Column="0" Content="Adresse" Margin="5" VerticalAlignment="Center" />
-                    <xctk:IntegerUpDown   Grid.Row="4" Grid.Column="1"   Text="{Binding ElementName=Vm,Path=SelectedVehicle.Address, UpdateSourceTrigger=PropertyChanged}" Margin="5" Padding="5" Minimum="0" Maximum="1000" VerticalAlignment="Center"/>
+                    <xctk:IntegerUpDown Grid.Row="4" Grid.Column="1"
+                                        Text="{Binding ElementName=Vm,Path=SelectedVehicle.Address, UpdateSourceTrigger=PropertyChanged}"
+                                        Margin="5" Padding="5" Minimum="0" Maximum="1000" VerticalAlignment="Center" />
 
                     <Label Content="Bild" Grid.Row="5" Grid.Column="0" Margin="5" VerticalAlignment="Center" />
 
@@ -117,7 +119,8 @@
 
                         <CheckBox
                             IsChecked="{Binding ElementName=Vm,Path=SelectedVehicle.IsActive, UpdateSourceTrigger=PropertyChanged}"
-                            IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5" Content="Fahrzeug aktiv"
+                            IsEnabled="{Binding ElementName=Vm, Path=VehicleSelected}" Margin="5"
+                            Content="Fahrzeug aktiv"
                             HorizontalAlignment="Left" VerticalAlignment="Center" />
                         <CheckBox
                             IsChecked="{Binding ElementName=Vm,Path=SelectedVehicle.InvertTraction, UpdateSourceTrigger=PropertyChanged}"

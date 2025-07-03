@@ -3,12 +3,14 @@ using System;
 
 namespace WPF_Application.TrainControl.FunctionButton
 {
-    internal class PushButton : FunctionBase
+  internal class PushButton : FunctionBase
+  {
+    public PushButton(IServiceProvider serviceProvider, FunctionModel functionModel) : base(
+                                                                                            serviceProvider,
+                                                                                            functionModel)
     {
-        public PushButton(IServiceProvider serviceProvider, FunctionModel functionModel) : base(serviceProvider, functionModel)
-        {
-            PreviewMouseDown += (sender, e) => Function.SetState(true);
-            PreviewMouseUp += (sender, e) => Function.SetState(false);
-        }
+      PreviewMouseDown += (sender, e) => Function.SetState(true);
+      PreviewMouseUp += (sender, e) => Function.SetState(false);
     }
+  }
 }

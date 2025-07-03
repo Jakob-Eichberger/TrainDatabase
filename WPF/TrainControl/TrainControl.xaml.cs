@@ -24,128 +24,161 @@ using Z21.Model;
 
 namespace TrainDatabase
 {
-    /// <summary>
-    /// Interaction logic for VehicleController.xaml
-    /// </summary>
-    public partial class TrainControl : Window, INotifyPropertyChanged
+  /// <summary>
+  /// Interaction logic for VehicleController.xaml
+  /// </summary>
+  public partial class TrainControl : Window, INotifyPropertyChanged
+  {
+    public TrainControl(IServiceProvider serviceProvider, VehicleModel _vehicle)
     {
-        public TrainControl(IServiceProvider serviceProvider, VehicleModel _vehicle)
-        {
-            try
-            {
-                ServiceProvider = serviceProvider;
-                Db = ServiceProvider.GetService<Database>()!;
-                VehicleService = ServiceProvider.GetService<VehicleService>()!;
-                LogService = ServiceProvider.GetService<LogEventBus>()!;
-                Z21Client = ServiceProvider.GetService<Z21.Client>()!;
+      try
+      {
+        ServiceProvider = serviceProvider;
+        Db = ServiceProvider.GetService<Database>()!;
+        VehicleService = ServiceProvider.GetService<VehicleService>()!;
+        LogService = ServiceProvider.GetService<LogEventBus>()!;
+        Z21Client = ServiceProvider.GetService<Z21.Client>()!;
 
-                TrackPowerService = ServiceProvider.GetService<TrackPowerService>()!;
-                TrackPowerService.StateChanged += (a, b) => Dispatcher.Invoke(() => OnPropertyChanged());
+        TrackPowerService = ServiceProvider.GetService<TrackPowerService>()!;
+        TrackPowerService.StateChanged += (a, b) => Dispatcher.Invoke(() => OnPropertyChanged());
 
-                Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
+        Vehicle = Db.Vehicles.Include(e => e.Functions).ToList().FirstOrDefault(e => e.Id == _vehicle.Id)!;
 
-                VehicleViewmodel = new(serviceProvider, Vehicle);
-                VehicleViewmodel.StateChanged += (a, b) => Dispatcher.Invoke(() => OnPropertyChanged());
+        VehicleViewmodel = new(serviceProvider, Vehicle);
+        VehicleViewmodel.StateChanged += (a, b) => Dispatcher.Invoke(() => OnPropertyChanged());
 
-                DataContext = this;
-                InitializeComponent();
-                Activate();
-            }
-            catch (Exception ex)
-            {
-                Close();
-                LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, ex);
-                MessageBox.Show($"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public Database Db { get; } = default!;
-
-        public int MaxDccSpeed => Z21.Client.maxDccStep;
-
-        public IServiceProvider ServiceProvider { get; } = default!;
-
-        public TrackPowerService TrackPowerService { get; } = default!;
-
-        /// <summary>
-        /// The <see cref="Vehicle"/> the application is trying to controll
-        /// </summary>
-        public VehicleModel Vehicle { get; private set; } = default!;
-
-        public VehicleService VehicleService { get; } = default!;
-      
-        public LogEventBus LogService { get; private set; }
-
-        public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? new GridLength(80) : new GridLength(0);
-
-        public Visibility VehicleTypeVisbility => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive ? Visibility.Visible : Visibility.Collapsed;
-
-        public VehicleController VehicleViewmodel { get; private set; } = default!;
-
-        public Z21.Client Z21Client { get; } = default!;
-
-        /// <summary>
-        /// Creates a single instance of the <see cref="TrainControl"/> window.
-        /// </summary>
-        /// <param name="vehicle"></param>
-        /// <param name="client"></param>
-        /// <param name="db"></param>
-        public static void CreatTrainControlWindow(IServiceProvider serviceProvider, VehicleModel vehicle)
-        {
-            if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is TrainControl trainControl)
-            {
-                trainControl.WindowState = WindowState.Normal;
-                trainControl.Activate();
-            }
-            else
-                new TrainControl(serviceProvider, vehicle).Show();
-        }
-
-        protected void OnPropertyChanged(string propertyName = null!) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        private void BtnDirection_Click(object sender, RoutedEventArgs e) => VehicleViewmodel.SwitchDirection();
-
-        private void SetTitle() => Title = $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
-
-        private void TBRailPower_Click(object sender, RoutedEventArgs e) => TrackPowerService.SetTrackPower(!TrackPowerService.TrackPowerOn);
-
-        private void Tc_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Space)
-                e.Handled = true;
-        }
-
-        private void Tc_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            VehicleViewmodel.Speed = e.Delta < 0 ? VehicleViewmodel.Speed - 1 : VehicleViewmodel.Speed + 1;
-            e.Handled = true;
-            VehicleViewmodel.LastUserInteraction = DateTime.Now;
-        }
-
-        private void TrainControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            Z21Client.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(() => { BusyIndicator.IsBusy = !Z21Client.ClientReachable; Z21Client.GetLocoInfo(new LokAdresse(Vehicle.Address)); });
-
-            Z21Client.GetStatus();
-            BusyIndicator.IsBusy = !Z21Client.ClientReachable;
-            
-            SetTitle();
-            UpdateTiMultiTractionHeader();
-
-            TIFunction.Content = new FunctionControl(ServiceProvider, Vehicle);
-            TIMultiTraction.Content = new MultitractionSelectorControl(ServiceProvider, Vehicle);
-
-            Db.ChangeTracker.StateChanged += (a, b) =>
-            {
-                SetTitle();
-                UpdateTiMultiTractionHeader();
-            };
-
-            Z21Client.GetLocoInfo(new LokAdresse(Vehicle.Address));
-        }
-
-        private void UpdateTiMultiTractionHeader() => TIMultiTraction.Header = $"Mehrfachtraktion ({Vehicle.TractionVehicleIds.Count})";
+        DataContext = this;
+        InitializeComponent();
+        Activate();
+      }
+      catch (Exception ex)
+      {
+        Close();
+        LogService.Log(Microsoft.Extensions.Logging.LogLevel.Error, ex);
+        MessageBox.Show(
+                        $"Beim öffnen des Controllers ist ein Fehler aufgetreten: {(string.IsNullOrWhiteSpace(ex?.Message) ? "" : ex.Message)}",
+                        "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+      }
     }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public Database Db { get; } = default!;
+
+    public int MaxDccSpeed => Z21.Client.maxDccStep;
+
+    public IServiceProvider ServiceProvider { get; } = default!;
+
+    public TrackPowerService TrackPowerService { get; } = default!;
+
+    /// <summary>
+    /// The <see cref="Vehicle"/> the application is trying to controll
+    /// </summary>
+    public VehicleModel Vehicle { get; private set; } = default!;
+
+    public VehicleService VehicleService { get; } = default!;
+
+    public LogEventBus LogService { get; private set; }
+
+    public GridLength VehicleTypeGridLength => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive
+                                                 ? new(80)
+                                                 : new GridLength(0);
+
+    public Visibility VehicleTypeVisbility => (Vehicle?.Type ?? VehicleType.Lokomotive) == VehicleType.Lokomotive
+                                                ? Visibility.Visible
+                                                : Visibility.Collapsed;
+
+    public VehicleController VehicleViewmodel { get; private set; } = default!;
+
+    public Z21.Client Z21Client { get; } = default!;
+
+    /// <summary>
+    /// Creates a single instance of the <see cref="TrainControl"/> window.
+    /// </summary>
+    /// <param name="vehicle"></param>
+    /// <param name="client"></param>
+    /// <param name="db"></param>
+    public static void CreatTrainControlWindow(IServiceProvider serviceProvider, VehicleModel vehicle)
+    {
+      if (Application.Current.Windows.OfType<TrainControl>().FirstOrDefault(e => e.Vehicle.Id == vehicle?.Id) is
+          TrainControl trainControl)
+      {
+        trainControl.WindowState = WindowState.Normal;
+        trainControl.Activate();
+      }
+      else
+      {
+        new TrainControl(serviceProvider, vehicle).Show();
+      }
+    }
+
+    protected void OnPropertyChanged(string propertyName = null!)
+    {
+      PropertyChanged?.Invoke(this, new(propertyName));
+    }
+
+    private void BtnDirection_Click(object sender, RoutedEventArgs e)
+    {
+      VehicleViewmodel.SwitchDirection();
+    }
+
+    private void SetTitle()
+    {
+      Title =
+        $"{Vehicle.Address} - {(string.IsNullOrWhiteSpace(Vehicle.Name) ? Vehicle.FullName : Vehicle.Name)}";
+    }
+
+    private void TBRailPower_Click(object sender, RoutedEventArgs e)
+    {
+      TrackPowerService.SetTrackPower(!TrackPowerService.TrackPowerOn);
+    }
+
+    private void Tc_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter || e.Key == Key.Space)
+      {
+        e.Handled = true;
+      }
+    }
+
+    private void Tc_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+      VehicleViewmodel.Speed = e.Delta < 0 ? VehicleViewmodel.Speed - 1 : VehicleViewmodel.Speed + 1;
+      e.Handled = true;
+      VehicleViewmodel.LastUserInteraction = DateTime.Now;
+    }
+
+    private void TrainControl_Loaded(object sender, RoutedEventArgs e)
+    {
+      Z21Client.ClientReachabilityChanged += (a, b) => Dispatcher.Invoke(
+                                                                         () =>
+                                                                         {
+                                                                           BusyIndicator.IsBusy =
+                                                                             !Z21Client.ClientReachable;
+                                                                           Z21Client.GetLocoInfo(new(Vehicle.Address));
+                                                                         });
+
+      Z21Client.GetStatus();
+      BusyIndicator.IsBusy = !Z21Client.ClientReachable;
+
+      SetTitle();
+      UpdateTiMultiTractionHeader();
+
+      TIFunction.Content = new FunctionControl(ServiceProvider, Vehicle);
+      TIMultiTraction.Content = new MultitractionSelectorControl(ServiceProvider, Vehicle);
+
+      Db.ChangeTracker.StateChanged += (a, b) =>
+                                       {
+                                         SetTitle();
+                                         UpdateTiMultiTractionHeader();
+                                       };
+
+      Z21Client.GetLocoInfo(new(Vehicle.Address));
+    }
+
+    private void UpdateTiMultiTractionHeader()
+    {
+      TIMultiTraction.Header = $"Mehrfachtraktion ({Vehicle.TractionVehicleIds.Count})";
+    }
+  }
 }

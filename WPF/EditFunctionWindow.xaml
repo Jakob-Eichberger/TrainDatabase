@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:wpf="clr-namespace:TrainDatabase"
         xmlns:model="clr-namespace:Model;assembly=Model"
         mc:Ignorable="d"
@@ -11,37 +10,49 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="AUTO"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="AUTO" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="AUTO"/>
-                <RowDefinition Height="AUTO"/>
-                <RowDefinition Height="AUTO"/>
-                <RowDefinition Height="AUTO"/>
-                <RowDefinition Height="AUTO"/>
-                <RowDefinition Height="AUTO"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="AUTO" />
+                <RowDefinition Height="AUTO" />
+                <RowDefinition Height="AUTO" />
+                <RowDefinition Height="AUTO" />
+                <RowDefinition Height="AUTO" />
+                <RowDefinition Height="AUTO" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
-            <TextBox Grid.Row="0" Grid.Column="1" Padding="5" Margin="5" Text="{Binding ElementName=ew,Path=Function.Name, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Name" Grid.Row="0" Grid.Column="0" />
+            <TextBox Grid.Row="0" Grid.Column="1" Padding="5" Margin="5"
+                     Text="{Binding ElementName=ew,Path=Function.Name, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Label Content="Function" Grid.Row="1" Grid.Column="0"/>
+            <Label Content="Function" Grid.Row="1" Grid.Column="0" />
             <!--<xctk:IntegerUpDown Grid.Row="1" Grid.Column="1" Padding="5" Margin="5" Value="{Binding ElementName=ew,Path=Function.Address, UpdateSourceTrigger=PropertyChanged}"/>-->
 
-            <Label Content="Type:" Grid.Row="2" Grid.Column="0"/>
-            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                <RadioButton x:Name="RbSwitch"  GroupName="type" IsChecked="True"  Content="Schalter" Margin="0,0,5,0" Click="TypeRadioButton_Click" Tag="{x:Static model:ButtonType.Switch}"/>
-                <RadioButton x:Name="RbPushButton" GroupName="type" Content="Taster" Margin="0,0,5,0"  Click="TypeRadioButton_Click" Tag="{x:Static model:ButtonType.PushButton}"/>
-                <RadioButton x:Name="RbTimer" GroupName="type" Content="Zeit" IsEnabled="False"  Click="TypeRadioButton_Click" Tag="{x:Static model:ButtonType.Timer}"/>
+            <Label Content="Type:" Grid.Row="2" Grid.Column="0" />
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left"
+                        VerticalAlignment="Center">
+                <RadioButton x:Name="RbSwitch" GroupName="type" IsChecked="True" Content="Schalter" Margin="0,0,5,0"
+                             Click="TypeRadioButton_Click" Tag="{x:Static model:ButtonType.Switch}" />
+                <RadioButton x:Name="RbPushButton" GroupName="type" Content="Taster" Margin="0,0,5,0"
+                             Click="TypeRadioButton_Click" Tag="{x:Static model:ButtonType.PushButton}" />
+                <RadioButton x:Name="RbTimer" GroupName="type" Content="Zeit" IsEnabled="False"
+                             Click="TypeRadioButton_Click" Tag="{x:Static model:ButtonType.Timer}" />
             </StackPanel>
 
-            <Label Content="Function" Grid.Row="3" Grid.Column="0"/>
-            <ComboBox Grid.Row="3" Grid.Column="1"  SelectedItem="{Binding Function.EnumType, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type model:FunctionType} }}" Padding="5" Margin="5" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False"/>
+            <Label Content="Function" Grid.Row="3" Grid.Column="0" />
+            <ComboBox Grid.Row="3" Grid.Column="1"
+                      SelectedItem="{Binding Function.EnumType, UpdateSourceTrigger=PropertyChanged}"
+                      ItemsSource="{Binding Source={wpf:EnumBindingSource {x:Type model:FunctionType} }}" Padding="5"
+                      Margin="5" IsTextSearchEnabled="True" IsTextSearchCaseSensitive="False" />
 
-            <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding ElementName=ew,Path=Function.IsActive, UpdateSourceTrigger=PropertyChanged}" Content="Active" Margin="5"/>
-            <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding ElementName=ew,Path=Function.ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}" Content="Adresse anzeigen" Margin="5"/>
+            <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                      IsChecked="{Binding ElementName=ew,Path=Function.IsActive, UpdateSourceTrigger=PropertyChanged}"
+                      Content="Active" Margin="5" />
+            <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                      IsChecked="{Binding ElementName=ew,Path=Function.ShowFunctionNumber, UpdateSourceTrigger=PropertyChanged}"
+                      Content="Adresse anzeigen" Margin="5" />
         </Grid>
     </ScrollViewer>
 

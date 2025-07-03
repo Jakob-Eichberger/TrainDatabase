@@ -1,113 +1,113 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net7.0-windows</TargetFramework>
-		<Nullable>enable</Nullable>
-    	<LangVersion>latest</LangVersion>
-		<UseWPF>true</UseWPF>
-		<ApplicationIcon>Datenbank.ico</ApplicationIcon>
-		<AssemblyName>TrainDB</AssemblyName>
-		<Version>0.7.0.0</Version>
-		<FileVersion>0.7.0.0</FileVersion>
-		<Platforms>x64</Platforms>
-	</PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <UseWPF>true</UseWPF>
+        <ApplicationIcon>Datenbank.ico</ApplicationIcon>
+        <AssemblyName>TrainDB</AssemblyName>
+        <Version>0.7.0.0</Version>
+        <FileVersion>0.7.0.0</FileVersion>
+        <Platforms>x64</Platforms>
+    </PropertyGroup>
 
-	<ItemGroup>
-	  <Compile Remove="Data\**" />
-	  <Compile Remove="Z21Client\**" />
-	  <EmbeddedResource Remove="Data\**" />
-	  <EmbeddedResource Remove="Z21Client\**" />
-	  <None Remove="Data\**" />
-	  <None Remove="Z21Client\**" />
-	  <Page Remove="Data\**" />
-	  <Page Remove="Z21Client\**" />
-	</ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Data\**"/>
+        <Compile Remove="Z21Client\**"/>
+        <EmbeddedResource Remove="Data\**"/>
+        <EmbeddedResource Remove="Z21Client\**"/>
+        <None Remove="Data\**"/>
+        <None Remove="Z21Client\**"/>
+        <Page Remove="Data\**"/>
+        <Page Remove="Z21Client\**"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <None Remove="Datenbank.ico" />
-	  <None Remove="Resource\NotFound.png" />
-	  <None Remove="Script\cmd.exe" />
-	</ItemGroup>
+    <ItemGroup>
+        <None Remove="Datenbank.ico"/>
+        <None Remove="Resource\NotFound.png"/>
+        <None Remove="Script\cmd.exe"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <Content Include="Script\cmd.exe">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
+    <ItemGroup>
+        <Content Include="Script\cmd.exe">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Autofac" Version="8.3.0" />
-		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-		<PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0" />
-		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-		<PackageReference Include="OxyPlot.Wpf" Version="2.1.2" />
-		<PackageReference Include="Serilog" Version="2.12.0" />
-		<PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="SharpDX" Version="4.2.0" />
-		<PackageReference Include="SharpDX.DirectInput" Version="4.2.0" />
-		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-		<PackageReference Include="System.IO.Ports" Version="7.0.0" />
-		<PackageReference Include="System.Management" Version="7.0.1" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Autofac" Version="8.3.0"/>
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0"/>
+        <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0"/>
+        <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0"/>
+        <PackageReference Include="OxyPlot.Wpf" Version="2.1.2"/>
+        <PackageReference Include="Serilog" Version="2.12.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="SharpDX" Version="4.2.0"/>
+        <PackageReference Include="SharpDX.DirectInput" Version="4.2.0"/>
+        <PackageReference Include="System.Drawing.Common" Version="7.0.0"/>
+        <PackageReference Include="System.IO.Ports" Version="7.0.0"/>
+        <PackageReference Include="System.Management" Version="7.0.1"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="Properties\Settings.Designer.cs">
-			<DesignTimeSharedInput>True</DesignTimeSharedInput>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Settings.settings</DependentUpon>
-		</Compile>
-		<Compile Update="Import\Z21Import.xaml.cs">
-			<SubType>Code</SubType>
-		</Compile>
-	</ItemGroup>
+    <ItemGroup>
+        <Compile Update="Properties\Settings.Designer.cs">
+            <DesignTimeSharedInput>True</DesignTimeSharedInput>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Settings.settings</DependentUpon>
+        </Compile>
+        <Compile Update="Import\Z21Import.xaml.cs">
+            <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
 
-	<ItemGroup>
-		<None Update="Properties\Settings.settings">
-			<Generator>SettingsSingleFileGenerator</Generator>
-			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
-		</None>
-	</ItemGroup>
+    <ItemGroup>
+        <None Update="Properties\Settings.settings">
+            <Generator>SettingsSingleFileGenerator</Generator>
+            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
 
-	<ItemGroup>
-		<Page Update="Import\Z21Import.xaml">
-			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-			<SubType>Designer</SubType>
-		</Page>
-	</ItemGroup>
+    <ItemGroup>
+        <Page Update="Import\Z21Import.xaml">
+            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Model\Model.csproj" />
-	  <ProjectReference Include="..\Service\Service.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Model\Model.csproj"/>
+        <ProjectReference Include="..\Service\Service.csproj"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <Content Include="Datenbank.ico">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
+    <ItemGroup>
+        <Content Include="Datenbank.ico">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <EmbeddedResource Include="Resource\NotFound.png" />
-	</ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Resource\NotFound.png"/>
+    </ItemGroup>
 
-	<ItemGroup>
-	  <Reference Include="Z21">
-	    <HintPath>..\..\z21Client\z21Client\Z21Client\bin\Debug\publish\Z21.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
+    <ItemGroup>
+        <Reference Include="Z21">
+            <HintPath>..\..\z21Client\z21Client\Z21Client\bin\Debug\publish\Z21.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
 </Project>

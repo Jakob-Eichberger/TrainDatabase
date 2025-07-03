@@ -4,15 +4,15 @@ using System.Windows.Controls;
 
 namespace Wpf_Application
 {
-    public class VehicleMenuItem : MenuItem
+  public class VehicleMenuItem : MenuItem
+  {
+    public VehicleMenuItem(VehicleModel vehicle, string content, Action<VehicleModel> onClick)
     {
-        public VehicleMenuItem(VehicleModel vehicle, string content, Action<VehicleModel> onClick)
-        {
-            Vehicle = vehicle;
-            Header = content;
-            Click += (a, b) => onClick(Vehicle);
-        }
-
-        public VehicleModel Vehicle { get; set; } = default!;
+      Vehicle = vehicle;
+      Header = content;
+      Click += (a, b) => onClick(Vehicle);
     }
+
+    public VehicleModel Vehicle { get; set; } = default!;
+  }
 }

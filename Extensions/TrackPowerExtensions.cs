@@ -7,3 +7,4 @@
 //        public static bool ToBoolean(this TrackPower e) => e == TrackPower.ON;
 //    }
 //}
+

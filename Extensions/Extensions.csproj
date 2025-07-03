@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<LangVersion>preview</LangVersion>
-		<Version>0.7.0.0</Version>
-		<FileVersion>0.7.0.0</FileVersion>
-		<Platforms>x64</Platforms>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <Version>0.7.0.0</Version>
+        <FileVersion>0.7.0.0</FileVersion>
+        <Platforms>x64</Platforms>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Autofac" Version="8.3.0" />
-		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
-		<PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-		<PackageReference Include="Serilog" Version="2.12.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Model\Model.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Autofac" Version="8.3.0"/>
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0"/>
+        <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0"/>
+        <PackageReference Include="Serilog" Version="2.12.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="System.IO.FileSystem" Version="4.3.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Model\Model.csproj"/>
+    </ItemGroup>
 
 </Project>

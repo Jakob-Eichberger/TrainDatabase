@@ -35,14 +35,14 @@ namespace Wpf_Application
                   .Enrich.FromLogContext()
                   .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
                   .WriteTo.Console(
-                                   restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
+                                   LogEventLevel.Debug,
                                    theme: AnsiConsoleTheme.Sixteen)
                   .CreateLogger();
     }
 
     private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-      var ex = e.ExceptionObject as Exception;
+      Exception? ex = e.ExceptionObject as Exception;
       Log.Logger.Error($"{ex?.Message}");
     }
 
@@ -57,7 +57,7 @@ namespace Wpf_Application
           AllocConsole();
         }
 
-        var client = ServiceProvider.GetService<Client>() ?? throw new ApplicationException();
+        Client client = ServiceProvider.GetService<Client>() ?? throw new ApplicationException();
         client.Connect(Configuration.ClientIP);
         ServiceProvider.GetService<MainWindow>()!.Show();
       }
