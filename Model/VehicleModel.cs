@@ -21,7 +21,7 @@ namespace Model
 
         public long? MaxSpeed { get; set; } = 0;
 
-        public long Speed​​step { get; set; } = 128;
+        public long Speedstep { get; set; } = 128;
 
         [Required]
         public long Address { get; set; } = 3;
