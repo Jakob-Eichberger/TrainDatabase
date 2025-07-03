@@ -11,86 +11,68 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
+using Autofac.Extensions.DependencyInjection;
 using WPF_Application;
 using Z21;
 
 namespace Wpf_Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+  /// <summary>
+  /// Interaction logic for App.xaml
+  /// </summary>
+  public partial class App : Application
+  {
+    private AutofacServiceProvider ServiceProvider { get; set; }
+
+    public App()
     {
-        private ServiceProvider ServiceProvider { get; }
+      AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-        public App()
-        {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-            string logFilePath = Path.Combine(Configuration.ApplicationData.LogDirectory.FullName, "log.txt");
-            Log.Logger = new LoggerConfiguration()
-                        .MinimumLevel.Debug()
-                        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                        .Enrich.FromLogContext()
-                        .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
-                        .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug, theme: AnsiConsoleTheme.Sixteen)
-                        .CreateLogger();
-
-
-            ServiceCollection services = new();
-            ConfigureServices(services);
-            ServiceProvider = services.BuildServiceProvider();
-        }
-
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var ex = e.ExceptionObject as Exception;
-            Log.Logger.Error($"{ex?.Message}");
-        }
-
-        private static void ConfigureServices(ServiceCollection services)
-        {
-            services.AddDbContext<Database>();
-            services.AddSingleton<Client>();
-            services.AddSingleton<MainWindow>();
-            services.AddSingleton<TrackPowerService>();
-            services.AddSingleton<VehicleService>();
-            services.AddSingleton<LogEventBus>();
-            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
-        }
-
-        private void OnStartup(object sender, StartupEventArgs e)
-        {
-            try
-            {
-
-                using (var db = new Database())
-                {
-                    //db.Database.EnsureDeleted();
-                    db.Database.MigrateAsync();
-                }
-
-                if (Configuration.OpenDebugConsoleOnStart || Debugger.IsAttached)
-                {
-                    AllocConsole();
-                }
-
-                var client = ServiceProvider.GetService<Client>() ?? throw new ApplicationException();
-                client.Connect(Configuration.ClientIP);
-                ServiceProvider.GetService<MainWindow>()!.Show();
-            }
-            catch (Exception ex)
-            {
-                Log.Logger.Fatal(ex, $"Failed to initialize the application!");
-                MessageBox.Show(ex.Message, "Fatal error");
-                Environment.Exit(1);
-            }
-        }
-
-        [DllImport("Kernel32")]
-        public static extern void AllocConsole();
-
-        [DllImport("Kernel32")]
-        public static extern void FreeConsole();
+      string logFilePath = Path.Combine(Configuration.ApplicationData.LogDirectory.FullName, "log.txt");
+      Log.Logger = new LoggerConfiguration()
+                  .MinimumLevel.Debug()
+                  .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                  .Enrich.FromLogContext()
+                  .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+                  .WriteTo.Console(
+                                   restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug,
+                                   theme: AnsiConsoleTheme.Sixteen)
+                  .CreateLogger();
     }
+
+    private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+      var ex = e.ExceptionObject as Exception;
+      Log.Logger.Error($"{ex?.Message}");
+    }
+
+    private void OnStartup(object sender, StartupEventArgs e)
+    {
+      try
+      {
+        ServiceProvider = TrainDatabaseServiceProvider.CreateServiceProvider();
+
+        if (Configuration.OpenDebugConsoleOnStart || Debugger.IsAttached)
+        {
+          AllocConsole();
+        }
+
+        var client = ServiceProvider.GetService<Client>() ?? throw new ApplicationException();
+        client.Connect(Configuration.ClientIP);
+        ServiceProvider.GetService<MainWindow>()!.Show();
+      }
+      catch (Exception ex)
+      {
+        Log.Logger.Fatal(ex, $"Failed to initialize the application!");
+        MessageBox.Show(ex.Message, "Fatal error");
+        Environment.Exit(1);
+      }
+    }
+
+    [DllImport("Kernel32")]
+    public static extern void AllocConsole();
+
+    [DllImport("Kernel32")]
+    public static extern void FreeConsole();
+  }
 }
