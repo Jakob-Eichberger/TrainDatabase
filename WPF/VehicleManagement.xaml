@@ -24,7 +24,8 @@
                   AutoGenerateColumns="False" GridLinesVisibility="Horizontal" SelectionMode="Single"
                   Background="Transparent" VerticalAlignment="Stretch"
                   SelectedCellsChanged="DgVehicles_SelectedCellsChanged" Grid.Row="0" IsReadOnly="True"
-                  CanUserSortColumns="False">
+                  CanUserSortColumns="False"
+                  Margin="5">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Adresse" Binding="{Binding Address}" />
                 <DataGridTextColumn Header="Kurzer Name" Binding="{Binding Name}" />
