@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Model;
-using Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -46,15 +45,15 @@ namespace TrainDatabase
         public VehicleManagement(IServiceProvider serviceProvider)
         {
             Db = serviceProvider.GetService<Database>()!;
-
-            Init();
             ServiceProvider = serviceProvider;
+
+            this.Loaded +=OnLoaded;
         }
 
-        private async void Init()
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
             InitializeComponent();
-            await ReloadVehicles();
+            _ = ReloadVehicles();
         }
 
         protected void OnPropertyChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));
@@ -173,30 +172,28 @@ namespace TrainDatabase
             if (SelectedVehicle is null)
                 return;
 
-            OpenFileDialog ofd = new OpenFileDialog() { Filter = "" };
+            IEnumerable<string> extensions = ImageCodecInfo.GetImageEncoders()
+                                                           .SelectMany(codec => codec.FilenameExtension?.Split(';')!)
+                                                           .Where(extension => !string.IsNullOrEmpty(extension))
+                                                           .Distinct();
+            
+            string filter = "Image Files|" + string.Join(";", extensions);
+            
+            OpenFileDialog openFileDialog = new()
+                                            {
+                                                Filter = filter,
+                                                CheckPathExists = true
+                                            };
 
-            string sep = string.Empty;
-
-            foreach (var c in ImageCodecInfo.GetImageEncoders())
+            if (openFileDialog.ShowDialog() ?? false)
             {
-                string codecName = c.CodecName?.Substring(8)?.Replace("Codec", "Files")?.Trim() ?? "";
-                ofd.Filter = string.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, codecName, c.FilenameExtension);
-                sep = "|";
-            }
-
-            ofd.Filter = string.Format("{0}{1}{2} ({3})|{3}", ofd.Filter, sep, "All Files", "*.*");
-            ofd.DefaultExt = ".png";
-            ofd.CheckPathExists = true;
-
-            if (ofd.ShowDialog() ?? false)
-            {
-                var oldFileNameAndPath = ofd.FileName;
-                var imageName = Guid.NewGuid() + Path.GetExtension(ofd.FileName);
-                var directory = Configuration.ApplicationData.VehicleImages.FullName;
+                string oldFileNameAndPath = openFileDialog.FileName;
+                string imageName = Guid.NewGuid() + Path.GetExtension(openFileDialog.FileName);
+                string directory = Configuration.ApplicationData.VehicleImages.FullName;
                 Directory.CreateDirectory(directory);
                 File.Copy(oldFileNameAndPath, $"{directory}\\{imageName}");
                 SelectedVehicle.ImageName = imageName;
-                Db.SaveChanges();
+                await Db.SaveChangesAsync();
                 Db.InvokeCollectionChanged();
                 await ReloadVehicles();
             }
